@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.example.neverpidor.ui.fragments.list.ListFragment"
+        android:label="ListFragment"
+        tools:layout="@layout/fragment_list">
+        <action
+            android:id="@+id/action_listFragment_to_menuItemListFragment"
+            app:destination="@id/menuItemListFragment"
+            app:enterAnim="@anim/slide_in_from_right"
+            app:exitAnim="@anim/slide_out_to_left"
+            app:popEnterAnim="@anim/slide_in_from_left"
+            app:popExitAnim="@anim/slide_out_to_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/menuItemListFragment"
+        android:name="com.example.neverpidor.ui.fragments.itemlist.MenuItemListFragment"
+        android:label="MenuItemListFragment"
+        tools:layout="@layout/fragment_menu_item_list">
+        <argument
+            android:name="itemId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_menuItemListFragment_to_addBeerFragment"
+            app:destination="@id/addBeerFragment"
+            app:enterAnim="@anim/slide_in_from_right"
+            app:exitAnim="@anim/slide_out_to_left"
+            app:popEnterAnim="@anim/slide_in_from_left"
+            app:popExitAnim="@anim/slide_out_to_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/addBeerFragment"
+        android:name="com.example.neverpidor.ui.fragments.addbeer.AddBeerFragment"
+        android:label="AddBeerFragment"
+        tools:layout="@layout/add_beer_fragment">
+        <argument
+            android:name="id"
+            app:argType="integer" />
+        <argument
+            android:name="itemId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+</navigation>
