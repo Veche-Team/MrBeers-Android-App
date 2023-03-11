@@ -5,17 +5,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.Event
+import com.example.neverpidor.Repositories
 import com.example.neverpidor.data.MenuItemsRepository
-import com.example.neverpidor.model.beer.Beer
-import com.example.neverpidor.model.beer.BeerResponse
-import com.example.neverpidor.model.beer.BeerRequest
-import com.example.neverpidor.model.snack.Snack
-import com.example.neverpidor.model.snack.SnackResponse
-import com.example.neverpidor.model.snack.SnackRequest
+import com.example.neverpidor.model.network.beer.Beer
+import com.example.neverpidor.model.network.beer.BeerResponse
+import com.example.neverpidor.model.network.beer.BeerRequest
+import com.example.neverpidor.model.network.snack.Snack
+import com.example.neverpidor.model.network.snack.SnackResponse
+import com.example.neverpidor.model.network.snack.SnackRequest
+import com.example.neverpidor.model.settings.AppSettings
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class AddBeerViewModel: ViewModel() {
+
+    private val appSettings: AppSettings by lazy {
+        Repositories.appSettings
+    }
 
     private val repository = MenuItemsRepository()
 
@@ -55,4 +61,6 @@ class AddBeerViewModel: ViewModel() {
     fun updateSnack(snackId: String, snackRequest: SnackRequest) = viewModelScope.launch {
         _snackResponse.postValue(Event(repository.updateSnack(snackId, snackRequest)))
     }
+
+    fun getItem(): Int = appSettings.getCurrentItem()
 }

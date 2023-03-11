@@ -1,6 +1,6 @@
-package com.example.neverpidor.model.beer
+package com.example.neverpidor.model.network.beer
 
-import com.example.neverpidor.model.Request
+import com.example.neverpidor.model.network.Request
 
 // body for post request
 data class BeerRequest(

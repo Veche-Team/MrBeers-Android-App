@@ -11,7 +11,7 @@ import com.example.neverpidor.ui.fragments.BaseFragment
 
 class ListFragment: BaseFragment() {
 
-    val viewModel: CategoryListViewModel by viewModels()
+    private val viewModel: CategoryListViewModel by viewModels()
     private var _binding: FragmentListBinding? = null
     private val binding: FragmentListBinding
     get() = _binding!!
@@ -28,7 +28,8 @@ class ListFragment: BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val controller = ListEpoxyController{
-            val direction = ListFragmentDirections.actionListFragmentToMenuItemListFragment(it)
+            val direction = ListFragmentDirections.actionListFragmentToMenuItemListFragment()
+            viewModel.setItem(it)
             navController.navigate(direction)
         }
         viewModel.menuCategoriesLiveData.observe(viewLifecycleOwner) {

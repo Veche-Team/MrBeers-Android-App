@@ -1,4 +1,4 @@
-package com.example.neverpidor.model.beer
+package com.example.neverpidor.model.network.beer
 
 // inner body
 data class Data(

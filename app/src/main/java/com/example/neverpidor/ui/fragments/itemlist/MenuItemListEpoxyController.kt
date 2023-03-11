@@ -1,22 +1,18 @@
 package com.example.neverpidor.ui.fragments.itemlist
 
-import android.graphics.Color
-import android.icu.text.Normalizer2.Mode
-import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.airbnb.epoxy.EpoxyController
 import com.example.neverpidor.R
-import com.example.neverpidor.databinding.DividerBinding
-import com.example.neverpidor.databinding.ModelItemTypeBinding
-import com.example.neverpidor.databinding.ModelLoadingDataScreenBinding
-import com.example.neverpidor.databinding.ModelMenuItemBinding
-import com.example.neverpidor.model.beer.BeerList
-import com.example.neverpidor.model.snack.SnackList
+import com.example.neverpidor.databinding.*
+import com.example.neverpidor.model.domain.DomainBeer
+import com.example.neverpidor.model.network.beer.BeerList
+import com.example.neverpidor.model.network.beer.Data
+import com.example.neverpidor.model.network.snack.SnackList
 import com.example.neverpidor.ui.epoxy.ViewBindingKotlinModel
 import kotlin.random.Random
 
-class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit) :
+class MenuItemListEpoxyController(val id: Int, private val onEditClick: (String) -> Unit) :
     EpoxyController() {
 
     var isLoading = true
@@ -41,7 +37,7 @@ class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit
         }
 
     //beer layer
-    var beerList = BeerList()
+    var beerList = listOf<DomainBeer>()
         set(value) {
             field = value
             isLoading = false
@@ -57,14 +53,16 @@ class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit
         }
         when (id) {
             R.string.beer -> {
-                beerList.data.groupBy { it.type }.forEach { map ->
+                beerList.groupBy { it.type }.forEach { map ->
                     ItemTypeEpoxyModel(map.key, onTypeClick = { string ->
                         isShown = string
                     }).id(map.key.hashCode()).addTo(this)
-                    DividerEpoxy(R.color.accent).id(Random.nextDouble(100.0)).addTo(this)
-                    map.value.filter { it.type == isShown }.forEach {
-                        MenuItemEpoxyModel(it, id, onEditClick).id(it.UID).addTo(this)
-                        DividerEpoxy(R.color.black).id(Random.nextDouble(100.0)).addTo(this)
+                    DividerEpoxy(R.color.amber_dark).id(Random.nextDouble(100.0)).addTo(this)
+                    map.value.filter { it.type == isShown }.forEachIndexed { index, data ->
+                        MenuItemEpoxyModel(data , id, onEditClick).id(data.UID).addTo(this)
+                     /*   if (index % 2 == 1) {
+                            DividerEpoxy(R.color.amber_dark).id(Random.nextDouble(100.0)).addTo(this)
+                        }*/
                     }
                 }
             }
@@ -76,7 +74,7 @@ class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit
                     DividerEpoxy(R.color.accent).id(Random.nextDouble(100.0)).addTo(this)
                     map.value.filter { it.type == isShown }.forEach {
                         MenuItemEpoxyModel(it, id, onEditClick).id(it.UID).addTo(this)
-                        DividerEpoxy(R.color.black).id(Random.nextDouble(100.0)).addTo(this)
+                  //      DividerEpoxy(R.color.black).id(Random.nextDouble(100.0)).addTo(this)
                     }
                 }
             }
@@ -101,20 +99,27 @@ class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit
                 onTypeClick(type)
             }
         }
+
+        override fun getSpanSize(totalSpanCount: Int, position: Int, itemCount: Int): Int {
+            return totalSpanCount
+        }
     }
 
-    data class MenuItemEpoxyModel(val data: com.example.neverpidor.model.beer.Data, val id: Int, val onEditClick: (String) -> Unit) :
-        ViewBindingKotlinModel<ModelMenuItemBinding>(R.layout.model_menu_item) {
-        override fun ModelMenuItemBinding.bind() {
-            nameText.text = data.name
-            description.isGone = true
+    data class MenuItemEpoxyModel(val domainBeer: DomainBeer, val id: Int, val onEditClick: (String) -> Unit) :
+        ViewBindingKotlinModel<ModelMenuItem2Binding>(R.layout.model_menu_item2) {
+        override fun ModelMenuItem2Binding.bind() {
+            nameText.text = domainBeer.name
+            price.text = "${domainBeer.price} P."
+
+            editImage.setOnClickListener {
+                onEditClick(domainBeer.UID)
+            }
+          /*  description.isGone = true
             alcoholPercentageText.isGone = true
             volumeText.isGone = true
-            price.text = "${data.price} P."
+
             var closed: Boolean = true
-            editImage.setOnClickListener {
-                onEditClick(data.UID)
-            }
+
             root.setOnClickListener {
 
                 if (closed) {
@@ -136,7 +141,7 @@ class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit
                     volumeText.isGone = true
                 }
                 closed = !closed
-            }
+            }*/
 
         }
     }
@@ -147,6 +152,10 @@ data class DividerEpoxy(val color: Int) :
     ViewBindingKotlinModel<DividerBinding>(R.layout.divider) {
     override fun DividerBinding.bind() {
         divideLine.setBackgroundResource(color)
+    }
+
+    override fun getSpanSize(totalSpanCount: Int, position: Int, itemCount: Int): Int {
+        return totalSpanCount
     }
 }
 

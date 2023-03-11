@@ -1,9 +1,7 @@
-package com.example.neverpidor.model.beer
+package com.example.neverpidor.model.network.beer
 
 // post and delete response
 data class BeerResponse(
     val createdBeverage: Data = Data(),
     val msg: String = ""
-) {
-    fun toBeer(): Beer = Beer(data = this.createdBeverage)
-}
+)

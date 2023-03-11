@@ -1,6 +1,6 @@
-package com.example.neverpidor.model.snack
+package com.example.neverpidor.model.network.snack
 
-import com.example.neverpidor.model.Request
+import com.example.neverpidor.model.network.Request
 
 data class SnackRequest(
     val description: String,

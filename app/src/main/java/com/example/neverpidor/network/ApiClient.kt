@@ -1,14 +1,14 @@
 package com.example.neverpidor.network
 
 import android.util.Log
-import com.example.neverpidor.model.beer.Beer
-import com.example.neverpidor.model.beer.BeerList
-import com.example.neverpidor.model.beer.BeerResponse
-import com.example.neverpidor.model.beer.BeerRequest
-import com.example.neverpidor.model.snack.Snack
-import com.example.neverpidor.model.snack.SnackResponse
-import com.example.neverpidor.model.snack.SnackList
-import com.example.neverpidor.model.snack.SnackRequest
+import com.example.neverpidor.model.network.beer.Beer
+import com.example.neverpidor.model.network.beer.BeerList
+import com.example.neverpidor.model.network.beer.BeerResponse
+import com.example.neverpidor.model.network.beer.BeerRequest
+import com.example.neverpidor.model.network.snack.Snack
+import com.example.neverpidor.model.network.snack.SnackResponse
+import com.example.neverpidor.model.network.snack.SnackList
+import com.example.neverpidor.model.network.snack.SnackRequest
 import retrofit2.Response
 
 class ApiClient(private val beersApiService: BeersApiService) {

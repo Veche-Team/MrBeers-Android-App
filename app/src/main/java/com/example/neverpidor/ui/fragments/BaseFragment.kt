@@ -9,5 +9,4 @@ abstract class BaseFragment: Fragment() {
     val navController: NavController by lazy {
         (activity as MainActivity).navController
     }
-
 }

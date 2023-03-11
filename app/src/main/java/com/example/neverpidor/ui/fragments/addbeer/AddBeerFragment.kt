@@ -11,9 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.AddBeerFragmentBinding
-import com.example.neverpidor.model.beer.BeerRequest
-import com.example.neverpidor.model.snack.SnackRequest
+import com.example.neverpidor.model.network.beer.BeerRequest
+import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.ui.fragments.BaseFragment
+import kotlin.properties.Delegates
 
 class AddBeerFragment : BaseFragment() {
 
@@ -25,6 +26,7 @@ class AddBeerFragment : BaseFragment() {
     private val viewModel: AddBeerViewModel by viewModels()
 
     private val args: AddBeerFragmentArgs by navArgs()
+    private var item by Delegates.notNull<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,21 +40,23 @@ class AddBeerFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        item = viewModel.getItem()
+
         args.itemId?.let {
             activateUpdateMode()
         }
 
-        if (args.resItemName == R.string.snacks) {
+        if (item == R.string.snacks) {
             binding.volumeTextLayout.isGone = true
             binding.alcTextLayout.isGone = true
             binding.saveButton.setOnClickListener {
-                validateAndSave(args.resItemName)
+                validateAndSave(item)
             }
             observeSnackResponse()
 
         } else {
             binding.saveButton.setOnClickListener {
-                validateAndSave(args.resItemName)
+                validateAndSave(item)
             }
             observeBeerResponse()
         }
@@ -158,7 +162,7 @@ class AddBeerFragment : BaseFragment() {
         updateMode = true
 
         binding.saveButton.text = "Update"
-        if (args.resItemName == R.string.beer) {
+        if (item == R.string.beer) {
             viewModel.getBeerById(args.itemId!!)
             viewModel.beerLiveData.observe(viewLifecycleOwner) {
                 binding.nameEditText.setText(it.data.name)

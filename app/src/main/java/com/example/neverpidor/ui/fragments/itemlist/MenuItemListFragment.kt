@@ -14,16 +14,16 @@ import com.airbnb.epoxy.EpoxyTouchHelper.SwipeCallbacks
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.FragmentMenuItemListBinding
 import com.example.neverpidor.ui.fragments.BaseFragment
+import kotlin.properties.Delegates
 
 class MenuItemListFragment : BaseFragment() {
 
     private var _binding: FragmentMenuItemListBinding? = null
     private val binding: FragmentMenuItemListBinding
         get() = _binding!!
-    private val args: MenuItemListFragmentArgs by navArgs()
+
     private val viewModel: MenuItemListViewModel by viewModels()
-    private val resMenuItem: String
-    get() = getString(args.resItemName)
+    private var item by Delegates.notNull<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,16 +37,18 @@ class MenuItemListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+         item = viewModel.getItem()
+
         binding.fab.setOnClickListener {
-            val direction = MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(args.resItemName)
+            val direction = MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment()
             navController.navigate(direction)
         }
-        val controller = MenuItemListEpoxyController(args.resItemName) {
-            val direction = MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(args.resItemName, it)
+        val controller = MenuItemListEpoxyController(item) {
+            val direction = MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(it)
             navController.navigate(direction)
         }
 
-        when (args.resItemName) {
+        when (item) {
             R.string.beer -> {
 
                 viewModel.getBeers()
@@ -112,7 +114,7 @@ class MenuItemListFragment : BaseFragment() {
                     direction: Int
                 ) {
                     val removedItemId = model?.data?.UID ?: return
-                    if (args.resItemName == R.string.beer) {
+                    if (item == R.string.beer) {
                         viewModel.deleteBeer(removedItemId)
                     } else {
                         viewModel.deleteSnack(removedItemId)

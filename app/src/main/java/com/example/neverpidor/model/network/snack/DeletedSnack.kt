@@ -1,4 +1,4 @@
-package com.example.neverpidor.model.snack
+package com.example.neverpidor.model.network.snack
 
 data class DeletedSnack(
     val UID: String = "",

@@ -1,18 +1,22 @@
 package com.example.neverpidor.data
 
-import com.example.neverpidor.model.beer.Beer
-import com.example.neverpidor.model.beer.BeerList
-import com.example.neverpidor.model.beer.BeerResponse
-import com.example.neverpidor.model.beer.BeerRequest
-import com.example.neverpidor.model.snack.Snack
-import com.example.neverpidor.model.snack.SnackList
-import com.example.neverpidor.model.snack.SnackRequest
-import com.example.neverpidor.model.snack.SnackResponse
+import com.example.neverpidor.model.domain.DomainBeer
+import com.example.neverpidor.model.mapper.BeerMapper
+import com.example.neverpidor.model.network.beer.Beer
+import com.example.neverpidor.model.network.beer.BeerList
+import com.example.neverpidor.model.network.beer.BeerResponse
+import com.example.neverpidor.model.network.beer.BeerRequest
+import com.example.neverpidor.model.network.snack.Snack
+import com.example.neverpidor.model.network.snack.SnackList
+import com.example.neverpidor.model.network.snack.SnackRequest
+import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.network.NetworkLayer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class MenuItemsRepository {
+
+    private val beerMapper = BeerMapper()
 
     suspend fun getBeerById(beerId: String): Beer? {
 
@@ -53,7 +57,7 @@ class MenuItemsRepository {
         return request.body
     }
 
-    suspend fun getBeers(): BeerList? {
+    suspend fun getBeers(): List<DomainBeer>? {
 
         val request = NetworkLayer.apiClient.getBeers()
 
@@ -63,7 +67,9 @@ class MenuItemsRepository {
         if (!request.isSuccessful) {
             return null
         }
-        return request.body
+        return request.body.data.map {
+            beerMapper.buildFrom(it)
+        }
     }
 
     suspend fun addBeer(beerRequest: BeerRequest): BeerResponse? {

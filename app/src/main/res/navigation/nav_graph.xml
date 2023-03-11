@@ -23,9 +23,6 @@
         android:name="com.example.neverpidor.ui.fragments.itemlist.MenuItemListFragment"
         android:label="MenuItemListFragment"
         tools:layout="@layout/fragment_menu_item_list">
-        <argument
-            android:name="resItemName"
-            app:argType="integer" />
         <action
             android:id="@+id/action_menuItemListFragment_to_addBeerFragment"
             app:destination="@id/addBeerFragment"
@@ -33,6 +30,9 @@
             app:exitAnim="@anim/slide_out_to_left"
             app:popEnterAnim="@anim/slide_in_from_left"
             app:popExitAnim="@anim/slide_out_to_right"/>
+        <action
+            android:id="@+id/action_menuItemListFragment_to_fragmentSingleItem"
+            app:destination="@id/fragmentSingleItem" />
     </fragment>
     <fragment
         android:id="@+id/addBeerFragment"
@@ -40,12 +40,18 @@
         android:label="AddBeerFragment"
         tools:layout="@layout/add_beer_fragment">
         <argument
-            android:name="resItemName"
-            app:argType="integer" />
-        <argument
             android:name="itemId"
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentSingleItem"
+        android:name="com.example.neverpidor.ui.fragments.singleItem.FragmentSingleItem"
+        android:label="FragmentSingleItem"
+        tools:layout="@layout/single_item_fragment">
+        <action
+            android:id="@+id/action_fragmentSingleItem_self"
+            app:destination="@id/fragmentSingleItem" />
     </fragment>
 </navigation>
