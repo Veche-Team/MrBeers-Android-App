@@ -1,5 +1,6 @@
 package com.example.neverpidor.ui.fragments.list
 
+import android.content.res.Resources
 import com.airbnb.epoxy.EpoxyController
 import com.example.neverpidor.R
 import com.example.neverpidor.data.MenuCategoryEntity
@@ -24,9 +25,9 @@ class ListEpoxyController(private val onClick: (Int) -> Unit) : EpoxyController(
     ) {
         override fun ModelPreviewBinding.bind() {
             rootLayout.setBackgroundResource(menuCategoryEntity.previewImage)
-            titleText.text = menuCategoryEntity.name
+            titleText.text = root.context.getString(menuCategoryEntity.name)
             rootLayout.setOnClickListener {
-                onClick(menuCategoryEntity.id)
+                onClick(menuCategoryEntity.name)
             }
         }
 

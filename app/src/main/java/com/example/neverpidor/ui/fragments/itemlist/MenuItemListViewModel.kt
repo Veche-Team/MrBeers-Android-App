@@ -33,9 +33,7 @@ class MenuItemListViewModel: ViewModel() {
         _snacks.postValue(repository.getSnacks())
     }
     fun getBeers() = viewModelScope.launch {
-         repository.getBeers()?.collect{
-             _beers.value = it
-        }
+         _beers.postValue(repository.getBeers())
     }
     fun deleteBeer(beerId: String) = viewModelScope.launch {
         _beerResponse.postValue(Event(repository.deleteBeer(beerId)))

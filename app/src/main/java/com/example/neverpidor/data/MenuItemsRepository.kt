@@ -39,11 +39,12 @@ class MenuItemsRepository {
         }
         return request.body
     }
+
     suspend fun getSnacks(): SnackList? {
 
         val request = NetworkLayer.apiClient.getSnacks()
 
-       if (request.failed) {
+        if (request.failed) {
             return null
         }
         if (!request.isSuccessful) {
@@ -51,7 +52,8 @@ class MenuItemsRepository {
         }
         return request.body
     }
-    suspend fun getBeers(): Flow<BeerList>? {
+
+    suspend fun getBeers(): BeerList? {
 
         val request = NetworkLayer.apiClient.getBeers()
 
@@ -61,8 +63,9 @@ class MenuItemsRepository {
         if (!request.isSuccessful) {
             return null
         }
-        return flowOf( request.body)
+        return request.body
     }
+
     suspend fun addBeer(beerRequest: BeerRequest): BeerResponse? {
 
         val request = NetworkLayer.apiClient.addBeer(beerRequest)

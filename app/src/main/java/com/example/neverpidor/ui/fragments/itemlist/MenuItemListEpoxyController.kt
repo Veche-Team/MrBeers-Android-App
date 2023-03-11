@@ -56,7 +56,7 @@ class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit
             return
         }
         when (id) {
-            0 -> {
+            R.string.beer -> {
                 beerList.data.groupBy { it.type }.forEach { map ->
                     ItemTypeEpoxyModel(map.key, onTypeClick = { string ->
                         isShown = string
@@ -68,7 +68,7 @@ class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit
                     }
                 }
             }
-            1 -> {
+            R.string.snacks -> {
                 snacks.data.groupBy { it.type }.forEach { map ->
                     ItemTypeEpoxyModel(map.key, onTypeClick = { string ->
                         isShown = string
@@ -119,7 +119,7 @@ class MenuItemListEpoxyController(val id: Int, val onEditClick: (String) -> Unit
 
                 if (closed) {
                     when (id) {
-                        0 -> {
+                        R.string.beer -> {
                             alcoholPercentageText.isVisible = true
                             alcoholPercentageText.text =
                                 "Содержание алкоголя ${data.alcPercentage}%"

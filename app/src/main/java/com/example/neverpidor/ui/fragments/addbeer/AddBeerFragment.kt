@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.example.neverpidor.R
 import com.example.neverpidor.databinding.AddBeerFragmentBinding
 import com.example.neverpidor.model.beer.BeerRequest
 import com.example.neverpidor.model.snack.SnackRequest
@@ -41,17 +42,17 @@ class AddBeerFragment : BaseFragment() {
             activateUpdateMode()
         }
 
-        if (args.id == 1) {
+        if (args.resItemName == R.string.snacks) {
             binding.volumeTextLayout.isGone = true
             binding.alcTextLayout.isGone = true
             binding.saveButton.setOnClickListener {
-                validateAndSave(args.id)
+                validateAndSave(args.resItemName)
             }
             observeSnackResponse()
 
         } else {
             binding.saveButton.setOnClickListener {
-                validateAndSave(args.id)
+                validateAndSave(args.resItemName)
             }
             observeBeerResponse()
         }
@@ -94,7 +95,7 @@ class AddBeerFragment : BaseFragment() {
             binding.priceTextLayout.error = "Чет дорого"
             return
         }
-        if (id == 0) {
+        if (id == R.string.beer) {
             val alcPercentageStr = binding.alcEt.text.toString()
             if (alcPercentageStr.isEmpty()) {
                 binding.alcTextLayout.error = "Надо бы добавить хмелю"
@@ -131,14 +132,14 @@ class AddBeerFragment : BaseFragment() {
                 viewModel.addSnack(request)
             }
         }
-        navController.popBackStack()
+
     }
 
     private fun observeBeerResponse() {
         viewModel.beerResponse.observe(viewLifecycleOwner) {
             it.getContent()?.let {
                 Toast.makeText(requireContext(), it.msg, Toast.LENGTH_SHORT).show()
-                Log.e("Add", "${it.msg} ${it.createdBeverage.name}")
+                navController.popBackStack()
             }
 
         }
@@ -148,6 +149,7 @@ class AddBeerFragment : BaseFragment() {
         viewModel.snackResponse.observe(viewLifecycleOwner) {
             it.getContent()?.let {
                 Toast.makeText(requireContext(), it.msg, Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
             }
         }
     }
@@ -155,9 +157,8 @@ class AddBeerFragment : BaseFragment() {
     private fun activateUpdateMode() {
         updateMode = true
 
-        activity?.actionBar?.title = "Cunt"
         binding.saveButton.text = "Update"
-        if (args.id == 0) {
+        if (args.resItemName == R.string.beer) {
             viewModel.getBeerById(args.itemId!!)
             viewModel.beerLiveData.observe(viewLifecycleOwner) {
                 binding.nameEditText.setText(it.data.name)

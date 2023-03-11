@@ -37,8 +37,6 @@ class ListFragment: BaseFragment() {
             binding.recyclerView.setControllerAndBuildModels(controller)
         }
         viewModel.getCategories()
-
-
     }
 
     override fun onDestroyView() {

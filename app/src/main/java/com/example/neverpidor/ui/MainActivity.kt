@@ -2,7 +2,6 @@ package com.example.neverpidor.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -24,27 +23,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-/*
-        setSupportActionBar(binding.toolbar)*/
-
-       // supportActionBar?.setDisplayHomeAsUpEnabled(true)
-       /* val toggle = ActionBarDrawerToggle(
-            this,
-            binding.drawerLayout,
-            binding.toolbar,
-            R.string.app_name,
-            R.string.app_name
-        )
-        binding.drawerLayout.addDrawerListener(toggle)*/
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment
         navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(navController.graph, binding.drawerLayout)
-     //   NavigationUI.setupActionBarWithNavController(this, navController)
+
         binding.navView.setupWithNavController(navController)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-   /*     toggle.syncState()*/
     }
 
     override fun onSupportNavigateUp(): Boolean {

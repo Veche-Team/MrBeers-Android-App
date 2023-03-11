@@ -24,7 +24,7 @@
         android:label="MenuItemListFragment"
         tools:layout="@layout/fragment_menu_item_list">
         <argument
-            android:name="itemId"
+            android:name="resItemName"
             app:argType="integer" />
         <action
             android:id="@+id/action_menuItemListFragment_to_addBeerFragment"
@@ -40,7 +40,7 @@
         android:label="AddBeerFragment"
         tools:layout="@layout/add_beer_fragment">
         <argument
-            android:name="id"
+            android:name="resItemName"
             app:argType="integer" />
         <argument
             android:name="itemId"
