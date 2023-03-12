@@ -8,6 +8,7 @@ import com.example.neverpidor.Event
 import com.example.neverpidor.Repositories
 import com.example.neverpidor.data.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
+import com.example.neverpidor.model.domain.DomainSnack
 import com.example.neverpidor.model.network.beer.BeerList
 import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.snack.SnackResponse
@@ -24,8 +25,8 @@ class MenuItemListViewModel: ViewModel() {
 
     private val repository = MenuItemsRepository()
 
-    private val _snacks = MutableLiveData<SnackList>()
-    val snacks: LiveData<SnackList> = _snacks
+    private val _snacks = MutableLiveData<List<DomainSnack>>()
+    val snacks: LiveData<List<DomainSnack>> = _snacks
 
     private val _beers = MutableLiveData<List<DomainBeer>>()
     val beers: LiveData<List<DomainBeer>> = _beers
@@ -35,6 +36,9 @@ class MenuItemListViewModel: ViewModel() {
 
     private val _snackResponse = MutableLiveData<Event<SnackResponse?>>()
     val snackResponse: LiveData<Event<SnackResponse?>> = _snackResponse
+
+    private val _shownEpoxyState = MutableLiveData<Set<String>>()
+    val shownEpoxyState: LiveData<Set<String>> = _shownEpoxyState
 
     fun getSnacks() = viewModelScope.launch {
         _snacks.postValue(repository.getSnacks())
@@ -52,4 +56,8 @@ class MenuItemListViewModel: ViewModel() {
     }
 
     fun getItem(): Int = appSettings.getCurrentItem()
+
+    fun saveEpoxyState(set: Set<String>) {
+        _shownEpoxyState.postValue(set)
+    }
 }

@@ -40,13 +40,15 @@ class AddBeerFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        item = viewModel.getItem()
 
+        item = viewModel.getItem()
+        binding.lottie.playAnimation()
         args.itemId?.let {
             activateUpdateMode()
         }
 
         if (item == R.string.snacks) {
+            supportActionBar?.title = "Добавить закусь"
             binding.volumeTextLayout.isGone = true
             binding.alcTextLayout.isGone = true
             binding.saveButton.setOnClickListener {
@@ -55,6 +57,7 @@ class AddBeerFragment : BaseFragment() {
             observeSnackResponse()
 
         } else {
+            supportActionBar?.title = "Добавить пивас"
             binding.saveButton.setOnClickListener {
                 validateAndSave(item)
             }
@@ -165,20 +168,22 @@ class AddBeerFragment : BaseFragment() {
         if (item == R.string.beer) {
             viewModel.getBeerById(args.itemId!!)
             viewModel.beerLiveData.observe(viewLifecycleOwner) {
-                binding.nameEditText.setText(it.data.name)
-                binding.descriptionEt.setText(it.data.description)
-                binding.typeEt.setText(it.data.type)
-                binding.priceEt.setText(it.data.price.toString())
-                binding.alcEt.setText(it.data.alcPercentage.toString())
-                binding.volumeEt.setText(it.data.volume.toString())
+                supportActionBar?.title = "Изменяем ${it.name}"
+                binding.nameEditText.setText(it.name)
+                binding.descriptionEt.setText(it.description)
+                binding.typeEt.setText(it.type)
+                binding.priceEt.setText(it.price.toString())
+                binding.alcEt.setText(it.alcPercentage.toString())
+                binding.volumeEt.setText(it.volume.toString())
             }
         } else {
             viewModel.getSnackById(args.itemId!!)
             viewModel.snackLiveData.observe(viewLifecycleOwner) {
-                binding.nameEditText.setText(it.data.name)
-                binding.descriptionEt.setText(it.data.description)
-                binding.typeEt.setText(it.data.type)
-                binding.priceEt.setText(it.data.price.toString())
+                supportActionBar?.title = "Изменяем ${it.name}"
+                binding.nameEditText.setText(it.name)
+                binding.descriptionEt.setText(it.description)
+                binding.typeEt.setText(it.type)
+                binding.priceEt.setText(it.price.toString())
             }
         }
     }

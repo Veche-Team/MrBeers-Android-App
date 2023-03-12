@@ -11,6 +11,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.neverpidor.R
 import com.example.neverpidor.Repositories
 import com.example.neverpidor.databinding.ActivityMainBinding
+import com.example.neverpidor.model.settings.AppSettings
+import com.example.neverpidor.ui.fragments.singleItem.FragmentSingleItem
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Repositories.init(this)
+
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment
         navController = navHostFragment.navController

@@ -6,14 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyTouchHelper
 import com.airbnb.epoxy.EpoxyTouchHelper.SwipeCallbacks
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.FragmentMenuItemListBinding
+import com.example.neverpidor.ui.fragments.itemlist.epoxy.models.MenuItemEpoxyModel
 import com.example.neverpidor.ui.fragments.BaseFragment
+import com.example.neverpidor.ui.fragments.itemlist.epoxy.MenuItemListEpoxyController
 import kotlin.properties.Delegates
 
 class MenuItemListFragment : BaseFragment() {
@@ -24,6 +25,7 @@ class MenuItemListFragment : BaseFragment() {
 
     private val viewModel: MenuItemListViewModel by viewModels()
     private var item by Delegates.notNull<Int>()
+    private lateinit var controller: MenuItemListEpoxyController
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,20 +39,26 @@ class MenuItemListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-         item = viewModel.getItem()
+        item = viewModel.getItem()
 
         binding.fab.setOnClickListener {
-            val direction = MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment()
+            val direction =
+                MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment()
             navController.navigate(direction)
         }
-        val controller = MenuItemListEpoxyController(item) {
-            val direction = MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(it)
+         controller = MenuItemListEpoxyController(item, onEditClick = {
+            val direction =
+                MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(it)
             navController.navigate(direction)
-        }
-
+        },
+            onItemClick = {
+                val direction = MenuItemListFragmentDirections.actionMenuItemListFragmentToFragmentSingleItem(it.UID, it.itemType)
+                navController.navigate(direction)
+            }
+        )
         when (item) {
             R.string.beer -> {
-
+                supportActionBar?.title = resources.getString( R.string.beer)
                 viewModel.getBeers()
                 viewModel.beers.observe(viewLifecycleOwner) {
                     controller.beerList = it
@@ -58,7 +66,7 @@ class MenuItemListFragment : BaseFragment() {
                 observeBeerDeleteResponse()
             }
             R.string.snacks -> {
-
+                supportActionBar?.title = resources.getString( R.string.snacks)
                 viewModel.getSnacks()
                 viewModel.snacks.observe(viewLifecycleOwner) {
                     controller.snacks = it
@@ -86,7 +94,7 @@ class MenuItemListFragment : BaseFragment() {
 
     private fun observeBeerDeleteResponse() {
         viewModel.beerResponse.observe(viewLifecycleOwner) {
-           viewModel.getBeers()
+            viewModel.getBeers()
             it.getContent()?.let {
                 Toast.makeText(requireContext(), "${it.msg}", Toast.LENGTH_SHORT).show()
             }
@@ -101,19 +109,20 @@ class MenuItemListFragment : BaseFragment() {
             }
         }
     }
+
     private fun addSwipeToDelete() {
         EpoxyTouchHelper.initSwiping(binding.itemListRv)
             .right()
-            .withTarget(MenuItemListEpoxyController.MenuItemEpoxyModel::class.java)
+            .withTarget(MenuItemEpoxyModel::class.java)
             .andCallbacks(object :
-                SwipeCallbacks<MenuItemListEpoxyController.MenuItemEpoxyModel>() {
+                SwipeCallbacks<MenuItemEpoxyModel>() {
                 override fun onSwipeCompleted(
-                    model: MenuItemListEpoxyController.MenuItemEpoxyModel?,
+                    model: MenuItemEpoxyModel?,
                     itemView: View?,
                     position: Int,
                     direction: Int
                 ) {
-                    val removedItemId = model?.data?.UID ?: return
+                    val removedItemId = model?.domainItem?.UID ?: return
                     if (item == R.string.beer) {
                         viewModel.deleteBeer(removedItemId)
                     } else {
@@ -123,4 +132,13 @@ class MenuItemListFragment : BaseFragment() {
             })
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.saveEpoxyState(controller.getShownState())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        controller.setShownState(viewModel.shownEpoxyState.value ?: emptySet())
+    }
 }

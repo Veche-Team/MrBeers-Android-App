@@ -3,13 +3,14 @@ package com.example.neverpidor.model.domain
 import androidx.annotation.DrawableRes
 
 data class DomainBeer(
-    val UID: String,
-    val alcPercentage: Double,
-    val description: String,
-    val name: String,
-    val price: Double,
-    val type: String,
-    val volume: Double,
+    override val itemType: String = "beer",
+    override val UID: String,
+    override val alcPercentage: Double,
+    override val description: String,
+    override val name: String,
+    override val price: Double,
+    override val type: String,
+    override val volume: Double,
     @DrawableRes
-    val image: Int? = null
-)
+    override val image: Int? = null
+): DomainItem(itemType, UID, alcPercentage, description, name, price, type, volume, image, )

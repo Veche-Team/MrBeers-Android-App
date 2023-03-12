@@ -14,7 +14,7 @@ data class MenuCategoryEntity(
     companion object {
 
         fun getCategories() = listOf(
-            MenuCategoryEntity(0, R.string.beer, R.drawable.a_beer9),
+            MenuCategoryEntity(0, R.string.beer, R.drawable.beer_preview),
             MenuCategoryEntity(1, R.string.snacks, R.drawable.snacks_preview)
         )
     }

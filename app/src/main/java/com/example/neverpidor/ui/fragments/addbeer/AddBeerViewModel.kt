@@ -7,15 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.Event
 import com.example.neverpidor.Repositories
 import com.example.neverpidor.data.MenuItemsRepository
-import com.example.neverpidor.model.network.beer.Beer
+import com.example.neverpidor.model.domain.DomainBeer
+import com.example.neverpidor.model.domain.DomainSnack
 import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.beer.BeerRequest
-import com.example.neverpidor.model.network.snack.Snack
 import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.model.settings.AppSettings
 import kotlinx.coroutines.launch
-import retrofit2.Response
 
 class AddBeerViewModel: ViewModel() {
 
@@ -25,11 +24,11 @@ class AddBeerViewModel: ViewModel() {
 
     private val repository = MenuItemsRepository()
 
-    private val _beerLiveData = MutableLiveData<Beer>()
-    val beerLiveData: LiveData<Beer> = _beerLiveData
+    private val _beerLiveData = MutableLiveData<DomainBeer>()
+    val beerLiveData: LiveData<DomainBeer> = _beerLiveData
 
-    private val _snackLiveData = MutableLiveData<Snack>()
-    val snackLiveData: LiveData<Snack> = _snackLiveData
+    private val _snackLiveData = MutableLiveData<DomainSnack>()
+    val snackLiveData: LiveData<DomainSnack> = _snackLiveData
 
     private val _beerResponse = MutableLiveData<Event<BeerResponse?>>()
     val beerResponse: LiveData<Event<BeerResponse?>> = _beerResponse

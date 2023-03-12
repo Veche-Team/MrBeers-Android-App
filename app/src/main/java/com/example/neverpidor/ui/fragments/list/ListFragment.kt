@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import com.example.neverpidor.R
 import com.example.neverpidor.databinding.FragmentListBinding
 import com.example.neverpidor.ui.fragments.BaseFragment
+import com.example.neverpidor.ui.fragments.list.epoxy.ListEpoxyController
 
 class ListFragment: BaseFragment() {
 
