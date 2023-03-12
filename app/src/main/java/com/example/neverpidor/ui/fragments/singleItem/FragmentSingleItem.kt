@@ -8,11 +8,14 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import com.example.neverpidor.R
 import com.example.neverpidor.databinding.SingleItemFragmentBinding
 import com.example.neverpidor.model.domain.DomainItem
 import com.example.neverpidor.ui.fragments.BaseFragment
 import com.example.neverpidor.ui.fragments.singleItem.epoxy.SingleItemEpoxyController
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FragmentSingleItem: BaseFragment() {
 
     private var _binding: SingleItemFragmentBinding? = null
@@ -47,8 +50,8 @@ class FragmentSingleItem: BaseFragment() {
             viewModel.getBeerById(itemId)
             viewModel.beerLiveData.observe(viewLifecycleOwner) {
                 item = it
-                binding.volumeText.text = "${(item!!).volume} Л"
-                binding.alcoholPercentageText.text = "Алк.:${(item!!).alcPercentage}"
+                binding.volumeText.text = getString(R.string.volume, item!!.volume.toString())
+                binding.alcoholPercentageText.text = getString(R.string.alcPercentage, item!!.alcPercentage.toString())
                 updateUi(item!!)
             }
             binding.recyclerView.setController(controller)
@@ -104,7 +107,7 @@ class FragmentSingleItem: BaseFragment() {
         }
         binding.titleText.text = item.name
         binding.description.text = item.description
-        binding.price.text = "${item.price} P."
+        binding.price.text = getString(R.string.price, item.price.toString())
     }
 
 }

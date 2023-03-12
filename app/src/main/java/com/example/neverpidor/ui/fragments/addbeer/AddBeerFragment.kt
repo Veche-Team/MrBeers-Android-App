@@ -1,7 +1,6 @@
 package com.example.neverpidor.ui.fragments.addbeer
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,10 @@ import com.example.neverpidor.databinding.AddBeerFragmentBinding
 import com.example.neverpidor.model.network.beer.BeerRequest
 import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.ui.fragments.BaseFragment
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates
 
+@AndroidEntryPoint
 class AddBeerFragment : BaseFragment() {
 
     private var _binding: AddBeerFragmentBinding? = null
@@ -39,7 +40,6 @@ class AddBeerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         item = viewModel.getItem()
         binding.lottie.playAnimation()
@@ -144,8 +144,8 @@ class AddBeerFragment : BaseFragment() {
 
     private fun observeBeerResponse() {
         viewModel.beerResponse.observe(viewLifecycleOwner) {
-            it.getContent()?.let {
-                Toast.makeText(requireContext(), it.msg, Toast.LENGTH_SHORT).show()
+            it.getContent()?.let { beerResponse ->
+                Toast.makeText(requireContext(), beerResponse.msg, Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
             }
 
@@ -154,8 +154,8 @@ class AddBeerFragment : BaseFragment() {
 
     private fun observeSnackResponse() {
         viewModel.snackResponse.observe(viewLifecycleOwner) {
-            it.getContent()?.let {
-                Toast.makeText(requireContext(), it.msg, Toast.LENGTH_SHORT).show()
+            it.getContent()?.let { snackResponse ->
+                Toast.makeText(requireContext(), snackResponse.msg, Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
             }
         }
@@ -164,7 +164,7 @@ class AddBeerFragment : BaseFragment() {
     private fun activateUpdateMode() {
         updateMode = true
 
-        binding.saveButton.text = "Update"
+        binding.saveButton.text = getString(R.string.update)
         if (item == R.string.beer) {
             viewModel.getBeerById(args.itemId!!)
             viewModel.beerLiveData.observe(viewLifecycleOwner) {

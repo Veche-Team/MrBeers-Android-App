@@ -15,8 +15,10 @@ import com.example.neverpidor.databinding.FragmentMenuItemListBinding
 import com.example.neverpidor.ui.fragments.itemlist.epoxy.models.MenuItemEpoxyModel
 import com.example.neverpidor.ui.fragments.BaseFragment
 import com.example.neverpidor.ui.fragments.itemlist.epoxy.MenuItemListEpoxyController
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates
 
+@AndroidEntryPoint
 class MenuItemListFragment : BaseFragment() {
 
     private var _binding: FragmentMenuItemListBinding? = null
@@ -95,8 +97,8 @@ class MenuItemListFragment : BaseFragment() {
     private fun observeBeerDeleteResponse() {
         viewModel.beerResponse.observe(viewLifecycleOwner) {
             viewModel.getBeers()
-            it.getContent()?.let {
-                Toast.makeText(requireContext(), "${it.msg}", Toast.LENGTH_SHORT).show()
+            it.getContent()?.let { beerResponse ->
+                Toast.makeText(requireContext(), beerResponse.msg, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -104,8 +106,8 @@ class MenuItemListFragment : BaseFragment() {
     private fun observeSnackDeleteResponse() {
         viewModel.snackResponse.observe(viewLifecycleOwner) {
             viewModel.getSnacks()
-            it.getContent()?.let {
-                Toast.makeText(requireContext(), it.msg, Toast.LENGTH_SHORT).show()
+            it.getContent()?.let { snackResponse ->
+                Toast.makeText(requireContext(), snackResponse.msg, Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -7,7 +7,6 @@ interface AppSettings {
     fun setCurrentItem(item: Int)
 
     companion object {
-
         const val NO_ITEM = -1
     }
 }

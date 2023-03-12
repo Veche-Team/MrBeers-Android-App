@@ -5,25 +5,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.Event
-import com.example.neverpidor.Repositories
 import com.example.neverpidor.data.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
-import com.example.neverpidor.model.network.beer.BeerList
 import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.snack.SnackResponse
-import com.example.neverpidor.model.network.snack.SnackList
 import com.example.neverpidor.model.settings.AppSettings
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import retrofit2.Response
+import javax.inject.Inject
 
-class MenuItemListViewModel: ViewModel() {
-
-    private val appSettings: AppSettings by lazy {
-        Repositories.appSettings
-    }
-
-    private val repository = MenuItemsRepository()
+@HiltViewModel
+class MenuItemListViewModel @Inject constructor(
+    private val repository: MenuItemsRepository,
+    private val appSettings: AppSettings
+    ): ViewModel() {
 
     private val _snacks = MutableLiveData<List<DomainSnack>>()
     val snacks: LiveData<List<DomainSnack>> = _snacks

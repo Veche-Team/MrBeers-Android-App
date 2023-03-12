@@ -4,19 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.Repositories
 import com.example.neverpidor.data.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
-import com.example.neverpidor.model.settings.AppSettings
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SingleItemViewModel: ViewModel() {
-
-    private val appSettings: AppSettings by lazy {
-        Repositories.appSettings
-    }
-    private val repository = MenuItemsRepository()
+@HiltViewModel
+class SingleItemViewModel @Inject constructor(
+    private val repository: MenuItemsRepository,
+) : ViewModel() {
 
     private val _beerLiveData = MutableLiveData<DomainBeer>()
     val beerLiveData: LiveData<DomainBeer> = _beerLiveData
@@ -48,6 +46,7 @@ class SingleItemViewModel: ViewModel() {
         }
         _beerListLiveData.postValue(set)
     }
+
     fun getSnackSet() = viewModelScope.launch {
         val set = mutableSetOf<DomainSnack>()
         val allSnacks = repository.getSnacks()
@@ -59,8 +58,7 @@ class SingleItemViewModel: ViewModel() {
         _snackListLiveData.postValue(set)
     }
 
-    fun getItem(): Int = appSettings.getCurrentItem()
-    fun setItem(item: Int) = appSettings.setCurrentItem(item = item)
+
 
 
 }

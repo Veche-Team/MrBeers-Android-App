@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.Event
-import com.example.neverpidor.Repositories
 import com.example.neverpidor.data.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
@@ -14,15 +13,15 @@ import com.example.neverpidor.model.network.beer.BeerRequest
 import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.model.settings.AppSettings
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AddBeerViewModel: ViewModel() {
-
-    private val appSettings: AppSettings by lazy {
-        Repositories.appSettings
-    }
-
-    private val repository = MenuItemsRepository()
+@HiltViewModel
+class AddBeerViewModel @Inject constructor(
+    private val repository: MenuItemsRepository,
+    private val appSettings: AppSettings
+): ViewModel() {
 
     private val _beerLiveData = MutableLiveData<DomainBeer>()
     val beerLiveData: LiveData<DomainBeer> = _beerLiveData

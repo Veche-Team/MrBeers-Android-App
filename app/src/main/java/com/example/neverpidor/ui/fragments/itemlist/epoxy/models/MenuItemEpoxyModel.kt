@@ -13,7 +13,7 @@ data class MenuItemEpoxyModel(
     ViewBindingKotlinModel<ModelMenuItemBinding>(R.layout.model_menu_item) {
     override fun ModelMenuItemBinding.bind() {
         nameText.text = domainItem.name
-        price.text = "${domainItem.price} P."
+        price.text = root.context.getString(R.string.price, domainItem.price.toString())
 
         editImage.setOnClickListener {
             onEditClick(domainItem.UID)

@@ -8,7 +8,9 @@ import androidx.fragment.app.viewModels
 import com.example.neverpidor.databinding.FragmentListBinding
 import com.example.neverpidor.ui.fragments.BaseFragment
 import com.example.neverpidor.ui.fragments.list.epoxy.ListEpoxyController
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ListFragment: BaseFragment() {
 
     private val viewModel: CategoryListViewModel by viewModels()

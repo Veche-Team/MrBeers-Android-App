@@ -56,7 +56,7 @@ class ApiClient(private val beersApiService: BeersApiService) {
         snackId: String,
         snackRequest: SnackRequest
     ): SimpleResponse<SnackResponse> {
-      return safeApiCall { beersApiService.updateSnack(snackId, snackRequest) }
+        return safeApiCall { beersApiService.updateSnack(snackId, snackRequest) }
     }
 
     private inline fun <T> safeApiCall(apiCall: () -> Response<T>): SimpleResponse<T> {

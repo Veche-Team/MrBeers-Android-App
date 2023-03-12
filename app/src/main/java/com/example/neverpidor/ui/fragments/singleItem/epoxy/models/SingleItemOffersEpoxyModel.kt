@@ -13,7 +13,7 @@ data class SingleItemOffersEpoxyModel(
     ViewBindingKotlinModel<ModelSingleItemOffersBinding>(R.layout.model_single_item_offers) {
     override fun ModelSingleItemOffersBinding.bind() {
         nameText.text = domainItem.name
-        price.text = "${domainItem.price} P."
+        price.text = root.context.getString(R.string.price, domainItem.price.toString())
 
         domainItem.image?.let {
             shapeableImageView.setImageResource(it)

@@ -25,7 +25,6 @@ class BeerPicturesProvider {
         R.drawable.a_beer18,
     )
 
-    fun getRandomPicture(): Int = beerPictures.random()
     fun getNotRandomPicture(index: Int): Int {
         val size = beerPictures.size
         return beerPictures[index % size]

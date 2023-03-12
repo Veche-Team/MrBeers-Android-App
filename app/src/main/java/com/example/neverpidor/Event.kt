@@ -2,8 +2,8 @@ package com.example.neverpidor
 
 open class Event<T>(private val content: T) {
 
-    var hasBeenHandled = false
-        private set
+    private var hasBeenHandled = false
+        
 
     fun getContent(): T? {
         return if (!hasBeenHandled) {
@@ -12,5 +12,4 @@ open class Event<T>(private val content: T) {
         } else null
     }
 
-    fun peekContent(): T = content
 }

@@ -4,22 +4,17 @@ import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
 import com.example.neverpidor.model.mapper.BeerMapper
 import com.example.neverpidor.model.mapper.SnackMapper
-import com.example.neverpidor.model.network.beer.Beer
-import com.example.neverpidor.model.network.beer.BeerList
 import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.beer.BeerRequest
-import com.example.neverpidor.model.network.snack.Snack
-import com.example.neverpidor.model.network.snack.SnackList
 import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.network.NetworkLayer
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import javax.inject.Inject
 
-class MenuItemsRepository {
-
-    private val beerMapper = BeerMapper()
-    private val snackMapper = SnackMapper()
+class MenuItemsRepository @Inject constructor(
+    private val beerMapper: BeerMapper,
+    private val snackMapper: SnackMapper
+) {
 
     suspend fun getBeerById(beerId: String): DomainBeer? {
 

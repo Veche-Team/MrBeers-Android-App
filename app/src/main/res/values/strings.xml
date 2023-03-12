@@ -2,4 +2,8 @@
     <string name="app_name">NeverPidor</string>
     <string name="beer">Пиво</string>
     <string name="snacks">Закуски</string>
+    <string name="update">Update</string>
+    <string name="volume">%1$s Л</string>
+    <string name="alcPercentage">Алк. :%1$s </string>
+    <string name="price">%1$s P.</string>
 </resources>
