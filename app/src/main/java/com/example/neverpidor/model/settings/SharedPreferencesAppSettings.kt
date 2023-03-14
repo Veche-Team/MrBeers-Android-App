@@ -25,5 +25,4 @@ class SharedPreferencesAppSettings @Inject constructor(
     companion object {
         private const val PREF_CURRENT_ITEM = "currentItem"
     }
-
 }

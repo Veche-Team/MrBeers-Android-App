@@ -1,8 +1,9 @@
 package com.example.neverpidor.data
 
 import com.example.neverpidor.R
+import javax.inject.Inject
 
-class BeerPicturesProvider {
+class BeerPicturesProvider @Inject constructor(){
 
     private val beerPictures = listOf(
         R.drawable.a_beer1,
@@ -28,6 +29,5 @@ class BeerPicturesProvider {
     fun getNotRandomPicture(index: Int): Int {
         val size = beerPictures.size
         return beerPictures[index % size]
-
     }
 }

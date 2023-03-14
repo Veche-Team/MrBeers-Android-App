@@ -20,13 +20,10 @@ class CategoryListViewModel @Inject constructor(
     private val repository = BeersCategoryRepository()
 
     fun getCategories() {
-        _menuCategoriesLiveData.value = repository.getCategories()
+        _menuCategoriesLiveData.postValue(repository.getCategories())
     }
-
 
     fun setItem(item: Int) {
         appSettings.setCurrentItem(item)
     }
-
-
 }

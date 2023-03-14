@@ -10,8 +10,9 @@ import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.network.snack.SnackList
 import com.example.neverpidor.model.network.snack.SnackRequest
 import retrofit2.Response
+import javax.inject.Inject
 
-class ApiClient(private val beersApiService: BeersApiService) {
+class ApiClient @Inject constructor(private val beersApiService: BeersApiService) {
 
     suspend fun getBeerById(beerId: String): SimpleResponse<Beer> {
         return safeApiCall { beersApiService.getBeerById(beerId) }

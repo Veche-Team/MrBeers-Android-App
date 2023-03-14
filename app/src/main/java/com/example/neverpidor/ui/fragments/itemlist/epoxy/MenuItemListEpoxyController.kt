@@ -20,7 +20,12 @@ class MenuItemListEpoxyController(
 
     var isLoading = true
 
-    // snacks layer
+    private var isShown = setOf<String>()
+        set(value) {
+            field = value
+            requestModelBuild()
+        }
+
     var snacks = listOf<DomainSnack>()
         set(value) {
             field = value
@@ -28,13 +33,6 @@ class MenuItemListEpoxyController(
             requestModelBuild()
         }
 
-    private var isShown = setOf<String>()
-        set(value) {
-            field = value
-            requestModelBuild()
-        }
-
-    //beer layer
     var beerList = listOf<DomainBeer>()
         set(value) {
             field = value
@@ -62,21 +60,25 @@ class MenuItemListEpoxyController(
                         }
                     ).id(map.key.hashCode()).addTo(this)
                     DividerEpoxy(R.color.amber_dark).id(Random.nextDouble(100.0)).addTo(this)
-                    map.value.filter { isShown.contains(it.type) }.forEach{ data ->
+                    map.value.filter { isShown.contains(it.type) }.forEach { data ->
                         MenuItemEpoxyModel(data, onEditClick, onItemClick).id(data.UID).addTo(this)
-
                     }
                 }
             }
             R.string.snacks -> {
                 snacks.groupBy { it.type }.forEach { map ->
-                    ItemTypeEpoxyModel(map.key, onTypeClick = { string ->
-                        isShown = isShown + string
-                    }).id(map.key.hashCode()).addTo(this)
+                    ItemTypeEpoxyModel(map.key,
+                        onTypeClick = { string ->
+                            isShown = if (isShown.contains(string)) {
+                                isShown - string
+                            } else {
+                                isShown + string
+                            }
+                        }
+                    ).id(map.key.hashCode()).addTo(this)
                     DividerEpoxy(R.color.accent).id(Random.nextDouble(100.0)).addTo(this)
                     map.value.filter { isShown.contains(it.type) }.forEach {
                         MenuItemEpoxyModel(it, onEditClick, onItemClick).id(it.UID).addTo(this)
-                        //      DividerEpoxy(R.color.black).id(Random.nextDouble(100.0)).addTo(this)
                     }
                 }
             }
@@ -87,8 +89,6 @@ class MenuItemListEpoxyController(
     fun setShownState(set: Set<String>) {
         isShown = set
     }
-
-
 }
 
 

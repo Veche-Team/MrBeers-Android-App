@@ -1,8 +1,9 @@
 package com.example.neverpidor.data
 
 import com.example.neverpidor.R
+import javax.inject.Inject
 
-class SnackPicturesProvider {
+class SnackPicturesProvider @Inject constructor() {
 
     private val snackPictures = listOf(
         R.drawable.a_snack1,

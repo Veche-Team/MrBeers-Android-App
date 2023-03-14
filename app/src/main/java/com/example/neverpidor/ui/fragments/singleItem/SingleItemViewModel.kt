@@ -8,6 +8,7 @@ import com.example.neverpidor.data.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,15 +29,15 @@ class SingleItemViewModel @Inject constructor(
     private val _snackListLiveData = MutableLiveData<Set<DomainSnack>>()
     val snackListLiveData: LiveData<Set<DomainSnack>> = _snackListLiveData
 
-    fun getBeerById(beerId: String) = viewModelScope.launch {
+    fun getBeerById(beerId: String) = viewModelScope.launch(Dispatchers.IO) {
         _beerLiveData.postValue(repository.getBeerById(beerId))
     }
 
-    fun getSnackById(snackId: String) = viewModelScope.launch {
+    fun getSnackById(snackId: String) = viewModelScope.launch(Dispatchers.IO) {
         _snackLiveData.postValue(repository.getSnackById(snackId))
     }
 
-    fun getBeerSet() = viewModelScope.launch {
+    fun getBeerSet() = viewModelScope.launch(Dispatchers.IO) {
         val set = mutableSetOf<DomainBeer>()
         val allBeer = repository.getBeers()
         while (set.size < 3) {
@@ -47,7 +48,7 @@ class SingleItemViewModel @Inject constructor(
         _beerListLiveData.postValue(set)
     }
 
-    fun getSnackSet() = viewModelScope.launch {
+    fun getSnackSet() = viewModelScope.launch(Dispatchers.IO) {
         val set = mutableSetOf<DomainSnack>()
         val allSnacks = repository.getSnacks()
         while (set.size < 3) {
@@ -57,8 +58,4 @@ class SingleItemViewModel @Inject constructor(
         }
         _snackListLiveData.postValue(set)
     }
-
-
-
-
 }

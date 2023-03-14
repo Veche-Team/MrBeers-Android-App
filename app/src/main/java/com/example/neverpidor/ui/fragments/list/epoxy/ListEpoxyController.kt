@@ -13,6 +13,4 @@ class ListEpoxyController(private val onClick: (Int) -> Unit) : EpoxyController(
             PreviewEpoxyModel(it, onClick).id(it.id).addTo(this)
         }
     }
-
-
 }

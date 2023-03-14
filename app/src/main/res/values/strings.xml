@@ -6,4 +6,17 @@
     <string name="volume">%1$s Л</string>
     <string name="alcPercentage">Алк. :%1$s </string>
     <string name="price">%1$s P.</string>
+    <string name="empty_name_field">Название не может быть пустым</string>
+    <string name="empty_description_field">Придумай хоть что-нибудь</string>
+    <string name="empty_type_field">Так не пойдет</string>
+    <string name="empty_price_field">Бесплатно только шлюхи в церкви</string>
+    <string name="low_price_field">Хули тут так мало?</string>
+    <string name="high_price_field">Чет дорого</string>
+    <string name="empty_alc_field">Надо бы добавить хмелю</string>
+    <string name="high_alc_field">У нас здесь не кабак</string>
+    <string name="empty_volume_field">Наливать то куда?</string>
+    <string name="low_volume_field">Такими темпами не захмелеешь</string>
+    <string name="high_volume_field">Бочками пиво не продаем</string>
+    <string name="add_snack">Добавить закусь</string>
+    <string name="add_beer">Добавить пивас</string>
 </resources>

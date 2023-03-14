@@ -8,17 +8,18 @@ import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.beer.BeerRequest
 import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.model.network.snack.SnackResponse
-import com.example.neverpidor.network.NetworkLayer
+import com.example.neverpidor.network.ApiClient
 import javax.inject.Inject
 
 class MenuItemsRepository @Inject constructor(
     private val beerMapper: BeerMapper,
-    private val snackMapper: SnackMapper
+    private val snackMapper: SnackMapper,
+    private val apiClient: ApiClient
 ) {
 
     suspend fun getBeerById(beerId: String): DomainBeer? {
 
-        val request = NetworkLayer.apiClient.getBeerById(beerId)
+        val request = apiClient.getBeerById(beerId)
 
         if (request.failed) {
             return null
@@ -31,7 +32,7 @@ class MenuItemsRepository @Inject constructor(
 
     suspend fun getSnackById(snackId: String): DomainSnack? {
 
-        val request = NetworkLayer.apiClient.getSnackById(snackId)
+        val request = apiClient.getSnackById(snackId)
 
         if (request.failed) {
             return null
@@ -44,7 +45,7 @@ class MenuItemsRepository @Inject constructor(
 
     suspend fun getSnacks(): List<DomainSnack>? {
 
-        val request = NetworkLayer.apiClient.getSnacks()
+        val request = apiClient.getSnacks()
 
         if (request.failed) {
             return null
@@ -59,7 +60,7 @@ class MenuItemsRepository @Inject constructor(
 
     suspend fun getBeers(): List<DomainBeer>? {
 
-        val request = NetworkLayer.apiClient.getBeers()
+        val request = apiClient.getBeers()
 
         if (request.failed) {
             return null
@@ -74,7 +75,7 @@ class MenuItemsRepository @Inject constructor(
 
     suspend fun addBeer(beerRequest: BeerRequest): BeerResponse? {
 
-        val request = NetworkLayer.apiClient.addBeer(beerRequest)
+        val request = apiClient.addBeer(beerRequest)
 
         if (request.failed) {
             return null
@@ -86,7 +87,7 @@ class MenuItemsRepository @Inject constructor(
     }
 
     suspend fun addSnack(snackRequest: SnackRequest): SnackResponse? {
-        val request = NetworkLayer.apiClient.addSnack(snackRequest)
+        val request = apiClient.addSnack(snackRequest)
 
         if (request.failed) {
             return null
@@ -99,7 +100,7 @@ class MenuItemsRepository @Inject constructor(
 
     suspend fun deleteBeer(beerId: String): BeerResponse? {
 
-        val request = NetworkLayer.apiClient.deleteBeer(beerId)
+        val request = apiClient.deleteBeer(beerId)
 
         if (request.failed) {
             return null
@@ -111,7 +112,7 @@ class MenuItemsRepository @Inject constructor(
     }
 
     suspend fun deleteSnack(snackId: String): SnackResponse? {
-        val request = NetworkLayer.apiClient.deleteSnack(snackId)
+        val request = apiClient.deleteSnack(snackId)
 
         if (request.failed) {
             return null
@@ -124,7 +125,7 @@ class MenuItemsRepository @Inject constructor(
 
     suspend fun updateBeer(beerId: String, beerRequest: BeerRequest): BeerResponse? {
 
-        val request = NetworkLayer.apiClient.updateBeer(beerId, beerRequest)
+        val request = apiClient.updateBeer(beerId, beerRequest)
 
         if (request.failed) {
             return null
@@ -136,7 +137,7 @@ class MenuItemsRepository @Inject constructor(
     }
 
     suspend fun updateSnack(snackId: String, snackRequest: SnackRequest): SnackResponse? {
-        val request = NetworkLayer.apiClient.updateSnack(snackId, snackRequest)
+        val request = apiClient.updateSnack(snackId, snackRequest)
 
         if (request.failed) {
             return null

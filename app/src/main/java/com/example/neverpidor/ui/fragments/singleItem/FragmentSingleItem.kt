@@ -16,11 +16,11 @@ import com.example.neverpidor.ui.fragments.singleItem.epoxy.SingleItemEpoxyContr
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FragmentSingleItem: BaseFragment() {
+class FragmentSingleItem : BaseFragment() {
 
     private var _binding: SingleItemFragmentBinding? = null
     private val binding: SingleItemFragmentBinding
-    get() = _binding!!
+        get() = _binding!!
     private val args: FragmentSingleItemArgs by navArgs()
     private val viewModel: SingleItemViewModel by viewModels()
 
@@ -40,7 +40,8 @@ class FragmentSingleItem: BaseFragment() {
         val itemType = args.itemType
         var item: DomainItem? = null
         val controller = SingleItemEpoxyController {
-            val direction = FragmentSingleItemDirections.actionFragmentSingleItemSelf(it.UID, it.itemType)
+            val direction =
+                FragmentSingleItemDirections.actionFragmentSingleItemSelf(it.UID, it.itemType)
             navController.navigate(direction)
         }
         if (item == null) {
@@ -51,7 +52,8 @@ class FragmentSingleItem: BaseFragment() {
             viewModel.beerLiveData.observe(viewLifecycleOwner) {
                 item = it
                 binding.volumeText.text = getString(R.string.volume, item!!.volume.toString())
-                binding.alcoholPercentageText.text = getString(R.string.alcPercentage, item!!.alcPercentage.toString())
+                binding.alcoholPercentageText.text =
+                    getString(R.string.alcPercentage, item!!.alcPercentage.toString())
                 updateUi(item!!)
             }
             binding.recyclerView.setController(controller)
@@ -73,42 +75,44 @@ class FragmentSingleItem: BaseFragment() {
                 controller.itemList = it
             }
         }
-
-
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
     private fun loadingState() {
-        binding.progressBar.isVisible = true
-        binding.alcoholPercentageText.isGone = true
-        binding.volumeText.isGone = true
-        binding.price.isGone = true
-        binding.description.isGone = true
-        binding.imageView.isGone = true
-        binding.titleText.isGone = true
-        binding.recyclerView.isGone = true
+        binding.apply {
+            progressBar.isVisible = true
+            alcoholPercentageText.isGone = true
+            volumeText.isGone = true
+            price.isGone = true
+            description.isGone = true
+            imageView.isGone = true
+            titleText.isGone = true
+            recyclerView.isGone = true
+        }
     }
 
     private fun updateUi(item: DomainItem) {
         supportActionBar?.title = item.name
-        binding.progressBar.isGone = true
-        binding.alcoholPercentageText.isVisible = true
-        binding.volumeText.isVisible = true
-        binding.price.isVisible = true
-        binding.description.isVisible = true
-        binding.imageView.isVisible = true
-        binding.titleText.isVisible = true
-        binding.recyclerView.isVisible = true
-        item.image?.let {
-            binding.imageView.setImageResource(it)
+        binding.apply {
+            progressBar.isGone = true
+            alcoholPercentageText.isVisible = true
+            volumeText.isVisible = true
+            price.isVisible = true
+            description.isVisible = true
+            imageView.isVisible = true
+            titleText.isVisible = true
+            recyclerView.isVisible = true
+            item.image?.let {
+                imageView.setImageResource(it)
+            }
+            titleText.text = item.name
+            description.text = item.description
+            price.text = getString(R.string.price, item.price.toString())
         }
-        binding.titleText.text = item.name
-        binding.description.text = item.description
-        binding.price.text = getString(R.string.price, item.price.toString())
     }
-
 }
 

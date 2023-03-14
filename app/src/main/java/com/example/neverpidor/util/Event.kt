@@ -1,4 +1,4 @@
-package com.example.neverpidor
+package com.example.neverpidor.util
 
 open class Event<T>(private val content: T) {
 
@@ -11,5 +11,4 @@ open class Event<T>(private val content: T) {
             content
         } else null
     }
-
 }

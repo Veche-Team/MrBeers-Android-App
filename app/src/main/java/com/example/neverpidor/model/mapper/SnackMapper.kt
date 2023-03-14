@@ -5,8 +5,9 @@ import com.example.neverpidor.model.domain.DomainSnack
 import com.example.neverpidor.model.network.beer.Data
 import javax.inject.Inject
 
-class SnackMapper @Inject constructor() {
-    private val snackPicturesProvider = SnackPicturesProvider()
+class SnackMapper @Inject constructor(
+    private val snackPicturesProvider: SnackPicturesProvider
+) {
 
     fun buildFrom(data: Data): DomainSnack {
         return DomainSnack(

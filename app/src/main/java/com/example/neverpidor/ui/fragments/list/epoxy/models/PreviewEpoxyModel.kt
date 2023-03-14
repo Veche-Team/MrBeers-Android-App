@@ -18,5 +18,4 @@ data class PreviewEpoxyModel(
             onClick(menuCategoryEntity.name)
         }
     }
-
 }

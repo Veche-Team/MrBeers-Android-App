@@ -7,6 +7,9 @@ import com.example.neverpidor.ui.epoxy.ViewBindingKotlinModel
 class LoadingScreenEpoxyModel :
     ViewBindingKotlinModel<ModelLoadingDataScreenBinding>(R.layout.model_loading_data_screen) {
     override fun ModelLoadingDataScreenBinding.bind() {
+    }
 
+    override fun getSpanSize(totalSpanCount: Int, position: Int, itemCount: Int): Int {
+        return totalSpanCount
     }
 }

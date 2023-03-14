@@ -22,7 +22,4 @@ class SingleItemEpoxyController(val onItemClick: (DomainItem) -> Unit) : EpoxyCo
             ).id(domainItem.UID).addTo(this)
         }
     }
-
-
-
 }
