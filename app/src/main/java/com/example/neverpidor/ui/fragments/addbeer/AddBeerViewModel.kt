@@ -15,6 +15,7 @@ import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.model.settings.AppSettings
 import com.example.neverpidor.util.InvalidFields
+import com.example.neverpidor.util.TextFieldsValidator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddBeerViewModel @Inject constructor(
     private val repository: MenuItemsRepository,
-    private val appSettings: AppSettings
+    private val appSettings: AppSettings,
+    private val textFieldsValidator: TextFieldsValidator
 ) : ViewModel() {
 
     private val _beerLiveData = MutableLiveData<DomainBeer>()
@@ -72,7 +74,7 @@ class AddBeerViewModel @Inject constructor(
 
     fun getItem(): Int = appSettings.getCurrentItem()
 
-    fun validateFields(
+    fun handleInput(
         title: String,
         description: String,
         type: String,
@@ -81,28 +83,9 @@ class AddBeerViewModel @Inject constructor(
         volume: String? = null,
         itemId: String? = null
     ): Boolean {
-        val invalidFields = arrayListOf<Pair<String, Int>>()
-        if (title.isEmpty()) invalidFields.add(INPUT_TITLE)
-        if (description.isEmpty()) invalidFields.add(INPUT_DESCRIPTION)
-        if (type.isEmpty()) invalidFields.add(INPUT_TYPE)
-        if (price.isEmpty()) invalidFields.add(EMPTY_PRICE)
-        if (price.isNotEmpty() && price.toDouble() < 50.0) invalidFields.add(LOW_PRICE)
-        if (price.isNotEmpty() && price.toDouble() > 500.0) invalidFields.add(HIGH_PRICE)
-        alc?.let {
-            if (it.isEmpty()) invalidFields.add(EMPTY_ALC)
-            if (it.isNotEmpty() && it.toDouble() > 20.0) invalidFields.add(HIGH_ALC)
-        }
-        volume?.let {
-            if (it.isEmpty()) invalidFields.add(EMPTY_VOLUME)
-            if (it.isNotEmpty() && it.toDouble() < 0.25) invalidFields.add(LOW_VOLUME)
-            if (it.isNotEmpty() && it.toDouble() > 5.00) invalidFields.add(HIGH_VOLUME)
-        }
-
-        if (invalidFields.isNotEmpty()) {
-            _currentLiveState.value = InvalidFields(invalidFields)
-            return false
-        }
-        _currentLiveState.value = InvalidFields(emptyList())
+        _currentLiveState.value =
+            textFieldsValidator.validateFields(title, description, type, price, alc, volume, itemId)
+        if (_currentLiveState.value!!.fields.isNotEmpty()) return false
         alc?.let {
             val beerRequest = BeerRequest(
                 alc.toDouble(),
@@ -126,19 +109,5 @@ class AddBeerViewModel @Inject constructor(
             addSnack(snackRequest)
         }
         return true
-    }
-
-    companion object {
-        val INPUT_TITLE = "INPUT_TITLE" to R.string.empty_name_field
-        val INPUT_DESCRIPTION = "INPUT_DESCRIPTION" to R.string.empty_description_field
-        val INPUT_TYPE = "INPUT_TYPE" to R.string.empty_type_field
-        val EMPTY_PRICE = "EMPTY_PRICE" to R.string.empty_price_field
-        val LOW_PRICE = "LOW_PRICE" to R.string.low_price_field
-        val HIGH_PRICE = "HIGH_PRICE" to R.string.high_price_field
-        val EMPTY_ALC = "EMPTY_ALC" to R.string.empty_alc_field
-        val HIGH_ALC = "HIGH_ALC" to R.string.high_alc_field
-        val EMPTY_VOLUME = "EMPTY_VOLUME" to R.string.empty_volume_field
-        val LOW_VOLUME = "LOW_VOLUME" to R.string.low_volume_field
-        val HIGH_VOLUME = "HIGH_VOLUME" to R.string.high_volume_field
     }
 }

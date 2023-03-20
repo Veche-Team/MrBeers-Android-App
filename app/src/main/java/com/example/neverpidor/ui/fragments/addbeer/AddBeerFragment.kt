@@ -12,6 +12,17 @@ import androidx.navigation.fragment.navArgs
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.AddBeerFragmentBinding
 import com.example.neverpidor.ui.fragments.BaseFragment
+import com.example.neverpidor.util.Constants.EMPTY_ALC
+import com.example.neverpidor.util.Constants.EMPTY_PRICE
+import com.example.neverpidor.util.Constants.EMPTY_VOLUME
+import com.example.neverpidor.util.Constants.HIGH_ALC
+import com.example.neverpidor.util.Constants.HIGH_PRICE
+import com.example.neverpidor.util.Constants.HIGH_VOLUME
+import com.example.neverpidor.util.Constants.INPUT_DESCRIPTION
+import com.example.neverpidor.util.Constants.INPUT_TITLE
+import com.example.neverpidor.util.Constants.INPUT_TYPE
+import com.example.neverpidor.util.Constants.LOW_PRICE
+import com.example.neverpidor.util.Constants.LOW_VOLUME
 import com.example.neverpidor.util.InvalidFields
 import com.example.neverpidor.util.disableErrorMessage
 import com.google.android.material.textfield.TextInputLayout
@@ -60,7 +71,7 @@ class AddBeerFragment : BaseFragment() {
         binding.saveButton.setOnClickListener {
             if (item == R.string.beer) {
                 if (updateMode) {
-                    viewModel.validateFields(
+                    viewModel.handleInput(
                         binding.nameEditText.text.toString(),
                         binding.descriptionEt.text.toString(),
                         binding.typeEt.text.toString(),
@@ -70,7 +81,7 @@ class AddBeerFragment : BaseFragment() {
                         args.itemId
                     )
                 } else {
-                    viewModel.validateFields(
+                    viewModel.handleInput(
                         binding.nameEditText.text.toString(),
                         binding.descriptionEt.text.toString(),
                         binding.typeEt.text.toString(),
@@ -83,7 +94,7 @@ class AddBeerFragment : BaseFragment() {
             } else {
                 if (updateMode) {
 
-                    viewModel.validateFields(
+                    viewModel.handleInput(
                         binding.nameEditText.text.toString(),
                         binding.descriptionEt.text.toString(),
                         binding.typeEt.text.toString(),
@@ -91,7 +102,7 @@ class AddBeerFragment : BaseFragment() {
                         itemId = args.itemId
                     )
                 } else {
-                    viewModel.validateFields(
+                    viewModel.handleInput(
                         binding.nameEditText.text.toString(),
                         binding.descriptionEt.text.toString(),
                         binding.typeEt.text.toString(),
@@ -114,17 +125,17 @@ class AddBeerFragment : BaseFragment() {
     }
 
     private fun initValidationFields() = mapOf(
-        AddBeerViewModel.INPUT_TITLE.first to binding.nameLayout,
-        AddBeerViewModel.INPUT_DESCRIPTION.first to binding.descriptionTextLayout,
-        AddBeerViewModel.INPUT_TYPE.first to binding.typeTextLayout,
-        AddBeerViewModel.EMPTY_PRICE.first to binding.priceTextLayout,
-        AddBeerViewModel.LOW_PRICE.first to binding.priceTextLayout,
-        AddBeerViewModel.HIGH_PRICE.first to binding.priceTextLayout,
-        AddBeerViewModel.EMPTY_ALC.first to binding.alcTextLayout,
-        AddBeerViewModel.HIGH_ALC.first to binding.alcTextLayout,
-        AddBeerViewModel.EMPTY_VOLUME.first to binding.volumeTextLayout,
-        AddBeerViewModel.LOW_VOLUME.first to binding.volumeTextLayout,
-        AddBeerViewModel.HIGH_VOLUME.first to binding.volumeTextLayout
+        INPUT_TITLE.first to binding.nameLayout,
+        INPUT_DESCRIPTION.first to binding.descriptionTextLayout,
+        INPUT_TYPE.first to binding.typeTextLayout,
+        EMPTY_PRICE.first to binding.priceTextLayout,
+        LOW_PRICE.first to binding.priceTextLayout,
+        HIGH_PRICE.first to binding.priceTextLayout,
+        EMPTY_ALC.first to binding.alcTextLayout,
+        HIGH_ALC.first to binding.alcTextLayout,
+        EMPTY_VOLUME.first to binding.volumeTextLayout,
+        LOW_VOLUME.first to binding.volumeTextLayout,
+        HIGH_VOLUME.first to binding.volumeTextLayout
     )
 
     private fun handleErrorFields(data: InvalidFields) {
