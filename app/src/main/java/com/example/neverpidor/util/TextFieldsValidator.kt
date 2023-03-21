@@ -15,31 +15,28 @@ import javax.inject.Inject
 
 class TextFieldsValidator @Inject constructor() {
 
-    fun validateFields(
-        title: String,
-        description: String,
-        type: String,
-        price: String,
-        alc: String? = null,
-        volume: String? = null,
-        itemId: String? = null
-    ): InvalidFields {
-        val invalidFields = arrayListOf<Pair<String, Int>>()
-        if (title.isEmpty()) invalidFields.add(INPUT_TITLE)
-        if (description.isEmpty()) invalidFields.add(INPUT_DESCRIPTION)
-        if (type.isEmpty()) invalidFields.add(INPUT_TYPE)
-        if (price.isEmpty()) invalidFields.add(EMPTY_PRICE)
-        if (price.isNotEmpty() && price.toDouble() < 50.0) invalidFields.add(LOW_PRICE)
-        if (price.isNotEmpty() && price.toDouble() > 500.0) invalidFields.add(HIGH_PRICE)
-        alc?.let {
-            if (it.isEmpty()) invalidFields.add(EMPTY_ALC)
-            if (it.isNotEmpty() && it.toDouble() > 20.0) invalidFields.add(HIGH_ALC)
+    fun validateFields(input: ValidationModel): TextFieldValidationResult {
+        var errors = mutableMapOf<String, Int>()
+        if (input.title.isEmpty()) errors[INPUT_TITLE.first] = INPUT_TITLE.second
+        if (input.description.isEmpty()) errors[INPUT_DESCRIPTION.first] = INPUT_DESCRIPTION.second
+        if (input.type.isEmpty()) errors[INPUT_TYPE.first] = INPUT_TYPE.second
+        if (input.price.isEmpty()) errors[EMPTY_PRICE.first] = EMPTY_PRICE.second
+        if (input.price.isNotEmpty() && input.price.toDouble() < 50.0) errors[LOW_PRICE.first] =
+            LOW_PRICE.second
+        if (input.price.isNotEmpty() && input.price.toDouble() > 500.0) errors[HIGH_PRICE.first] =
+            HIGH_PRICE.second
+        input.alc?.let {
+            if (it.isEmpty()) errors[EMPTY_ALC.first] = EMPTY_ALC.second
+            if (it.isNotEmpty() && it.toDouble() > 20.0) errors[HIGH_ALC.first] = HIGH_ALC.second
         }
-        volume?.let {
-            if (it.isEmpty()) invalidFields.add(EMPTY_VOLUME)
-            if (it.isNotEmpty() && it.toDouble() < 0.25) invalidFields.add(LOW_VOLUME)
-            if (it.isNotEmpty() && it.toDouble() > 5.00) invalidFields.add(HIGH_VOLUME)
+        input.volume?.let {
+            if (it.isEmpty()) errors[EMPTY_VOLUME.first] = EMPTY_VOLUME.second
+            if (it.isNotEmpty() && it.toDouble() < 0.25) errors[LOW_VOLUME.first] =
+                LOW_VOLUME.second
+            if (it.isNotEmpty() && it.toDouble() > 5.00) errors[HIGH_VOLUME.first] =
+                HIGH_VOLUME.second
         }
-        return InvalidFields(invalidFields)
+        if (errors.isEmpty()) return TextFieldValidationResult.Success
+        return TextFieldValidationResult.Failure(errors)
     }
 }

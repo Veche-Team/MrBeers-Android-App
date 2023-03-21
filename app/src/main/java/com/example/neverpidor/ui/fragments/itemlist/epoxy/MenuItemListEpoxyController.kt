@@ -19,6 +19,11 @@ class MenuItemListEpoxyController(
     EpoxyController() {
 
     var isLoading = true
+    var searchInput = ""
+        set(value) {
+            field = value.lowercase()
+            requestModelBuild()
+        }
 
     private var isShown = setOf<String>()
         set(value) {
@@ -48,39 +53,34 @@ class MenuItemListEpoxyController(
         }
         when (id) {
             R.string.beer -> {
-                beerList.groupBy { it.type }.forEach { map ->
-                    ItemTypeEpoxyModel(
-                        map.key,
-                        onTypeClick = { string ->
-                            isShown = if (isShown.contains(string)) {
-                                isShown - string
-                            } else {
-                                isShown + string
-                            }
+                beerList.filter {
+                    it.name.lowercase().contains(searchInput) ||
+                            it.type.lowercase().contains(searchInput)
+                }.groupBy { it.type }
+                    .forEach { map ->
+                        ItemTypeEpoxyModel(
+                            map.key,
+                        ).id(map.key.hashCode()).addTo(this)
+                        DividerEpoxy(R.color.amber_dark).id(Random.nextDouble(100.0)).addTo(this)
+                        map.value.forEach { data ->
+                            MenuItemEpoxyModel(data, onEditClick, onItemClick).id(data.UID)
+                                .addTo(this)
                         }
-                    ).id(map.key.hashCode()).addTo(this)
-                    DividerEpoxy(R.color.amber_dark).id(Random.nextDouble(100.0)).addTo(this)
-                    map.value.filter { isShown.contains(it.type) }.forEach { data ->
-                        MenuItemEpoxyModel(data, onEditClick, onItemClick).id(data.UID).addTo(this)
                     }
-                }
             }
             R.string.snacks -> {
-                snacks.groupBy { it.type }.forEach { map ->
-                    ItemTypeEpoxyModel(map.key,
-                        onTypeClick = { string ->
-                            isShown = if (isShown.contains(string)) {
-                                isShown - string
-                            } else {
-                                isShown + string
-                            }
+                snacks.filter {
+                    it.name.lowercase().contains(searchInput) ||
+                            it.type.lowercase().contains(searchInput)
+                }.groupBy { it.type }
+                    .forEach { map ->
+                        ItemTypeEpoxyModel(
+                            map.key,
+                        ).id(map.key.hashCode()).addTo(this)
+                        map.value.forEach {
+                            MenuItemEpoxyModel(it, onEditClick, onItemClick).id(it.UID).addTo(this)
                         }
-                    ).id(map.key.hashCode()).addTo(this)
-                    DividerEpoxy(R.color.accent).id(Random.nextDouble(100.0)).addTo(this)
-                    map.value.filter { isShown.contains(it.type) }.forEach {
-                        MenuItemEpoxyModel(it, onEditClick, onItemClick).id(it.UID).addTo(this)
                     }
-                }
             }
         }
     }
@@ -89,6 +89,7 @@ class MenuItemListEpoxyController(
     fun setShownState(set: Set<String>) {
         isShown = set
     }
+
 }
 
 

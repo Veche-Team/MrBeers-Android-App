@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -58,6 +59,10 @@ class MenuItemListFragment : BaseFragment() {
                 navController.navigate(direction)
             }
         )
+
+        binding.searchEditText.doAfterTextChanged {
+            controller.searchInput = it?.toString() ?: ""
+        }
         when (item) {
             R.string.beer -> {
                 supportActionBar?.title = resources.getString( R.string.beer)

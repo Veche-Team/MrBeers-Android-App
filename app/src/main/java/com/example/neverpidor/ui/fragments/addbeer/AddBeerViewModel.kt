@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.util.Event
 import com.example.neverpidor.R
 import com.example.neverpidor.data.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
@@ -14,8 +13,7 @@ import com.example.neverpidor.model.network.beer.BeerRequest
 import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.model.settings.AppSettings
-import com.example.neverpidor.util.InvalidFields
-import com.example.neverpidor.util.TextFieldsValidator
+import com.example.neverpidor.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,8 +38,8 @@ class AddBeerViewModel @Inject constructor(
     private val _snackResponse = MutableLiveData<Event<SnackResponse?>>()
     val snackResponse: LiveData<Event<SnackResponse?>> = _snackResponse
 
-    private val _currentLiveState = MutableLiveData<InvalidFields>()
-    val currentLiveState: LiveData<InvalidFields>
+    private val _currentLiveState = MutableLiveData<TextFieldValidationResult>()
+    val currentLiveState: LiveData<TextFieldValidationResult>
         get() = _currentLiveState
 
     private fun addBeer(beerRequest: BeerRequest) = viewModelScope.launch(Dispatchers.IO) {
@@ -75,25 +73,21 @@ class AddBeerViewModel @Inject constructor(
     fun getItem(): Int = appSettings.getCurrentItem()
 
     fun handleInput(
-        title: String,
-        description: String,
-        type: String,
-        price: String,
-        alc: String? = null,
-        volume: String? = null,
+        validationModel: ValidationModel,
         itemId: String? = null
     ): Boolean {
+
         _currentLiveState.value =
-            textFieldsValidator.validateFields(title, description, type, price, alc, volume, itemId)
-        if (_currentLiveState.value!!.fields.isNotEmpty()) return false
-        alc?.let {
+            textFieldsValidator.validateFields(validationModel)
+        if (_currentLiveState.value is TextFieldValidationResult.Failure) return false
+        validationModel.alc?.let {
             val beerRequest = BeerRequest(
-                alc.toDouble(),
-                description,
-                title,
-                price.toDouble(),
-                type,
-                volume!!.toDouble()
+                validationModel.alc.toDouble(),
+                validationModel.description,
+                validationModel.title,
+                validationModel.price.toDouble(),
+                validationModel.type,
+                validationModel.volume!!.toDouble()
             )
             if (itemId != null) {
                 updateBeer(itemId, beerRequest)
@@ -102,7 +96,12 @@ class AddBeerViewModel @Inject constructor(
             }
             return true
         }
-        val snackRequest = SnackRequest(description, title, price.toDouble(), type)
+        val snackRequest = SnackRequest(
+            validationModel.description,
+            validationModel.title,
+            validationModel.price.toDouble(),
+            validationModel.type
+        )
         if (itemId != null) {
             updateSnack(itemId, snackRequest)
         } else {

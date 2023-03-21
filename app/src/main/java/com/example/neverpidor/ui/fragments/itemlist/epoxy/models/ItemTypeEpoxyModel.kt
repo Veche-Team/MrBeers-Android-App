@@ -6,13 +6,13 @@ import com.example.neverpidor.ui.epoxy.ViewBindingKotlinModel
 
 data class ItemTypeEpoxyModel(
     val type: String,
-    val onTypeClick: (String) -> Unit
+  //  val onTypeClick: (String) -> Unit
 ) :
     ViewBindingKotlinModel<ModelItemTypeBinding>(R.layout.model_item_type) {
     override fun ModelItemTypeBinding.bind() {
         typeText.text = type
         root.setOnClickListener {
-            onTypeClick(type)
+       //     onTypeClick(type)
         }
     }
 

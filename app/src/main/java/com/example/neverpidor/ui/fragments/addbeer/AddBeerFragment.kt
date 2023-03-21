@@ -23,7 +23,8 @@ import com.example.neverpidor.util.Constants.INPUT_TITLE
 import com.example.neverpidor.util.Constants.INPUT_TYPE
 import com.example.neverpidor.util.Constants.LOW_PRICE
 import com.example.neverpidor.util.Constants.LOW_VOLUME
-import com.example.neverpidor.util.InvalidFields
+import com.example.neverpidor.util.TextFieldValidationResult
+import com.example.neverpidor.util.ValidationModel
 import com.example.neverpidor.util.disableErrorMessage
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -70,44 +71,38 @@ class AddBeerFragment : BaseFragment() {
 
         binding.saveButton.setOnClickListener {
             if (item == R.string.beer) {
+                val validationModel = ValidationModel(
+                    binding.nameEditText.text.toString(),
+                    binding.descriptionEt.text.toString(),
+                    binding.typeEt.text.toString(),
+                    binding.priceEt.text.toString(),
+                    binding.alcEt.text.toString(),
+                    binding.volumeEt.text.toString(),
+                )
                 if (updateMode) {
                     viewModel.handleInput(
-                        binding.nameEditText.text.toString(),
-                        binding.descriptionEt.text.toString(),
-                        binding.typeEt.text.toString(),
-                        binding.priceEt.text.toString(),
-                        binding.alcEt.text.toString(),
-                        binding.volumeEt.text.toString(),
+                        validationModel,
                         args.itemId
                     )
                 } else {
-                    viewModel.handleInput(
-                        binding.nameEditText.text.toString(),
-                        binding.descriptionEt.text.toString(),
-                        binding.typeEt.text.toString(),
-                        binding.priceEt.text.toString(),
-                        binding.alcEt.text.toString(),
-                        binding.volumeEt.text.toString()
-                    )
+                    viewModel.handleInput(validationModel)
                 }
                 observeBeerResponse()
             } else {
+                val validationModel = ValidationModel(
+                    binding.nameEditText.text.toString(),
+                    binding.descriptionEt.text.toString(),
+                    binding.typeEt.text.toString(),
+                    binding.priceEt.text.toString(),
+                )
                 if (updateMode) {
 
                     viewModel.handleInput(
-                        binding.nameEditText.text.toString(),
-                        binding.descriptionEt.text.toString(),
-                        binding.typeEt.text.toString(),
-                        binding.priceEt.text.toString(),
+                        validationModel,
                         itemId = args.itemId
                     )
                 } else {
-                    viewModel.handleInput(
-                        binding.nameEditText.text.toString(),
-                        binding.descriptionEt.text.toString(),
-                        binding.typeEt.text.toString(),
-                        binding.priceEt.text.toString()
-                    )
+                    viewModel.handleInput(validationModel)
                 }
                 observeSnackResponse()
             }
@@ -138,12 +133,15 @@ class AddBeerFragment : BaseFragment() {
         HIGH_VOLUME.first to binding.volumeTextLayout
     )
 
-    private fun handleErrorFields(data: InvalidFields) {
-        val validationFields: Map<String, TextInputLayout> = initValidationFields()
-        data.fields.forEach {
-            val stringErrorMessage = getString(it.second)
-            validationFields[it.first]?.error = stringErrorMessage
+    private fun handleErrorFields(data: TextFieldValidationResult) {
+        if (data is TextFieldValidationResult.Failure) {
+            val validationFields: Map<String, TextInputLayout> = initValidationFields()
+            data.errors.forEach {
+                val stringErrorMessage = getString(it.value)
+                validationFields[it.key]?.error = stringErrorMessage
+            }
         }
+
     }
 
     private fun observeBeerResponse() {
