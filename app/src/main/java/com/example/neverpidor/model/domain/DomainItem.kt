@@ -12,5 +12,7 @@ open class DomainItem(
     open val type: String = "",
     open val volume: Double = 0.0,
     @DrawableRes
-    open val image: Int? = null
+    open val image: Int? = null,
+    open val isFaved: Boolean = false,
+    open val isInCart: Boolean = false
 )

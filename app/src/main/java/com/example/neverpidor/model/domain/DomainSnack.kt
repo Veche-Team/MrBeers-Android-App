@@ -12,5 +12,7 @@ data class DomainSnack(
     @DrawableRes
     override val image: Int? = null,
     override val alcPercentage: Double = 0.0,
-    override val volume: Double = 0.0
+    override val volume: Double = 0.0,
+    override val isFaved: Boolean = false,
+    override val isInCart: Boolean = false
 ): DomainItem(itemType, UID, alcPercentage, description, name, price, type, volume, image)

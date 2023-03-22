@@ -12,5 +12,7 @@ data class DomainBeer(
     override val type: String,
     override val volume: Double,
     @DrawableRes
-    override val image: Int? = null
+    override val image: Int? = null,
+    override val isInCart: Boolean = false,
+    override val isFaved: Boolean = false
 ): DomainItem(itemType, UID, alcPercentage, description, name, price, type, volume, image, )

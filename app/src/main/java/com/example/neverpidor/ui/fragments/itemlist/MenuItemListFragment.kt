@@ -49,13 +49,17 @@ class MenuItemListFragment : BaseFragment() {
                 MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment()
             navController.navigate(direction)
         }
-         controller = MenuItemListEpoxyController(item, onEditClick = {
+        controller = MenuItemListEpoxyController(item, onEditClick = {
             val direction =
                 MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(it)
             navController.navigate(direction)
         },
             onItemClick = {
-                val direction = MenuItemListFragmentDirections.actionMenuItemListFragmentToFragmentSingleItem(it.UID, it.itemType)
+                val direction =
+                    MenuItemListFragmentDirections.actionMenuItemListFragmentToFragmentSingleItem(
+                        it.UID,
+                        it.itemType
+                    )
                 navController.navigate(direction)
             }
         )
@@ -65,7 +69,7 @@ class MenuItemListFragment : BaseFragment() {
         }
         when (item) {
             R.string.beer -> {
-                supportActionBar?.title = resources.getString( R.string.beer)
+                supportActionBar?.title = resources.getString(R.string.beer)
                 viewModel.getBeers()
                 viewModel.beers.observe(viewLifecycleOwner) {
                     controller.beerList = it
@@ -73,7 +77,7 @@ class MenuItemListFragment : BaseFragment() {
                 observeBeerDeleteResponse()
             }
             R.string.snacks -> {
-                supportActionBar?.title = resources.getString( R.string.snacks)
+                supportActionBar?.title = resources.getString(R.string.snacks)
                 viewModel.getSnacks()
                 viewModel.snacks.observe(viewLifecycleOwner) {
                     controller.snacks = it

@@ -53,7 +53,7 @@ class SingleItemViewModel @Inject constructor(
         val allSnacks = repository.getSnacks()
         while (set.size < 3) {
             allSnacks?.let {
-                set.add(it.random())
+               // set.add(it.random())
             }
         }
         _snackListLiveData.postValue(set)

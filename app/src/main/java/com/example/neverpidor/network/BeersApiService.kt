@@ -8,6 +8,7 @@ import com.example.neverpidor.model.network.snack.Snack
 import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.network.snack.SnackList
 import com.example.neverpidor.model.network.snack.SnackRequest
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -43,8 +44,14 @@ interface BeersApiService {
     suspend fun deleteSnack(@Path("snackId") snackId: String): Response<SnackResponse>
 
     @PUT("beverages/{beerId}")
-    suspend fun updateBeer(@Path("beerId") beerId: String, @Body beerRequest: BeerRequest): Response<BeerResponse>
+    suspend fun updateBeer(
+        @Path("beerId") beerId: String,
+        @Body beerRequest: BeerRequest
+    ): Response<BeerResponse>
 
     @PUT("snacks/{snackId}")
-    suspend fun updateSnack(@Path("snackId") snackId: String, @Body snackRequest: SnackRequest): Response<SnackResponse>
+    suspend fun updateSnack(
+        @Path("snackId") snackId: String,
+        @Body snackRequest: SnackRequest
+    ): Response<SnackResponse>
 }
