@@ -1,5 +1,7 @@
 package com.example.neverpidor.ui.fragments.itemlist
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -85,7 +87,6 @@ class MenuItemListFragment : BaseFragment() {
                 observeSnackDeleteResponse()
             }
         }
-
         controller.isLoading = true
         binding.itemListRv.setControllerAndBuildModels(controller)
         binding.itemListRv.addItemDecoration(
@@ -95,7 +96,6 @@ class MenuItemListFragment : BaseFragment() {
             )
         )
         addSwipeToDelete()
-
     }
 
     override fun onDestroyView() {
@@ -105,7 +105,6 @@ class MenuItemListFragment : BaseFragment() {
 
     private fun observeBeerDeleteResponse() {
         viewModel.beerResponse.observe(viewLifecycleOwner) {
-            viewModel.getBeers()
             it.getContent()?.let { beerResponse ->
                 Toast.makeText(requireContext(), beerResponse.msg, Toast.LENGTH_SHORT).show()
             }
@@ -114,7 +113,6 @@ class MenuItemListFragment : BaseFragment() {
 
     private fun observeSnackDeleteResponse() {
         viewModel.snackResponse.observe(viewLifecycleOwner) {
-            viewModel.getSnacks()
             it.getContent()?.let { snackResponse ->
                 Toast.makeText(requireContext(), snackResponse.msg, Toast.LENGTH_SHORT).show()
             }
@@ -139,6 +137,15 @@ class MenuItemListFragment : BaseFragment() {
                     } else {
                         viewModel.deleteSnack(removedItemId)
                     }
+                }
+
+                override fun isSwipeEnabledForModel(model: MenuItemEpoxyModel?): Boolean {
+                    val connectivityManager =
+                        requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                    val networkInfo = connectivityManager.activeNetworkInfo
+                    val connected = networkInfo != null && networkInfo.isAvailable && networkInfo.isConnected
+                    if (!connected) return false
+                    return super.isSwipeEnabledForModel(model)
                 }
             })
     }

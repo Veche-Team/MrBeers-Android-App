@@ -19,4 +19,6 @@
     <string name="high_volume_field">Бочками пиво не продаем</string>
     <string name="add_snack">Добавить закусь</string>
     <string name="add_beer">Добавить пивас</string>
+    <string name="check_connection">Похоже интернет отвалился</string>
+    <string name="error">error</string>
 </resources>

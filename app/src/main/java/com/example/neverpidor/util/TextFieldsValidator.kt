@@ -18,6 +18,7 @@ class TextFieldsValidator @Inject constructor() {
     fun validateFields(input: ValidationModel): TextFieldValidationResult {
         var errors = mutableMapOf<String, Int>()
         if (input.title.isEmpty()) errors[INPUT_TITLE.first] = INPUT_TITLE.second
+
         if (input.description.isEmpty()) errors[INPUT_DESCRIPTION.first] = INPUT_DESCRIPTION.second
         if (input.type.isEmpty()) errors[INPUT_TYPE.first] = INPUT_TYPE.second
         if (input.price.isEmpty()) errors[EMPTY_PRICE.first] = EMPTY_PRICE.second

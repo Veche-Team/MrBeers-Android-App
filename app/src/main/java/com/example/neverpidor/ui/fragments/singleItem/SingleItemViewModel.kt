@@ -1,5 +1,6 @@
 package com.example.neverpidor.ui.fragments.singleItem
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,8 @@ import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,23 +42,23 @@ class SingleItemViewModel @Inject constructor(
 
     fun getBeerSet() = viewModelScope.launch(Dispatchers.IO) {
         val set = mutableSetOf<DomainBeer>()
-        val allBeer = repository.getBeers()
-        while (set.size < 3) {
-            allBeer?.let {
-                set.add(it.random())
+        val allBeer = repository.getDatabaseBeers()
+        allBeer.collect {
+            while (set.size < 3) {
+                    set.add(it.random())
             }
+            _beerListLiveData.postValue(set)
         }
-        _beerListLiveData.postValue(set)
     }
 
     fun getSnackSet() = viewModelScope.launch(Dispatchers.IO) {
         val set = mutableSetOf<DomainSnack>()
-        val allSnacks = repository.getSnacks()
-        while (set.size < 3) {
-            allSnacks?.let {
-               // set.add(it.random())
+        val allSnacks = repository.getDatabaseSnacks()
+        allSnacks.collect {
+            while (set.size < 3) {
+                set.add(it.random())
             }
+            _snackListLiveData.postValue(set)
         }
-        _snackListLiveData.postValue(set)
     }
 }

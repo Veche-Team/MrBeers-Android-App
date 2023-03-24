@@ -4,6 +4,7 @@ import com.example.neverpidor.data.SnackPicturesProvider
 import com.example.neverpidor.model.domain.DomainSnack
 import com.example.neverpidor.model.entities.SnackEntity
 import com.example.neverpidor.model.network.beer.Data
+import com.example.neverpidor.model.network.snack.CreatedSnackResponse
 import javax.inject.Inject
 
 class SnackMapper @Inject constructor(
@@ -48,6 +49,15 @@ class SnackMapper @Inject constructor(
             name = data.name,
             price = data.price,
             type = data.type,
+        )
+    }
+    fun buildEntityFromResponse(snackResponse: CreatedSnackResponse): SnackEntity {
+        return SnackEntity(
+            UID = snackResponse.createdSnack.UID,
+            description = snackResponse.createdSnack.description,
+            name = snackResponse.createdSnack.description,
+            price = snackResponse.createdSnack.price,
+            type = snackResponse.createdSnack.type
         )
     }
 }

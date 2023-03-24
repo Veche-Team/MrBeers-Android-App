@@ -4,7 +4,9 @@ import com.example.neverpidor.data.BeerPicturesProvider
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.entities.BeerEntity
 import com.example.neverpidor.model.entities.SnackEntity
+import com.example.neverpidor.model.network.beer.CreatedBeerResponse
 import com.example.neverpidor.model.network.beer.Data
+import com.example.neverpidor.model.network.snack.CreatedSnackResponse
 import javax.inject.Inject
 
 class BeerMapper @Inject constructor(
@@ -50,6 +52,17 @@ class BeerMapper @Inject constructor(
             type = data.type,
             volume = data.volume,
             alcPercentage = data.alcPercentage
+        )
+    }
+    fun buildEntityFromResponse(beerResponse: CreatedBeerResponse): BeerEntity {
+        return BeerEntity(
+            UID = beerResponse.createdBeverage.UID,
+            description = beerResponse.createdBeverage.description,
+            name = beerResponse.createdBeverage.description,
+            price = beerResponse.createdBeverage.price,
+            type = beerResponse.createdBeverage.type,
+            alcPercentage = beerResponse.createdBeverage.alcPercentage,
+            volume = beerResponse.createdBeverage.volume
         )
     }
 }

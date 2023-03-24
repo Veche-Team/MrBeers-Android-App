@@ -1,14 +1,9 @@
 package com.example.neverpidor.network
 
-import com.example.neverpidor.model.network.beer.Beer
 import com.example.neverpidor.model.network.beer.BeerList
-import com.example.neverpidor.model.network.beer.BeerResponse
+import com.example.neverpidor.model.network.beer.CreatedBeerResponse
 import com.example.neverpidor.model.network.beer.BeerRequest
-import com.example.neverpidor.model.network.snack.Snack
-import com.example.neverpidor.model.network.snack.SnackResponse
-import com.example.neverpidor.model.network.snack.SnackList
-import com.example.neverpidor.model.network.snack.SnackRequest
-import kotlinx.coroutines.flow.Flow
+import com.example.neverpidor.model.network.snack.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -19,39 +14,33 @@ import retrofit2.http.Path
 
 interface BeersApiService {
 
-    @GET("beverages/{beerId}")
-    suspend fun getBeerById(@Path("beerId") beerId: String): Response<Beer>
-
-    @GET("snacks/{snackId}")
-    suspend fun getSnackById(@Path("snackId") snackId: String): Response<Snack>
-
     @GET("snacks")
-    suspend fun getSnacks(): Response<SnackList>
+    suspend fun getSnacks(): SnackList
 
     @GET("beverages")
-    suspend fun getBeers(): Response<BeerList>
+    suspend fun getBeers(): BeerList
 
     @POST("beverages/add-beverage")
-    suspend fun addBeer(@Body beerRequest: BeerRequest): Response<BeerResponse>
+    suspend fun addBeer(@Body beerRequest: BeerRequest): Response<CreatedBeerResponse>
 
     @POST("snacks/add-snack")
-    suspend fun addSnack(@Body snackRequest: SnackRequest): Response<SnackResponse>
+    suspend fun addSnack(@Body snackRequest: SnackRequest): Response<CreatedSnackResponse>
 
     @DELETE("beverages/{beerId}")
-    suspend fun deleteBeer(@Path("beerId") beerId: String): Response<BeerResponse>
+    suspend fun deleteBeer(@Path("beerId") beerId: String): Response<CreatedBeerResponse>
 
     @DELETE("snacks/{snackId}")
-    suspend fun deleteSnack(@Path("snackId") snackId: String): Response<SnackResponse>
+    suspend fun deleteSnack(@Path("snackId") snackId: String): Response<DeletedSnackResponse>
 
     @PUT("beverages/{beerId}")
     suspend fun updateBeer(
         @Path("beerId") beerId: String,
         @Body beerRequest: BeerRequest
-    ): Response<BeerResponse>
+    ): Response<CreatedBeerResponse>
 
     @PUT("snacks/{snackId}")
     suspend fun updateSnack(
         @Path("snackId") snackId: String,
         @Body snackRequest: SnackRequest
-    ): Response<SnackResponse>
+    ): Response<CreatedSnackResponse>
 }

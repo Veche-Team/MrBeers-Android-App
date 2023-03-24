@@ -1,6 +1,7 @@
 package com.example.neverpidor.ui.fragments.addbeer
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -148,7 +149,7 @@ class AddBeerFragment : BaseFragment() {
         viewModel.beerResponse.observe(viewLifecycleOwner) {
             it.getContent()?.let { beerResponse ->
                 Toast.makeText(requireContext(), beerResponse.msg, Toast.LENGTH_SHORT).show()
-                navController.popBackStack()
+                if (beerResponse.msg != "Проверьте подключение к интернету!") navController.popBackStack()
             }
         }
     }
@@ -157,7 +158,7 @@ class AddBeerFragment : BaseFragment() {
         viewModel.snackResponse.observe(viewLifecycleOwner) {
             it.getContent()?.let { snackResponse ->
                 Toast.makeText(requireContext(), snackResponse.msg, Toast.LENGTH_SHORT).show()
-                navController.popBackStack()
+                if (snackResponse.msg != "Проверьте подключение к интернету!") navController.popBackStack()
             }
         }
     }
