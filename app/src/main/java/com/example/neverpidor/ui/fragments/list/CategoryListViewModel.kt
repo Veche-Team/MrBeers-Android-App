@@ -3,6 +3,7 @@ package com.example.neverpidor.ui.fragments.list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.neverpidor.data.Category
 import com.example.neverpidor.data.repositories.BeersCategoryRepository
 import com.example.neverpidor.data.MenuCategoryEntity
 import com.example.neverpidor.model.settings.AppSettings
@@ -23,7 +24,7 @@ class CategoryListViewModel @Inject constructor(
         _menuCategoriesLiveData.postValue(repository.getCategories())
     }
 
-    fun setItem(item: Int) {
-        appSettings.setCurrentItem(item)
+    fun setItem(category: Category) {
+        appSettings.setCurrentItem(category)
     }
 }

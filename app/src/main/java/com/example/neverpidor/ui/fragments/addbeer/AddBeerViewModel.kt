@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neverpidor.data.Category
 import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
@@ -44,7 +45,7 @@ class AddBeerViewModel @Inject constructor(
         _snackLiveData.postValue(repository.getSnackById(snackId))
     }
 
-    fun getItem(): Int = appSettings.getCurrentItem()
+    fun getItem(): Category = appSettings.getCurrentItem()
 
     fun handleInput(
         validationModel: ValidationModel,

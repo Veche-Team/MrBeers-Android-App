@@ -10,6 +10,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.example.neverpidor.R
+import com.example.neverpidor.data.Category
 import com.example.neverpidor.databinding.AddBeerFragmentBinding
 import com.example.neverpidor.ui.fragments.BaseFragment
 import com.example.neverpidor.util.ValidationModel
@@ -28,7 +29,7 @@ class AddBeerFragment : BaseFragment() {
     private val viewModel: AddBeerViewModel by viewModels()
 
     private val args: AddBeerFragmentArgs by navArgs()
-    private var item by Delegates.notNull<Int>()
+    private lateinit var category: Category
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,12 +43,12 @@ class AddBeerFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        item = viewModel.getItem()
+        category = viewModel.getItem()
         binding.lottie.playAnimation()
         args.itemId?.let {
             activateUpdateMode()
         }
-        if (item == R.string.snacks) {
+        if (category == Category.Snack) {
             supportActionBar?.title = getString(R.string.add_snack)
             binding.volumeTextLayout.isGone = true
             binding.alcTextLayout.isGone = true
@@ -57,7 +58,7 @@ class AddBeerFragment : BaseFragment() {
         addTextChangedListeners()
 
         binding.saveButton.setOnClickListener {
-            if (item == R.string.beer) {
+            if (category == Category.Beer) {
                 val fields = listOf(
                     binding.nameLayout to binding.nameEditText,
                     binding.descriptionTextLayout to binding.descriptionEt,
@@ -102,7 +103,7 @@ class AddBeerFragment : BaseFragment() {
     }
 
     private fun onSaveButton() {
-        if (item == R.string.beer) {
+        if (category == Category.Beer) {
             val model = ValidationModel(
                 binding.nameEditText.text.toString(),
                 binding.descriptionEt.text.toString(),
@@ -150,7 +151,7 @@ class AddBeerFragment : BaseFragment() {
 
         binding.apply {
             saveButton.text = getString(R.string.update)
-            if (item == R.string.beer) {
+            if (category == Category.Beer) {
                 viewModel.getBeerById(args.itemId!!)
                 viewModel.beerLiveData.observe(viewLifecycleOwner) {
                     supportActionBar?.title = "Изменяем ${it.name}"
@@ -180,7 +181,7 @@ class AddBeerFragment : BaseFragment() {
             descriptionEt.addTextChangedListener { descriptionTextLayout.disableErrorMessage() }
             typeEt.addTextChangedListener { typeTextLayout.disableErrorMessage() }
             priceEt.addTextChangedListener { priceTextLayout.disableErrorMessage() }
-            if (item == R.string.beer) {
+            if (category == Category.Beer) {
                 alcEt.addTextChangedListener { alcTextLayout.disableErrorMessage() }
                 volumeEt.addTextChangedListener { volumeTextLayout.disableErrorMessage() }
             }

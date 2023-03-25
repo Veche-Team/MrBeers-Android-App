@@ -2,6 +2,7 @@ package com.example.neverpidor.ui.fragments.itemlist.epoxy
 
 import com.airbnb.epoxy.EpoxyController
 import com.example.neverpidor.R
+import com.example.neverpidor.data.Category
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainItem
 import com.example.neverpidor.model.domain.DomainSnack
@@ -12,7 +13,7 @@ import com.example.neverpidor.ui.fragments.itemlist.epoxy.models.MenuItemEpoxyMo
 import kotlin.random.Random
 
 class MenuItemListEpoxyController(
-    val id: Int,
+    val category: Category,
     private val onEditClick: (String) -> Unit,
     private val onItemClick: (DomainItem) -> Unit
 ) :
@@ -51,8 +52,8 @@ class MenuItemListEpoxyController(
             LoadingScreenEpoxyModel().id("Loading").addTo(this)
             return
         }
-        when (id) {
-            R.string.beer -> {
+        when (category) {
+            Category.Beer -> {
                 beerList.filter {
                     it.name.lowercase().contains(searchInput) ||
                             it.type.lowercase().contains(searchInput)
@@ -68,7 +69,7 @@ class MenuItemListEpoxyController(
                         }
                     }
             }
-            R.string.snacks -> {
+            Category.Snack -> {
                 snacks.filter {
                     it.name.lowercase().contains(searchInput) ||
                             it.type.lowercase().contains(searchInput)

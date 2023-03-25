@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neverpidor.data.Category
 import com.example.neverpidor.util.Event
 import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
@@ -65,7 +66,7 @@ class MenuItemListViewModel @Inject constructor(
         } ?: _snackResponse.postValue(Event(SnackResponse(msg = "Проверьте подключение к интернету!")))
     }
 
-    fun getItem(): Int = appSettings.getCurrentItem()
+    fun getItem(): Category = appSettings.getCurrentItem()
 
     fun saveEpoxyState(set: Set<String>) {
         _shownEpoxyState.postValue(set)

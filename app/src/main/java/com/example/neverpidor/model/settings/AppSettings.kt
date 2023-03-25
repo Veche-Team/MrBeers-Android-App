@@ -1,12 +1,14 @@
 package com.example.neverpidor.model.settings
 
+import com.example.neverpidor.data.Category
+
 interface AppSettings {
 
-    fun getCurrentItem(): Int
+    fun getCurrentItem(): Category
 
-    fun setCurrentItem(item: Int)
+    fun setCurrentItem(category: Category)
 
     companion object {
-        const val NO_ITEM = -1
+        const val NO_ITEM = ""
     }
 }
