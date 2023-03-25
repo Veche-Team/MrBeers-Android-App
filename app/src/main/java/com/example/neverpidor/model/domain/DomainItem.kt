@@ -3,16 +3,16 @@ package com.example.neverpidor.model.domain
 import androidx.annotation.DrawableRes
 
 open class DomainItem(
-    open val itemType: String,
-    open val UID: String = "",
-    open val alcPercentage: Double = 0.0,
-    open val description: String = "",
-    open val name: String = "",
-    open val price: Double = 0.0,
-    open val type: String = "",
-    open val volume: Double = 0.0,
+     val itemType: String,
+     val UID: String = "",
+     val alcPercentage: Double = 0.0,
+     val description: String = "",
+     val name: String = "",
+     val price: Double = 0.0,
+     val type: String = "",
+     val volume: Double = 0.0,
     @DrawableRes
-    open val image: Int? = null,
-    open val isFaved: Boolean = false,
-    open val isInCart: Boolean = false
+     val image: Int? = null,
+     val isFaved: Boolean = false,
+     val isInCart: Boolean = false
 )

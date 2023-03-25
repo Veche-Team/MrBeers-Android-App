@@ -1,7 +1,6 @@
 package com.example.neverpidor.ui.fragments.addbeer
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,21 +12,8 @@ import androidx.navigation.fragment.navArgs
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.AddBeerFragmentBinding
 import com.example.neverpidor.ui.fragments.BaseFragment
-import com.example.neverpidor.util.Constants.EMPTY_ALC
-import com.example.neverpidor.util.Constants.EMPTY_PRICE
-import com.example.neverpidor.util.Constants.EMPTY_VOLUME
-import com.example.neverpidor.util.Constants.HIGH_ALC
-import com.example.neverpidor.util.Constants.HIGH_PRICE
-import com.example.neverpidor.util.Constants.HIGH_VOLUME
-import com.example.neverpidor.util.Constants.INPUT_DESCRIPTION
-import com.example.neverpidor.util.Constants.INPUT_TITLE
-import com.example.neverpidor.util.Constants.INPUT_TYPE
-import com.example.neverpidor.util.Constants.LOW_PRICE
-import com.example.neverpidor.util.Constants.LOW_VOLUME
-import com.example.neverpidor.util.TextFieldValidationResult
 import com.example.neverpidor.util.ValidationModel
 import com.example.neverpidor.util.disableErrorMessage
-import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates
 
@@ -72,47 +58,42 @@ class AddBeerFragment : BaseFragment() {
 
         binding.saveButton.setOnClickListener {
             if (item == R.string.beer) {
-                val validationModel = ValidationModel(
-                    binding.nameEditText.text.toString(),
-                    binding.descriptionEt.text.toString(),
-                    binding.typeEt.text.toString(),
-                    binding.priceEt.text.toString(),
-                    binding.alcEt.text.toString(),
-                    binding.volumeEt.text.toString(),
+                val fields = listOf(
+                    binding.nameLayout to binding.nameEditText,
+                    binding.descriptionTextLayout to binding.descriptionEt,
+                    binding.typeTextLayout to binding.typeEt,
+                    binding.priceTextLayout to binding.priceEt,
+                    binding.alcTextLayout to binding.alcEt,
+                    binding.volumeTextLayout to binding.volumeEt
                 )
-                if (updateMode) {
-                    viewModel.handleInput(
-                        validationModel,
-                        args.itemId
-                    )
+                if (fields.any { it.first.error != null } || fields.any { it.second.text.isNullOrEmpty() }) {
+                    Toast.makeText(requireContext(), "Ой, ошибочка", Toast.LENGTH_SHORT)
+                        .show()
+                    return@setOnClickListener
                 } else {
-                    viewModel.handleInput(validationModel)
+                    onSaveButton()
                 }
                 observeBeerResponse()
             } else {
-                val validationModel = ValidationModel(
-                    binding.nameEditText.text.toString(),
-                    binding.descriptionEt.text.toString(),
-                    binding.typeEt.text.toString(),
-                    binding.priceEt.text.toString(),
+                val fields = listOf(
+                    binding.nameLayout to binding.nameEditText,
+                    binding.descriptionTextLayout to binding.descriptionEt,
+                    binding.typeTextLayout to binding.typeEt,
+                    binding.priceTextLayout to binding.priceEt
                 )
-                if (updateMode) {
-
-                    viewModel.handleInput(
-                        validationModel,
-                        itemId = args.itemId
-                    )
+                if (fields.any { it.first.error != null } || fields.any { it.second.text.isNullOrEmpty() }) {
+                    Toast.makeText(requireContext(), "Ой, ошибочка", Toast.LENGTH_SHORT)
+                        .show()
+                    return@setOnClickListener
                 } else {
-                    viewModel.handleInput(validationModel)
+                    onSaveButton()
                 }
                 observeSnackResponse()
             }
-            viewModel.currentLiveState.observe(viewLifecycleOwner) {
-                it?.let {
-                    handleErrorFields(it)
-                }
-            }
         }
+
+        val watchers = TextWatchers(binding)
+        watchers.setWatchers()
     }
 
     override fun onDestroyView() {
@@ -120,29 +101,30 @@ class AddBeerFragment : BaseFragment() {
         _binding = null
     }
 
-    private fun initValidationFields() = mapOf(
-        INPUT_TITLE.first to binding.nameLayout,
-        INPUT_DESCRIPTION.first to binding.descriptionTextLayout,
-        INPUT_TYPE.first to binding.typeTextLayout,
-        EMPTY_PRICE.first to binding.priceTextLayout,
-        LOW_PRICE.first to binding.priceTextLayout,
-        HIGH_PRICE.first to binding.priceTextLayout,
-        EMPTY_ALC.first to binding.alcTextLayout,
-        HIGH_ALC.first to binding.alcTextLayout,
-        EMPTY_VOLUME.first to binding.volumeTextLayout,
-        LOW_VOLUME.first to binding.volumeTextLayout,
-        HIGH_VOLUME.first to binding.volumeTextLayout
-    )
-
-    private fun handleErrorFields(data: TextFieldValidationResult) {
-        if (data is TextFieldValidationResult.Failure) {
-            val validationFields: Map<String, TextInputLayout> = initValidationFields()
-            data.errors.forEach {
-                val stringErrorMessage = getString(it.value)
-                validationFields[it.key]?.error = stringErrorMessage
-            }
+    private fun onSaveButton() {
+        if (item == R.string.beer) {
+            val model = ValidationModel(
+                binding.nameEditText.text.toString(),
+                binding.descriptionEt.text.toString(),
+                binding.typeEt.text.toString(),
+                binding.priceEt.text.toString(),
+                binding.alcEt.text.toString(),
+                binding.volumeEt.text.toString()
+            )
+            if (updateMode) viewModel.handleInput(model, args.itemId) else viewModel.handleInput(
+                model
+            )
+        } else {
+            val model = ValidationModel(
+                binding.nameEditText.text.toString(),
+                binding.descriptionEt.text.toString(),
+                binding.typeEt.text.toString(),
+                binding.priceEt.text.toString()
+            )
+            if (updateMode) viewModel.handleInput(model, args.itemId) else viewModel.handleInput(
+                model
+            )
         }
-
     }
 
     private fun observeBeerResponse() {

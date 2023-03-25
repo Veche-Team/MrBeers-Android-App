@@ -1,4 +1,4 @@
-package com.example.neverpidor.data
+package com.example.neverpidor.data.providers
 
 import com.example.neverpidor.R
 import javax.inject.Inject

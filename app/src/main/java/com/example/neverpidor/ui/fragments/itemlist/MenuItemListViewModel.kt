@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.util.Event
-import com.example.neverpidor.data.MenuItemsRepository
+import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
-import com.example.neverpidor.model.network.beer.CreatedBeerResponse
-import com.example.neverpidor.model.network.snack.DeletedSnackResponse
+import com.example.neverpidor.model.network.beer.BeerResponse
+import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.settings.AppSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -28,11 +28,11 @@ class MenuItemListViewModel @Inject constructor(
     private val _beers = MutableLiveData<List<DomainBeer>>()
     val beers: LiveData<List<DomainBeer>> = _beers
 
-    private val _beerResponse = MutableLiveData<Event<CreatedBeerResponse?>>()
-    val beerResponse: LiveData<Event<CreatedBeerResponse?>> = _beerResponse
+    private val _beerResponse = MutableLiveData<Event<BeerResponse?>>()
+    val beerResponse: LiveData<Event<BeerResponse?>> = _beerResponse
 
-    private val _snackResponse = MutableLiveData<Event<DeletedSnackResponse?>>()
-    val snackResponse: LiveData<Event<DeletedSnackResponse?>> = _snackResponse
+    private val _snackResponse = MutableLiveData<Event<SnackResponse?>>()
+    val snackResponse: LiveData<Event<SnackResponse?>> = _snackResponse
 
     private val _shownEpoxyState = MutableLiveData<Set<String>>()
     val shownEpoxyState: LiveData<Set<String>> = _shownEpoxyState
@@ -54,7 +54,7 @@ class MenuItemListViewModel @Inject constructor(
         response?.let {
             repository.deleteBeerFromDatabase(beerId)
             _beerResponse.postValue(Event(response))
-        } ?: _beerResponse.postValue(Event(CreatedBeerResponse(msg = "Проверьте подключение к интернету!")))
+        } ?: _beerResponse.postValue(Event(BeerResponse(msg = "Проверьте подключение к интернету!")))
     }
 
     fun deleteSnack(snackId: String) = viewModelScope.launch(Dispatchers.IO) {
@@ -62,7 +62,7 @@ class MenuItemListViewModel @Inject constructor(
         response?.let {
             repository.deleteSnackFromDatabase(snackId)
             _snackResponse.postValue(Event(response))
-        } ?: _snackResponse.postValue(Event(DeletedSnackResponse(msg = "Проверьте подключение к интернету!")))
+        } ?: _snackResponse.postValue(Event(SnackResponse(msg = "Проверьте подключение к интернету!")))
     }
 
     fun getItem(): Int = appSettings.getCurrentItem()

@@ -1,10 +1,10 @@
 package com.example.neverpidor.model.network.snack
 
-data class DeletedSnackResponse(
-    val deletedSnack: DeletedSnack = DeletedSnack(),
+data class SnackResponse(
+    val createdSnack: CreatedSnack = CreatedSnack(),
     val msg: String = ""
 ) {
-    data class DeletedSnack(
+    data class CreatedSnack(
         val UID: String = "",
         val createdAt: String = "",
         val description: String = "",

@@ -2,17 +2,17 @@ package com.example.neverpidor.model.domain
 
 import androidx.annotation.DrawableRes
 
-data class DomainSnack(
-    override val itemType: String = "snack",
-    override val UID: String,
-    override val description: String,
-    override val name: String,
-    override val price: Double,
-    override val type: String,
+class DomainSnack(
+    itemType: String = "snack",
+    UID: String,
+    description: String,
+    name: String,
+    price: Double,
+    type: String,
     @DrawableRes
-    override val image: Int? = null,
-    override val alcPercentage: Double = 0.0,
-    override val volume: Double = 0.0,
-    override val isFaved: Boolean = false,
-    override val isInCart: Boolean = false
-): DomainItem(itemType, UID, alcPercentage, description, name, price, type, volume, image)
+    image: Int? = null,
+    alcPercentage: Double = 0.0,
+    volume: Double = 0.0,
+    isFaved: Boolean = false,
+    isInCart: Boolean = false
+) : DomainItem(itemType, UID, alcPercentage, description, name, price, type, volume, image)

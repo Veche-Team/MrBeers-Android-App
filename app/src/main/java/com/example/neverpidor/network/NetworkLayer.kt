@@ -53,5 +53,4 @@ object NetworkLayer {
     fun providesApiClient(beersApiService: BeersApiService): ApiClient {
         return ApiClient(beersApiService)
     }
-
 }

@@ -51,24 +51,13 @@ class MenuItemListFragment : BaseFragment() {
                 MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment()
             navController.navigate(direction)
         }
-        controller = MenuItemListEpoxyController(item, onEditClick = {
-            val direction =
-                MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(it)
-            navController.navigate(direction)
-        },
-            onItemClick = {
-                val direction =
-                    MenuItemListFragmentDirections.actionMenuItemListFragmentToFragmentSingleItem(
-                        it.UID,
-                        it.itemType
-                    )
-                navController.navigate(direction)
-            }
-        )
 
         binding.searchEditText.doAfterTextChanged {
             controller.searchInput = it?.toString() ?: ""
         }
+
+        setEpoxyController()
+
         when (item) {
             R.string.beer -> {
                 supportActionBar?.title = resources.getString(R.string.beer)
@@ -87,8 +76,7 @@ class MenuItemListFragment : BaseFragment() {
                 observeSnackDeleteResponse()
             }
         }
-        controller.isLoading = true
-        binding.itemListRv.setControllerAndBuildModels(controller)
+
         binding.itemListRv.addItemDecoration(
             DividerItemDecoration(
                 requireContext(),
@@ -101,6 +89,25 @@ class MenuItemListFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun setEpoxyController() {
+        controller = MenuItemListEpoxyController(item, onEditClick = {
+            val direction =
+                MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(it)
+            navController.navigate(direction)
+        },
+            onItemClick = {
+                val direction =
+                    MenuItemListFragmentDirections.actionMenuItemListFragmentToFragmentSingleItem(
+                        it.UID,
+                        it.itemType
+                    )
+                navController.navigate(direction)
+            }
+        )
+        controller.isLoading = true
+        binding.itemListRv.setControllerAndBuildModels(controller)
     }
 
     private fun observeBeerDeleteResponse() {

@@ -2,7 +2,7 @@ package com.example.neverpidor.network
 
 import android.util.Log
 import com.example.neverpidor.model.network.beer.BeerList
-import com.example.neverpidor.model.network.beer.CreatedBeerResponse
+import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.beer.BeerRequest
 import com.example.neverpidor.model.network.snack.*
 import retrofit2.Response
@@ -18,33 +18,33 @@ class ApiClient @Inject constructor(private val beersApiService: BeersApiService
         return beersApiService.getBeers()
     }
 
-    suspend fun addBeer(beerRequest: BeerRequest): SimpleResponse<CreatedBeerResponse> {
+    suspend fun addBeer(beerRequest: BeerRequest): SimpleResponse<BeerResponse> {
         return safeApiCall { beersApiService.addBeer(beerRequest) }
     }
 
-    suspend fun addSnack(snackRequest: SnackRequest): SimpleResponse<CreatedSnackResponse> {
+    suspend fun addSnack(snackRequest: SnackRequest): SimpleResponse<SnackResponse> {
         return safeApiCall { beersApiService.addSnack(snackRequest) }
     }
 
-    suspend fun deleteBeer(beerId: String): SimpleResponse<CreatedBeerResponse> {
+    suspend fun deleteBeer(beerId: String): SimpleResponse<BeerResponse> {
         return safeApiCall { beersApiService.deleteBeer(beerId) }
     }
 
-    suspend fun deleteSnack(snackId: String): SimpleResponse<DeletedSnackResponse> {
+    suspend fun deleteSnack(snackId: String): SimpleResponse<SnackResponse> {
         return safeApiCall { beersApiService.deleteSnack(snackId) }
     }
 
     suspend fun updateBeer(
         beerId: String,
         beerRequest: BeerRequest
-    ): SimpleResponse<CreatedBeerResponse> {
+    ): SimpleResponse<BeerResponse> {
         return safeApiCall { beersApiService.updateBeer(beerId, beerRequest) }
     }
 
     suspend fun updateSnack(
         snackId: String,
         snackRequest: SnackRequest
-    ): SimpleResponse<CreatedSnackResponse> {
+    ): SimpleResponse<SnackResponse> {
         return safeApiCall { beersApiService.updateSnack(snackId, snackRequest) }
     }
 
@@ -52,7 +52,6 @@ class ApiClient @Inject constructor(private val beersApiService: BeersApiService
         return try {
             Log.i("ApiClient", "Success")
             SimpleResponse.success(apiCall.invoke())
-
         } catch (e: Exception) {
             Log.i("ApiClient", "Failure")
             SimpleResponse.failure(e)

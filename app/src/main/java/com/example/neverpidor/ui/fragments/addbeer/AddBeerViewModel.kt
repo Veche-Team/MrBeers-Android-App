@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.data.MenuItemsRepository
+import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
-import com.example.neverpidor.model.network.beer.CreatedBeerResponse
+import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.beer.BeerRequest
-import com.example.neverpidor.model.network.snack.CreatedSnackResponse
+import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.network.snack.SnackRequest
 import com.example.neverpidor.model.settings.AppSettings
 import com.example.neverpidor.util.*
@@ -21,8 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddBeerViewModel @Inject constructor(
     private val repository: MenuItemsRepository,
-    private val appSettings: AppSettings,
-    private val textFieldsValidator: TextFieldsValidator
+    private val appSettings: AppSettings
 ) : ViewModel() {
 
     private val _beerLiveData = MutableLiveData<DomainBeer>()
@@ -31,34 +30,11 @@ class AddBeerViewModel @Inject constructor(
     private val _snackLiveData = MutableLiveData<DomainSnack>()
     val snackLiveData: LiveData<DomainSnack> = _snackLiveData
 
-    private val _beerResponse = MutableLiveData<Event<CreatedBeerResponse?>>()
-    val beerResponse: LiveData<Event<CreatedBeerResponse?>> = _beerResponse
+    private val _beerResponse = MutableLiveData<Event<BeerResponse?>>()
+    val beerResponse: LiveData<Event<BeerResponse?>> = _beerResponse
 
-    private val _snackResponse = MutableLiveData<Event<CreatedSnackResponse?>>()
-    val snackResponse: LiveData<Event<CreatedSnackResponse?>> = _snackResponse
-
-    private val _currentLiveState = MutableLiveData<TextFieldValidationResult>()
-    val currentLiveState: LiveData<TextFieldValidationResult>
-        get() = _currentLiveState
-
-    private fun addBeer(beerRequest: BeerRequest) = viewModelScope.launch(Dispatchers.IO) {
-        val response = repository.addBeer(beerRequest)
-        response?.let {
-            repository.addBeerToDatabase(it)
-            _beerResponse.postValue(Event(response))
-        }
-            ?: _beerResponse.postValue(Event(CreatedBeerResponse(msg = "Проверьте подключение к интернету!")))
-
-    }
-
-    private fun addSnack(snackRequest: SnackRequest) = viewModelScope.launch(Dispatchers.IO) {
-        val response = repository.addSnack(snackRequest)
-        response?.let {
-            repository.addSnackToDatabase(it)
-            _snackResponse.postValue(Event(response))
-        }
-            ?: _snackResponse.postValue(Event(CreatedSnackResponse(msg = "Проверьте подключение к интернету!")))
-    }
+    private val _snackResponse = MutableLiveData<Event<SnackResponse?>>()
+    val snackResponse: LiveData<Event<SnackResponse?>> = _snackResponse
 
     fun getBeerById(beerId: String) = viewModelScope.launch(Dispatchers.IO) {
         _beerLiveData.postValue(repository.getBeerById(beerId))
@@ -68,34 +44,12 @@ class AddBeerViewModel @Inject constructor(
         _snackLiveData.postValue(repository.getSnackById(snackId))
     }
 
-    private fun updateBeer(beerId: String, beerRequest: BeerRequest) =
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.updateBeer(beerId, beerRequest)
-            response?.let {
-                _beerResponse.postValue(Event(response))
-                repository.updateDatabaseBeer(beerId, beerRequest)
-            } ?: _beerResponse.postValue(Event(CreatedBeerResponse(msg = "Проверьте подключение к интернету!")))
-        }
-
-    private fun updateSnack(snackId: String, snackRequest: SnackRequest) =
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.updateSnack(snackId, snackRequest)
-            response?.let {
-                _snackResponse.postValue(Event(response))
-                repository.updateDatabaseSnack(snackId, snackRequest)
-            } ?: _snackResponse.postValue(Event(CreatedSnackResponse(msg = "Проверьте подключение к интернету!")))
-        }
-
     fun getItem(): Int = appSettings.getCurrentItem()
 
     fun handleInput(
         validationModel: ValidationModel,
         itemId: String? = null
     ): Boolean {
-
-        _currentLiveState.value =
-            textFieldsValidator.validateFields(validationModel)
-        if (_currentLiveState.value is TextFieldValidationResult.Failure) return false
         validationModel.alc?.let {
             val beerRequest = BeerRequest(
                 validationModel.alc.toDouble(),
@@ -125,4 +79,40 @@ class AddBeerViewModel @Inject constructor(
         }
         return true
     }
+
+    private fun addBeer(beerRequest: BeerRequest) = viewModelScope.launch(Dispatchers.IO) {
+        val response = repository.addBeer(beerRequest)
+        response?.let {
+            repository.addBeerToDatabase(it)
+            _beerResponse.postValue(Event(response))
+        }
+            ?: _beerResponse.postValue(Event(BeerResponse(msg = "Проверьте подключение к интернету!")))
+    }
+
+    private fun addSnack(snackRequest: SnackRequest) = viewModelScope.launch(Dispatchers.IO) {
+        val response = repository.addSnack(snackRequest)
+        response?.let {
+            repository.addSnackToDatabase(it)
+            _snackResponse.postValue(Event(response))
+        }
+            ?: _snackResponse.postValue(Event(SnackResponse(msg = "Проверьте подключение к интернету!")))
+    }
+
+    private fun updateBeer(beerId: String, beerRequest: BeerRequest) =
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = repository.updateBeer(beerId, beerRequest)
+            response?.let {
+                _beerResponse.postValue(Event(response))
+                repository.updateDatabaseBeer(beerId, beerRequest)
+            } ?: _beerResponse.postValue(Event(BeerResponse(msg = "Проверьте подключение к интернету!")))
+        }
+
+    private fun updateSnack(snackId: String, snackRequest: SnackRequest) =
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = repository.updateSnack(snackId, snackRequest)
+            response?.let {
+                _snackResponse.postValue(Event(response))
+                repository.updateDatabaseSnack(snackId, snackRequest)
+            } ?: _snackResponse.postValue(Event(SnackResponse(msg = "Проверьте подключение к интернету!")))
+        }
 }

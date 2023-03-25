@@ -8,8 +8,3 @@ data class ValidationModel(
     val alc: String? = null,
     val volume: String? = null
 )
-
-sealed class TextFieldValidationResult {
-    object Success : TextFieldValidationResult()
-    data class Failure(val errors: Map<String, Int>): TextFieldValidationResult()
-}

@@ -25,12 +25,6 @@ class MenuItemListEpoxyController(
             requestModelBuild()
         }
 
-    private var isShown = setOf<String>()
-        set(value) {
-            field = value
-            requestModelBuild()
-        }
-
     var snacks = listOf<DomainSnack>()
         set(value) {
             field = value
@@ -42,6 +36,12 @@ class MenuItemListEpoxyController(
         set(value) {
             field = value
             isLoading = false
+            requestModelBuild()
+        }
+
+    private var isShown = setOf<String>()
+        set(value) {
+            field = value
             requestModelBuild()
         }
 

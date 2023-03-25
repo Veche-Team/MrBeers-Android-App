@@ -3,7 +3,7 @@ package com.example.neverpidor.ui.fragments.list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.neverpidor.data.BeersCategoryRepository
+import com.example.neverpidor.data.repositories.BeersCategoryRepository
 import com.example.neverpidor.data.MenuCategoryEntity
 import com.example.neverpidor.model.settings.AppSettings
 import dagger.hilt.android.lifecycle.HiltViewModel

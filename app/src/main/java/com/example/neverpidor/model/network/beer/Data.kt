@@ -1,7 +1,6 @@
 package com.example.neverpidor.model.network.beer
 
 // inner body
-@kotlinx.serialization.Serializable
 data class Data(
     val UID: String = "",
     val alcPercentage: Double = 0.0,

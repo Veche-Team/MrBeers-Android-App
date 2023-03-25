@@ -1,4 +1,4 @@
-package com.example.neverpidor.data
+package com.example.neverpidor.data.repositories
 
 import com.example.neverpidor.database.BeersDao
 import com.example.neverpidor.model.domain.DomainBeer
@@ -7,11 +7,10 @@ import com.example.neverpidor.model.entities.BeerEntity
 import com.example.neverpidor.model.entities.SnackEntity
 import com.example.neverpidor.model.mapper.BeerMapper
 import com.example.neverpidor.model.mapper.SnackMapper
-import com.example.neverpidor.model.network.beer.CreatedBeerResponse
+import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.beer.BeerRequest
-import com.example.neverpidor.model.network.snack.CreatedSnackResponse
+import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.network.snack.SnackRequest
-import com.example.neverpidor.model.network.snack.DeletedSnackResponse
 import com.example.neverpidor.network.ApiClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -25,6 +24,54 @@ class MenuItemsRepository @Inject constructor(
     private val beersDao: BeersDao
 ) {
 
+    fun getDatabaseBeers(): Flow<List<DomainBeer>> {
+        return beersDao
+            .getDatabaseBeers()
+            .map { list ->
+                list.map {
+                    beerMapper.buildDomainFromEntity(it)
+                }
+            }
+            .onEach {
+                if (it.isEmpty()) {
+                    getBeers()
+                    getSnacks()
+                }
+            }
+    }
+
+    private suspend fun getBeers() {
+        apiClient.getBeers().data.map {
+            beerMapper.buildEntityFromNetwork(it)
+        }.also {
+            beersDao.addBeers(it)
+        }
+    }
+
+    fun getDatabaseSnacks(): Flow<List<DomainSnack>> {
+        return beersDao
+            .getDatabaseSnacks()
+            .map { list ->
+                list.map {
+                    snackMapper.buildDomainFromEntity(it)
+                }
+            }
+            .onEach {
+                if (it.isEmpty()) {
+                    getSnacks()
+                    getBeers()
+                }
+            }
+    }
+
+    private suspend fun getSnacks() {
+        apiClient.getSnacks().data.map {
+            snackMapper.buildEntityFromNetwork(it)
+        }.also {
+            beersDao.addSnacks(it)
+        }
+    }
+
     suspend fun getBeerById(beerId: String): DomainBeer {
         val request = beersDao.getBeerById(beerId)
         return beerMapper.buildDomainFromEntity(request)
@@ -36,7 +83,7 @@ class MenuItemsRepository @Inject constructor(
     }
 
 
-    suspend fun addBeer(beerRequest: BeerRequest): CreatedBeerResponse? {
+    suspend fun addBeer(beerRequest: BeerRequest): BeerResponse? {
 
         val request = apiClient.addBeer(beerRequest)
 
@@ -49,11 +96,11 @@ class MenuItemsRepository @Inject constructor(
         return request.body
     }
 
-    suspend fun addBeerToDatabase(beerResponse: CreatedBeerResponse) {
+    suspend fun addBeerToDatabase(beerResponse: BeerResponse) {
         beersDao.addOneBeer(beerMapper.buildEntityFromResponse(beerResponse))
     }
 
-    suspend fun addSnack(snackRequest: SnackRequest): CreatedSnackResponse? {
+    suspend fun addSnack(snackRequest: SnackRequest): SnackResponse? {
         val request = apiClient.addSnack(snackRequest)
 
         if (request.failed) {
@@ -65,11 +112,11 @@ class MenuItemsRepository @Inject constructor(
         return request.body
     }
 
-    suspend fun addSnackToDatabase(snackResponse: CreatedSnackResponse) {
+    suspend fun addSnackToDatabase(snackResponse: SnackResponse) {
         beersDao.addOneSnack(snackMapper.buildEntityFromResponse(snackResponse))
     }
 
-    suspend fun deleteBeer(beerId: String): CreatedBeerResponse? {
+    suspend fun deleteBeer(beerId: String): BeerResponse? {
 
         val request = apiClient.deleteBeer(beerId)
 
@@ -85,7 +132,7 @@ class MenuItemsRepository @Inject constructor(
         beersDao.deleteBeerById(beerId)
     }
 
-    suspend fun deleteSnack(snackId: String): DeletedSnackResponse? {
+    suspend fun deleteSnack(snackId: String): SnackResponse? {
         val request = apiClient.deleteSnack(snackId)
 
         if (request.failed) {
@@ -100,7 +147,7 @@ class MenuItemsRepository @Inject constructor(
         beersDao.deleteSnackById(snackId)
     }
 
-    suspend fun updateBeer(beerId: String, beerRequest: BeerRequest): CreatedBeerResponse? {
+    suspend fun updateBeer(beerId: String, beerRequest: BeerRequest): BeerResponse? {
 
         val request = apiClient.updateBeer(beerId, beerRequest)
 
@@ -126,7 +173,7 @@ class MenuItemsRepository @Inject constructor(
         )
     }
 
-    suspend fun updateSnack(snackId: String, snackRequest: SnackRequest): CreatedSnackResponse? {
+    suspend fun updateSnack(snackId: String, snackRequest: SnackRequest): SnackResponse? {
         val request = apiClient.updateSnack(snackId, snackRequest)
 
         if (request.failed) {
@@ -147,51 +194,5 @@ class MenuItemsRepository @Inject constructor(
                 type = snackRequest.type
             )
         )
-    }
-
-    fun getDatabaseBeers(): Flow<List<DomainBeer>> {
-        return beersDao
-            .getDatabaseBeers()
-            .map { list ->
-                list.map {
-                    beerMapper.buildDomainFromEntity(it)
-                }
-            }
-            .onEach {
-                if (it.isEmpty()) {
-                    getBeers()
-                }
-            }
-    }
-
-    private suspend fun getBeers() {
-        apiClient.getBeers().data.map {
-            beerMapper.buildEntityFromNetwork(it)
-        }.also {
-            beersDao.addBeers(it)
-        }
-    }
-
-    fun getDatabaseSnacks(): Flow<List<DomainSnack>> {
-        return beersDao
-            .getDatabaseSnacks()
-            .map { list ->
-                list.map {
-                    snackMapper.buildDomainFromEntity(it)
-                }
-            }
-            .onEach {
-                if (it.isEmpty()) {
-                    getSnacks()
-                }
-            }
-    }
-
-    private suspend fun getSnacks() {
-        apiClient.getSnacks().data.map {
-            snackMapper.buildEntityFromNetwork(it)
-        }.also {
-            beersDao.addSnacks(it)
-        }
     }
 }
