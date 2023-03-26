@@ -9,6 +9,8 @@ import com.example.neverpidor.util.Event
 import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
+import com.example.neverpidor.model.entities.BeerEntity
+import com.example.neverpidor.model.entities.SnackEntity
 import com.example.neverpidor.model.network.beer.BeerResponse
 import com.example.neverpidor.model.network.snack.SnackResponse
 import com.example.neverpidor.model.settings.AppSettings
@@ -70,5 +72,33 @@ class MenuItemListViewModel @Inject constructor(
 
     fun saveEpoxyState(set: Set<String>) {
         _shownEpoxyState.postValue(set)
+    }
+
+    fun faveSnack(domainSnack: DomainSnack) = viewModelScope.launch {
+        repository.updateDatabaseSnack(
+            snackEntity = SnackEntity(
+                UID = domainSnack.UID,
+                description = domainSnack.description,
+                name = domainSnack.name,
+                price = domainSnack.price,
+                type = domainSnack.type,
+                isFaved = !domainSnack.isFaved
+            )
+        )
+    }
+
+    fun faveBeer(domainBeer: DomainBeer) = viewModelScope.launch {
+        repository.updateDatabaseBeer(
+            beerEntity = BeerEntity(
+                UID = domainBeer.UID,
+                description = domainBeer.description,
+                name = domainBeer.name,
+                price = domainBeer.price,
+                type = domainBeer.type,
+                isFaved = !domainBeer.isFaved,
+                alcPercentage = domainBeer.alcPercentage,
+                volume = domainBeer.volume
+            )
+        )
     }
 }

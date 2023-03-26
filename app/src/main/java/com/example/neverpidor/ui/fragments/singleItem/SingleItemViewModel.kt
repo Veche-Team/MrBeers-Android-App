@@ -4,9 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neverpidor.R
 import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
+import com.example.neverpidor.model.entities.BeerEntity
+import com.example.neverpidor.model.entities.SnackEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,6 +32,9 @@ class SingleItemViewModel @Inject constructor(
     private val _snackListLiveData = MutableLiveData<Set<DomainSnack>>()
     val snackListLiveData: LiveData<Set<DomainSnack>> = _snackListLiveData
 
+    private val _favImage = MutableLiveData<Int>()
+    val favImage: LiveData<Int> = _favImage
+
     fun getBeerById(beerId: String) = viewModelScope.launch(Dispatchers.IO) {
         _beerLiveData.postValue(repository.getBeerById(beerId))
     }
@@ -42,7 +48,7 @@ class SingleItemViewModel @Inject constructor(
         val allBeer = repository.getDatabaseBeers()
         allBeer.collect {
             while (set.size < 3) {
-                    set.add(it.random())
+                set.add(it.random())
             }
             _beerListLiveData.postValue(set)
         }
@@ -57,5 +63,55 @@ class SingleItemViewModel @Inject constructor(
             }
             _snackListLiveData.postValue(set)
         }
+    }
+
+    fun faveSnack(domainSnack: DomainSnack) = viewModelScope.launch {
+        repository.updateDatabaseSnack(
+            snackEntity = SnackEntity(
+                UID = domainSnack.UID,
+                description = domainSnack.description,
+                name = domainSnack.name,
+                price = domainSnack.price,
+                type = domainSnack.type,
+                isFaved = !domainSnack.isFaved
+            )
+        )
+        _snackLiveData.value = DomainSnack(
+            category = domainSnack.category,
+            UID = domainSnack.UID,
+            description = domainSnack.description,
+            name = domainSnack.name,
+            price = domainSnack.price,
+            type = domainSnack.type,
+            image = domainSnack.image,
+            isFaved = !domainSnack.isFaved
+        )
+    }
+
+    fun faveBeer(domainBeer: DomainBeer) = viewModelScope.launch {
+        repository.updateDatabaseBeer(
+            beerEntity = BeerEntity(
+                UID = domainBeer.UID,
+                description = domainBeer.description,
+                name = domainBeer.name,
+                price = domainBeer.price,
+                type = domainBeer.type,
+                isFaved = !domainBeer.isFaved,
+                alcPercentage = domainBeer.alcPercentage,
+                volume = domainBeer.volume
+            )
+        )
+        _beerLiveData.value = DomainBeer(
+            category = domainBeer.category,
+            UID = domainBeer.UID,
+            description = domainBeer.description,
+            name = domainBeer.name,
+            price = domainBeer.price,
+            type = domainBeer.type,
+            image = domainBeer.image,
+            isFaved = !domainBeer.isFaved,
+            alcPercentage = domainBeer.alcPercentage,
+            volume = domainBeer.volume
+        )
     }
 }

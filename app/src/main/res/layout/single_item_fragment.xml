@@ -40,6 +40,16 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@drawable/a_beer2" />
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/favImage"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_baseline_favorite_border_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/titleText"
                 android:layout_width="match_parent"

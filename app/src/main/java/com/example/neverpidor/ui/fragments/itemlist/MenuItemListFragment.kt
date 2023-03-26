@@ -3,6 +3,7 @@ package com.example.neverpidor.ui.fragments.itemlist
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +17,12 @@ import com.airbnb.epoxy.EpoxyTouchHelper.SwipeCallbacks
 import com.example.neverpidor.R
 import com.example.neverpidor.data.Category
 import com.example.neverpidor.databinding.FragmentMenuItemListBinding
+import com.example.neverpidor.model.domain.DomainBeer
+import com.example.neverpidor.model.domain.DomainSnack
 import com.example.neverpidor.ui.fragments.itemlist.epoxy.models.MenuItemEpoxyModel
 import com.example.neverpidor.ui.fragments.BaseFragment
 import com.example.neverpidor.ui.fragments.itemlist.epoxy.MenuItemListEpoxyController
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class MenuItemListFragment : BaseFragment() {
@@ -102,9 +104,17 @@ class MenuItemListFragment : BaseFragment() {
                 val direction =
                     MenuItemListFragmentDirections.actionMenuItemListFragmentToFragmentSingleItem(
                         it.UID,
-                        it.itemType
+                        it.category.toString()
                     )
                 navController.navigate(direction)
+            },
+            onFavClick = {
+                Log.e("FAVclick", "${it.category}")
+                if (it.category == Category.Beer) {
+                    viewModel.faveBeer(it as DomainBeer)
+                } else {
+                    viewModel.faveSnack(it as DomainSnack)
+                }
             }
         )
         controller.isLoading = true

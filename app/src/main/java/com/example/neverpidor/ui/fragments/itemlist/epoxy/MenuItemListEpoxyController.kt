@@ -15,7 +15,8 @@ import kotlin.random.Random
 class MenuItemListEpoxyController(
     val category: Category,
     private val onEditClick: (String) -> Unit,
-    private val onItemClick: (DomainItem) -> Unit
+    private val onItemClick: (DomainItem) -> Unit,
+    private val onFavClick: (DomainItem) -> Unit
 ) :
     EpoxyController() {
 
@@ -64,7 +65,7 @@ class MenuItemListEpoxyController(
                         ).id(map.key.hashCode()).addTo(this)
                         DividerEpoxy(R.color.amber_dark).id(Random.nextDouble(100.0)).addTo(this)
                         map.value.forEach { data ->
-                            MenuItemEpoxyModel(data, onEditClick, onItemClick).id(data.UID)
+                            MenuItemEpoxyModel(data, onEditClick, onItemClick, onFavClick).id(data.UID)
                                 .addTo(this)
                         }
                     }
@@ -79,7 +80,7 @@ class MenuItemListEpoxyController(
                             map.key,
                         ).id(map.key.hashCode()).addTo(this)
                         map.value.forEach {
-                            MenuItemEpoxyModel(it, onEditClick, onItemClick).id(it.UID).addTo(this)
+                            MenuItemEpoxyModel(it, onEditClick, onItemClick, onFavClick).id(it.UID).addTo(this)
                         }
                     }
             }

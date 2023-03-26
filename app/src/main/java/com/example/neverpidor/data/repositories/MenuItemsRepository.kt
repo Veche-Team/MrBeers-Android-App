@@ -128,6 +128,7 @@ class MenuItemsRepository @Inject constructor(
         }
         return request.body
     }
+
     suspend fun deleteBeerFromDatabase(beerId: String) {
         beersDao.deleteBeerById(beerId)
     }
@@ -143,6 +144,7 @@ class MenuItemsRepository @Inject constructor(
         }
         return request.body
     }
+
     suspend fun deleteSnackFromDatabase(snackId: String) {
         beersDao.deleteSnackById(snackId)
     }
@@ -159,6 +161,7 @@ class MenuItemsRepository @Inject constructor(
         }
         return request.body
     }
+
     suspend fun updateDatabaseBeer(beerId: String, beerRequest: BeerRequest) {
         beersDao.updateBeer(
             beer = BeerEntity(
@@ -173,6 +176,10 @@ class MenuItemsRepository @Inject constructor(
         )
     }
 
+    suspend fun updateDatabaseBeer(beerEntity: BeerEntity) {
+        beersDao.updateBeer(beerEntity)
+    }
+
     suspend fun updateSnack(snackId: String, snackRequest: SnackRequest): SnackResponse? {
         val request = apiClient.updateSnack(snackId, snackRequest)
 
@@ -184,6 +191,7 @@ class MenuItemsRepository @Inject constructor(
         }
         return request.body
     }
+
     suspend fun updateDatabaseSnack(snackId: String, snackRequest: SnackRequest) {
         beersDao.updateSnack(
             snack = SnackEntity(
@@ -194,5 +202,9 @@ class MenuItemsRepository @Inject constructor(
                 type = snackRequest.type
             )
         )
+    }
+
+    suspend fun updateDatabaseSnack(snackEntity: SnackEntity) {
+        beersDao.updateSnack(snack = snackEntity)
     }
 }

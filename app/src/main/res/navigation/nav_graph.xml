@@ -65,7 +65,7 @@
             android:name="itemId"
             app:argType="string" />
         <argument
-            android:name="itemType"
+            android:name="category"
             app:argType="string" />
     </fragment>
 </navigation>

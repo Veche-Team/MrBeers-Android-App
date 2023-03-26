@@ -1,9 +1,10 @@
 package com.example.neverpidor.model.domain
 
 import androidx.annotation.DrawableRes
+import com.example.neverpidor.data.Category
 
 open class DomainItem(
-     val itemType: String,
+     val category: Category,
      val UID: String = "",
      val alcPercentage: Double = 0.0,
      val description: String = "",

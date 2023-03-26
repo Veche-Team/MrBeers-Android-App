@@ -8,7 +8,8 @@ import com.example.neverpidor.ui.epoxy.ViewBindingKotlinModel
 data class MenuItemEpoxyModel(
     val domainItem: DomainItem,
     val onEditClick: (String) -> Unit,
-    val onItemClick: (DomainItem) -> Unit
+    val onItemClick: (DomainItem) -> Unit,
+    val onFavClick: (DomainItem) -> Unit
 ) :
     ViewBindingKotlinModel<ModelMenuItemBinding>(R.layout.model_menu_item) {
     override fun ModelMenuItemBinding.bind() {
@@ -23,6 +24,13 @@ data class MenuItemEpoxyModel(
         }
         root.setOnClickListener {
             onItemClick(domainItem)
+        }
+        if (domainItem.isFaved) {
+            favImage.setImageResource(R.drawable.ic_baseline_favorite_24)
+        } else favImage.setImageResource(R.drawable.ic_baseline_favorite_border_24)
+
+        favImage.setOnClickListener {
+            onFavClick(domainItem)
         }
     }
 }

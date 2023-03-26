@@ -1,9 +1,10 @@
 package com.example.neverpidor.model.domain
 
 import androidx.annotation.DrawableRes
+import com.example.neverpidor.data.Category
 
 class DomainBeer(
-    itemType: String = "beer",
+    category: Category = Category.Beer,
     UID: String,
     alcPercentage: Double,
     description: String,
@@ -13,6 +14,6 @@ class DomainBeer(
     volume: Double,
     @DrawableRes
     image: Int? = null,
-    isInCart: Boolean = false,
-    isFaved: Boolean = false
-) : DomainItem(itemType, UID, alcPercentage, description, name, price, type, volume, image)
+    isFaved: Boolean = false,
+    isInCart: Boolean = false
+) : DomainItem(category, UID, alcPercentage, description, name, price, type, volume, image, isFaved, isInCart)
