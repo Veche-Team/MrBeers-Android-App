@@ -4,8 +4,9 @@
     <string name="snacks">Закуски</string>
     <string name="update">Update</string>
     <string name="volume">%1$s Л</string>
-    <string name="alcPercentage">Алк. :%1$s </string>
+    <string name="alcPercentage">Алк.: %1$s </string>
     <string name="price">%1$s P.</string>
+    <string name="changing_item">Изменяем %1$s </string>
     <string name="empty_name_field">Название не может быть пустым</string>
     <string name="empty_description_field">Придумай хоть что-нибудь</string>
     <string name="empty_type_field">Так не пойдет</string>
@@ -19,6 +20,17 @@
     <string name="high_volume_field">Бочками пиво не продаем</string>
     <string name="add_snack">Добавить закусь</string>
     <string name="add_beer">Добавить пивас</string>
-    <string name="check_connection">Похоже интернет отвалился</string>
-    <string name="error">error</string>
+    <string name="check_connection">Проверьте подключение к интернету!</string>
+    <string name="error">Ой, ошибочка</string>
+    <string name="title">Название</string>
+    <string name="description">Описание</string>
+    <string name="type">Тип</string>
+    <string name="price_hint">Цена</string>
+    <string name="alc_hint">Сод. Алкоголя</string>
+    <string name="vol_hint">Литраж</string>
+    <string name="save">Сохранить</string>
+    <string name="search">Поиск</string>
+    <string name="city">Город: Кириши</string>
+    <string name="street">Переулок Берёзовый 7 </string>
+    <string name="related_products">С этим продуктом часто берут:</string>
 </resources>

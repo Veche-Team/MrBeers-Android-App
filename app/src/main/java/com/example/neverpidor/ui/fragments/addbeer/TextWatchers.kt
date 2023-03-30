@@ -2,7 +2,13 @@ package com.example.neverpidor.ui.fragments.addbeer
 
 import android.text.Editable
 import android.text.TextWatcher
+import com.example.neverpidor.R
 import com.example.neverpidor.databinding.AddBeerFragmentBinding
+import com.example.neverpidor.util.Constants.MAX_ALC
+import com.example.neverpidor.util.Constants.MAX_PRICE
+import com.example.neverpidor.util.Constants.MAX_VOLUME
+import com.example.neverpidor.util.Constants.MIN_PRICE
+import com.example.neverpidor.util.Constants.MIN_VOLUME
 
 class TextWatchers(val binding: AddBeerFragmentBinding) {
 
@@ -23,7 +29,8 @@ class TextWatchers(val binding: AddBeerFragmentBinding) {
 
         override fun afterTextChanged(s: Editable?) {
             s?.let {
-                if (it.isEmpty()) binding.nameLayout.error = "Название не может быть пустым"
+                if (it.isEmpty()) binding.nameLayout.error =
+                    binding.root.context.getString(R.string.empty_name_field)
             }
         }
     }
@@ -33,7 +40,8 @@ class TextWatchers(val binding: AddBeerFragmentBinding) {
 
         override fun afterTextChanged(s: Editable?) {
             s?.let {
-                if (it.isEmpty()) binding.descriptionTextLayout.error = "Придумай хоть что-нибудь"
+                if (it.isEmpty()) binding.descriptionTextLayout.error =
+                    binding.root.context.getString(R.string.empty_description_field)
             }
         }
     }
@@ -43,7 +51,8 @@ class TextWatchers(val binding: AddBeerFragmentBinding) {
 
         override fun afterTextChanged(s: Editable?) {
             s?.let {
-                if (it.isEmpty()) binding.typeTextLayout.error = "Так не пойдет"
+                if (it.isEmpty()) binding.typeTextLayout.error =
+                    binding.root.context.getString(R.string.empty_type_field)
             }
         }
     }
@@ -55,14 +64,17 @@ class TextWatchers(val binding: AddBeerFragmentBinding) {
         override fun afterTextChanged(s: Editable?) {
             s?.let {
                 if (it.isEmpty()) {
-                    binding.priceTextLayout.error = "Бесплатно только шлюхи в церкви"
+                    binding.priceTextLayout.error =
+                        binding.root.context.getString(R.string.empty_price_field)
                     return
                 }
-                if (it.toString().toDouble() > 500.0) {
-                    binding.priceTextLayout.error = "Чет дорого"
+                if (it.toString().toDouble() > MAX_PRICE) {
+                    binding.priceTextLayout.error =
+                        binding.root.context.getString(R.string.high_price_field)
                 }
-                if (it.toString().toDouble() < 50.0) {
-                    binding.priceTextLayout.error = "Хули тут так мало?"
+                if (it.toString().toDouble() < MIN_PRICE) {
+                    binding.priceTextLayout.error =
+                        binding.root.context.getString(R.string.low_price_field)
                 }
             }
         }
@@ -74,11 +86,13 @@ class TextWatchers(val binding: AddBeerFragmentBinding) {
         override fun afterTextChanged(s: Editable?) {
             s?.let {
                 if (it.isEmpty()) {
-                    binding.alcTextLayout.error = "Надо бы добавить хмелю"
+                    binding.alcTextLayout.error =
+                        binding.root.context.getString(R.string.empty_alc_field)
                     return
                 }
-                if (it.toString().toDouble() > 20.0) {
-                    binding.alcTextLayout.error = "У нас здесь не кабак"
+                if (it.toString().toDouble() > MAX_ALC) {
+                    binding.alcTextLayout.error =
+                        binding.root.context.getString(R.string.high_alc_field)
                 }
             }
         }
@@ -90,14 +104,17 @@ class TextWatchers(val binding: AddBeerFragmentBinding) {
         override fun afterTextChanged(s: Editable?) {
             s?.let {
                 if (it.isEmpty()) {
-                    binding.volumeTextLayout.error = "Наливать то куда?"
+                    binding.volumeTextLayout.error =
+                        binding.root.context.getString(R.string.empty_volume_field)
                     return
                 }
-                if (it.toString().toDouble() < 0.25) {
-                    binding.volumeTextLayout.error = "Такими темпами не захмелеешь"
+                if (it.toString().toDouble() < MIN_VOLUME) {
+                    binding.volumeTextLayout.error =
+                        binding.root.context.getString(R.string.low_volume_field)
                 }
-                if (it.toString().toDouble() > 5.0) {
-                    binding.volumeTextLayout.error = "Бочками пиво не продаем"
+                if (it.toString().toDouble() > MAX_VOLUME) {
+                    binding.volumeTextLayout.error =
+                        binding.root.context.getString(R.string.high_volume_field)
                 }
             }
         }

@@ -42,7 +42,7 @@ class BeerMapper @Inject constructor(
         return BeerEntity(
             UID = beerResponse.createdBeverage.UID,
             description = beerResponse.createdBeverage.description,
-            name = beerResponse.createdBeverage.description,
+            name = beerResponse.createdBeverage.name,
             price = beerResponse.createdBeverage.price,
             type = beerResponse.createdBeverage.type,
             alcPercentage = beerResponse.createdBeverage.alcPercentage,

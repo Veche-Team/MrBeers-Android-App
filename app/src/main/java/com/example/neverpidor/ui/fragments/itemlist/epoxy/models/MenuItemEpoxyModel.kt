@@ -4,6 +4,7 @@ import com.example.neverpidor.R
 import com.example.neverpidor.databinding.ModelMenuItemBinding
 import com.example.neverpidor.model.domain.DomainItem
 import com.example.neverpidor.ui.epoxy.ViewBindingKotlinModel
+import com.example.neverpidor.util.format
 
 data class MenuItemEpoxyModel(
     val domainItem: DomainItem,
@@ -13,8 +14,9 @@ data class MenuItemEpoxyModel(
 ) :
     ViewBindingKotlinModel<ModelMenuItemBinding>(R.layout.model_menu_item) {
     override fun ModelMenuItemBinding.bind() {
+
         nameText.text = domainItem.name
-        price.text = root.context.getString(R.string.price, domainItem.price.toString())
+        price.text = root.context.getString(R.string.price, domainItem.price.format(2))
 
         editImage.setOnClickListener {
             onEditClick(domainItem.UID)

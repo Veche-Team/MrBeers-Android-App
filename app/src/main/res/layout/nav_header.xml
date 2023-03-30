@@ -15,7 +15,7 @@
         android:textStyle="italic"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Город: Кириши" />
+        android:text="@string/city" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/address"
@@ -26,7 +26,6 @@
         android:textStyle="italic"
         app:layout_constraintStart_toStartOf="@+id/cityName"
         app:layout_constraintTop_toBottomOf="@+id/cityName"
-        android:text="Переулок Берёзовый 7 " />
-
+        android:text="@string/street" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

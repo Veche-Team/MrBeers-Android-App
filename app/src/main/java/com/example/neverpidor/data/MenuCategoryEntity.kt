@@ -1,6 +1,5 @@
 package com.example.neverpidor.data
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.example.neverpidor.R
@@ -26,7 +25,6 @@ enum class Category {
 
     companion object {
         fun toCategory(categoryString: String): Category {
-            Log.e("SKINHEAD", categoryString)
             return if (categoryString == Beer.toString()) Beer else Snack
 
         }

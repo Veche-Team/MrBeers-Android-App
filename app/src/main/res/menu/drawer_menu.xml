@@ -12,29 +12,31 @@
             app:showAsAction="always"
             android:title="Регистрация"
             android:icon="@drawable/ic_baseline_register_24"/>
+
         <item android:id="@+id/menu_reserve"
             app:showAsAction="ifRoom"
             android:title="Забронировать"
             android:icon="@drawable/ic_reserve_24"/>
 
-
         <item android:id="@+id/menu_menu"
             app:showAsAction="ifRoom"
             android:title="Меню"
             android:icon="@drawable/ic_baseline_emoji_food_beverage_24"/>
+
         <item android:id="@+id/menu_actions"
             app:showAsAction="ifRoom"
             android:title="Акции"
             android:icon="@drawable/ic_actions_24"/>
+
         <item android:id="@+id/addresses"
             app:showAsAction="ifRoom"
             android:title="Адреса"
             android:icon="@drawable/ic_addresses_24"/>
+
         <item android:id="@+id/patrons"
             app:showAsAction="ifRoom"
             android:title="Завсегдатаи"
             android:icon="@drawable/ic_baseline_groups_24"/>
 
     </group>
-
 </menu>

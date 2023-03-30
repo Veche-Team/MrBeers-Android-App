@@ -15,8 +15,7 @@
             android:layout_marginHorizontal="8dp"
             android:layout_marginTop="16dp"
             android:background="#00818181"
-            android:hint="Search"
-            android:outlineSpotShadowColor="@color/accent"
+            android:hint="@string/search"
             android:textColorHint="@color/accent"
             app:boxStrokeColor="@color/accent"
             app:errorEnabled="true"
@@ -32,8 +31,6 @@
                 android:textColor="@color/accent" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-
 
     <com.airbnb.epoxy.EpoxyRecyclerView
         android:id="@+id/itemListRv"

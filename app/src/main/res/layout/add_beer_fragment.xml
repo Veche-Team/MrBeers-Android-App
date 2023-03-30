@@ -35,7 +35,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="24dp"
-                    android:hint="Title"
+                    android:hint="@string/title"
                     app:errorEnabled="true"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -44,7 +44,8 @@
                         android:id="@+id/nameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textCapSentences" />
+                        android:inputType="textCapSentences"
+                        android:maxLength="15"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -55,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="8dp"
-                    android:hint="Description (optional)"
+                    android:hint="@string/description"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/nameLayout">
 
@@ -63,6 +64,7 @@
                         android:id="@+id/descriptionEt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLength="50"
                         android:inputType="textCapSentences"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,7 +75,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="16dp"
-                    android:hint="Type"
+                    android:hint="@string/type"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/descriptionTextLayout">
 
@@ -81,6 +83,7 @@
                         android:id="@+id/typeEt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLength="10"
                         android:inputType="textCapSentences"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -90,7 +93,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="Price"
+                    android:hint="@string/price_hint"
                     app:layout_constraintEnd_toStartOf="@id/alcTextLayout"
                     app:layout_constraintStart_toStartOf="@id/nameLayout"
                     app:layout_constraintTop_toBottomOf="@id/typeTextLayout">
@@ -99,6 +102,7 @@
                         android:id="@+id/priceEt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLength="6"
                         android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -107,7 +111,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Alc percentage"
+                    android:hint="@string/alc_hint"
                     app:layout_constraintEnd_toStartOf="@+id/volumeTextLayout"
                     app:layout_constraintStart_toEndOf="@id/priceTextLayout"
                     app:layout_constraintTop_toTopOf="@+id/priceTextLayout">
@@ -115,6 +119,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/alcEt"
                         android:layout_width="match_parent"
+                        android:maxLength="4"
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -124,7 +129,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:hint="Volume"
+                    android:hint="@string/vol_hint"
                     app:layout_constraintEnd_toEndOf="@+id/typeTextLayout"
                     app:layout_constraintStart_toEndOf="@id/alcTextLayout"
                     app:layout_constraintTop_toTopOf="@+id/priceTextLayout">
@@ -133,6 +138,7 @@
                         android:id="@+id/volumeEt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLength="4"
                         android:inputType="numberDecimal" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -144,7 +150,7 @@
                     android:layout_marginTop="32dp"
                     android:layout_marginEnd="24dp"
                     android:layout_marginBottom="16dp"
-                    android:text="Save"
+                    android:text="@string/save"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/priceTextLayout" />

@@ -16,8 +16,8 @@ import com.example.neverpidor.model.domain.DomainItem
 import com.example.neverpidor.model.domain.DomainSnack
 import com.example.neverpidor.ui.fragments.BaseFragment
 import com.example.neverpidor.ui.fragments.singleItem.epoxy.SingleItemEpoxyController
+import com.example.neverpidor.util.format
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
 import kotlin.properties.Delegates
 
 @AndroidEntryPoint
@@ -43,7 +43,7 @@ class FragmentSingleItem : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        loadingState()
         itemId = args.itemId
         val category = Category.toCategory(args.category)
 
@@ -88,9 +88,10 @@ class FragmentSingleItem : BaseFragment() {
         viewModel.getBeerById(itemId)
         viewModel.beerLiveData.observe(viewLifecycleOwner) {
             item = it
-            binding.volumeText.text = getString(R.string.volume, item.volume.toString())
+
+            binding.volumeText.text = getString(R.string.volume, item.volume.format(2))
             binding.alcoholPercentageText.text =
-                getString(R.string.alcPercentage, item.alcPercentage.toString())
+                getString(R.string.alcPercentage, item.alcPercentage.format(1))
             updateUi(item)
             setImage()
         }
@@ -130,6 +131,7 @@ class FragmentSingleItem : BaseFragment() {
     }
 
     private fun updateUi(item: DomainItem) {
+
         supportActionBar?.title = item.name
         binding.apply {
             progressBar.isGone = true
@@ -145,7 +147,7 @@ class FragmentSingleItem : BaseFragment() {
             }
             titleText.text = item.name
             description.text = item.description
-            price.text = getString(R.string.price, item.price.toString())
+            price.text = getString(R.string.price, item.price.format(2))
         }
     }
 }

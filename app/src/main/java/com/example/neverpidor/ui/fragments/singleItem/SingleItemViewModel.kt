@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.R
 import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.model.domain.DomainBeer
 import com.example.neverpidor.model.domain.DomainSnack
@@ -31,9 +30,6 @@ class SingleItemViewModel @Inject constructor(
 
     private val _snackListLiveData = MutableLiveData<Set<DomainSnack>>()
     val snackListLiveData: LiveData<Set<DomainSnack>> = _snackListLiveData
-
-    private val _favImage = MutableLiveData<Int>()
-    val favImage: LiveData<Int> = _favImage
 
     fun getBeerById(beerId: String) = viewModelScope.launch(Dispatchers.IO) {
         _beerLiveData.postValue(repository.getBeerById(beerId))

@@ -91,7 +91,6 @@ class MenuItemListEpoxyController(
     fun setShownState(set: Set<String>) {
         isShown = set
     }
-
 }
 
 

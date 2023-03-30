@@ -40,7 +40,7 @@ class SnackMapper @Inject constructor(
         return SnackEntity(
             UID = snackResponse.createdSnack.UID,
             description = snackResponse.createdSnack.description,
-            name = snackResponse.createdSnack.description,
+            name = snackResponse.createdSnack.name,
             price = snackResponse.createdSnack.price,
             type = snackResponse.createdSnack.type
         )

@@ -16,7 +16,6 @@ import com.example.neverpidor.ui.fragments.BaseFragment
 import com.example.neverpidor.util.ValidationModel
 import com.example.neverpidor.util.disableErrorMessage
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class AddBeerFragment : BaseFragment() {
@@ -68,7 +67,7 @@ class AddBeerFragment : BaseFragment() {
                     binding.volumeTextLayout to binding.volumeEt
                 )
                 if (fields.any { it.first.error != null } || fields.any { it.second.text.isNullOrEmpty() }) {
-                    Toast.makeText(requireContext(), "Ой, ошибочка", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_SHORT)
                         .show()
                     return@setOnClickListener
                 } else {
@@ -83,7 +82,7 @@ class AddBeerFragment : BaseFragment() {
                     binding.priceTextLayout to binding.priceEt
                 )
                 if (fields.any { it.first.error != null } || fields.any { it.second.text.isNullOrEmpty() }) {
-                    Toast.makeText(requireContext(), "Ой, ошибочка", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_SHORT)
                         .show()
                     return@setOnClickListener
                 } else {
@@ -104,6 +103,7 @@ class AddBeerFragment : BaseFragment() {
 
     private fun onSaveButton() {
         if (category == Category.Beer) {
+
             val model = ValidationModel(
                 binding.nameEditText.text.toString(),
                 binding.descriptionEt.text.toString(),
@@ -111,6 +111,7 @@ class AddBeerFragment : BaseFragment() {
                 binding.priceEt.text.toString(),
                 binding.alcEt.text.toString(),
                 binding.volumeEt.text.toString()
+
             )
             if (updateMode) viewModel.handleInput(model, args.itemId) else viewModel.handleInput(
                 model
@@ -132,7 +133,7 @@ class AddBeerFragment : BaseFragment() {
         viewModel.beerResponse.observe(viewLifecycleOwner) {
             it.getContent()?.let { beerResponse ->
                 Toast.makeText(requireContext(), beerResponse.msg, Toast.LENGTH_SHORT).show()
-                if (beerResponse.msg != "Проверьте подключение к интернету!") navController.popBackStack()
+                if (beerResponse.msg != getString(R.string.check_connection)) navController.popBackStack()
             }
         }
     }
@@ -141,7 +142,7 @@ class AddBeerFragment : BaseFragment() {
         viewModel.snackResponse.observe(viewLifecycleOwner) {
             it.getContent()?.let { snackResponse ->
                 Toast.makeText(requireContext(), snackResponse.msg, Toast.LENGTH_SHORT).show()
-                if (snackResponse.msg != "Проверьте подключение к интернету!") navController.popBackStack()
+                if (snackResponse.msg != getString(R.string.check_connection)) navController.popBackStack()
             }
         }
     }
@@ -154,7 +155,7 @@ class AddBeerFragment : BaseFragment() {
             if (category == Category.Beer) {
                 viewModel.getBeerById(args.itemId!!)
                 viewModel.beerLiveData.observe(viewLifecycleOwner) {
-                    supportActionBar?.title = "Изменяем ${it.name}"
+                    supportActionBar?.title = getString(R.string.changing_item, it.name)
                     nameEditText.setText(it.name)
                     descriptionEt.setText(it.description)
                     typeEt.setText(it.type)
@@ -165,7 +166,7 @@ class AddBeerFragment : BaseFragment() {
             } else {
                 viewModel.getSnackById(args.itemId!!)
                 viewModel.snackLiveData.observe(viewLifecycleOwner) {
-                    supportActionBar?.title = "Изменяем ${it.name}"
+                    supportActionBar?.title = getString(R.string.changing_item, it.name)
                     nameEditText.setText(it.name)
                     descriptionEt.setText(it.description)
                     typeEt.setText(it.type)

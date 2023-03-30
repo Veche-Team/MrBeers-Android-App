@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.time.Duration
@@ -35,10 +36,13 @@ object NetworkLayer {
     @Singleton
     fun providesOkHttpClient(): OkHttpClient {
         val duration = Duration.ofSeconds(15)
+        val logger = HttpLoggingInterceptor()
+        logger.setLevel(HttpLoggingInterceptor.Level.BASIC)
         return OkHttpClient.Builder()
             .connectTimeout(duration)
             .readTimeout(duration)
             .writeTimeout(duration)
+            .addInterceptor(logger)
             .build()
     }
 

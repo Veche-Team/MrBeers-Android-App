@@ -2,8 +2,8 @@ package com.example.neverpidor.ui.fragments.itemlist
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -109,7 +109,6 @@ class MenuItemListFragment : BaseFragment() {
                 navController.navigate(direction)
             },
             onFavClick = {
-                Log.e("FAVclick", "${it.category}")
                 if (it.category == Category.Beer) {
                     viewModel.faveBeer(it as DomainBeer)
                 } else {
@@ -160,8 +159,13 @@ class MenuItemListFragment : BaseFragment() {
                 override fun isSwipeEnabledForModel(model: MenuItemEpoxyModel?): Boolean {
                     val connectivityManager =
                         requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                    val networkInfo = connectivityManager.activeNetworkInfo
-                    val connected = networkInfo != null && networkInfo.isAvailable && networkInfo.isConnected
+                    val activeNetwork = connectivityManager.activeNetwork ?: return false
+                    val capabilities =
+                        connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+                    val connected =
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
                     if (!connected) return false
                     return super.isSwipeEnabledForModel(model)
                 }
