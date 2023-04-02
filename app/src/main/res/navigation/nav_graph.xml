@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/listFragment"
-        android:name="com.example.neverpidor.ui.fragments.list.ListFragment"
+        android:name="com.example.neverpidor.presentation.fragments.list.ListFragment"
         android:label="Меню"
         tools:layout="@layout/fragment_list">
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/menuItemListFragment"
-        android:name="com.example.neverpidor.ui.fragments.itemlist.MenuItemListFragment"
+        android:name="com.example.neverpidor.presentation.fragments.itemlist.MenuItemListFragment"
         android:label="MenuItemListFragment"
         tools:layout="@layout/fragment_menu_item_list">
         <action
@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/addBeerFragment"
-        android:name="com.example.neverpidor.ui.fragments.addbeer.AddBeerFragment"
+        android:name="com.example.neverpidor.presentation.fragments.addbeer.AddBeerFragment"
         android:label="AddBeerFragment"
         tools:layout="@layout/add_beer_fragment">
         <argument
@@ -51,7 +51,7 @@
     </fragment>
     <fragment
         android:id="@+id/fragmentSingleItem"
-        android:name="com.example.neverpidor.ui.fragments.singleItem.FragmentSingleItem"
+        android:name="com.example.neverpidor.presentation.fragments.singleItem.FragmentSingleItem"
         android:label="FragmentSingleItem"
         tools:layout="@layout/single_item_fragment">
         <action
