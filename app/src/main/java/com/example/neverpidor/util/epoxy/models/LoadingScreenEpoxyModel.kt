@@ -1,8 +1,8 @@
-package com.example.neverpidor.presentation.epoxy.models
+package com.example.neverpidor.util.epoxy.models
 
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.ModelLoadingDataScreenBinding
-import com.example.neverpidor.presentation.epoxy.ViewBindingKotlinModel
+import com.example.neverpidor.util.epoxy.ViewBindingKotlinModel
 
 class LoadingScreenEpoxyModel :
     ViewBindingKotlinModel<ModelLoadingDataScreenBinding>(R.layout.model_loading_data_screen) {

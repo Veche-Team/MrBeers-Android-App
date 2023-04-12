@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.util.Event
-import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.domain.model.DomainBeer
 import com.example.neverpidor.domain.model.DomainSnack
 import com.example.neverpidor.data.database.entities.BeerEntity
@@ -14,8 +13,10 @@ import com.example.neverpidor.data.database.entities.SnackEntity
 import com.example.neverpidor.data.network.dto.beer.BeerResponse
 import com.example.neverpidor.data.network.dto.snack.SnackResponse
 import com.example.neverpidor.data.settings.AppSettings
+import com.example.neverpidor.domain.repository.MenuItemsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,8 +29,8 @@ class MenuItemListViewModel @Inject constructor(
     private val _snacks = MutableLiveData<List<DomainSnack>>()
     val snacks: LiveData<List<DomainSnack>> = _snacks
 
-    private val _beers = MutableLiveData<List<DomainBeer>>()
-    val beers: LiveData<List<DomainBeer>> = _beers
+    private val _beers = MutableStateFlow<List<DomainBeer>>(emptyList())
+    val beers: StateFlow<List<DomainBeer>> = _beers
 
     private val _beerResponse = MutableLiveData<Event<BeerResponse?>>()
     val beerResponse: LiveData<Event<BeerResponse?>> = _beerResponse
@@ -46,26 +47,28 @@ class MenuItemListViewModel @Inject constructor(
         }
     }
 
-    fun getBeers() = viewModelScope.launch(Dispatchers.IO) {
-        repository.getDatabaseBeers().collect {
-            _beers.postValue(it)
-        }
+    fun getBeers() {
+        repository.getDatabaseBeers().onEach {
+            _beers.value = it
+        }.launchIn(viewModelScope)
     }
 
     fun deleteBeer(beerId: String) = viewModelScope.launch(Dispatchers.IO) {
-        val response = repository.deleteBeer(beerId)
+        val response = repository.deleteApiBeer(beerId)
         response?.let {
             repository.deleteBeerFromDatabase(beerId)
             _beerResponse.postValue(Event(response))
-        } ?: _beerResponse.postValue(Event(BeerResponse(msg = "Проверьте подключение к интернету!")))
+        }
+            ?: _beerResponse.postValue(Event(BeerResponse(msg = "Проверьте подключение к интернету!")))
     }
 
     fun deleteSnack(snackId: String) = viewModelScope.launch(Dispatchers.IO) {
-        val response = repository.deleteSnack(snackId)
+        val response = repository.deleteApiSnack(snackId)
         response?.let {
             repository.deleteSnackFromDatabase(snackId)
             _snackResponse.postValue(Event(response))
-        } ?: _snackResponse.postValue(Event(SnackResponse(msg = "Проверьте подключение к интернету!")))
+        }
+            ?: _snackResponse.postValue(Event(SnackResponse(msg = "Проверьте подключение к интернету!")))
     }
 
     fun getItem(): MenuCategory = appSettings.getCurrentItem()

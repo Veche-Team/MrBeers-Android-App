@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.domain.model.DomainBeer
 import com.example.neverpidor.domain.model.DomainSnack
 import com.example.neverpidor.data.database.entities.BeerEntity
 import com.example.neverpidor.data.database.entities.SnackEntity
+import com.example.neverpidor.domain.repository.MenuItemsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -2,7 +2,7 @@ package com.example.neverpidor.presentation.fragments.itemlist.epoxy.models
 
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.ModelItemTypeBinding
-import com.example.neverpidor.presentation.epoxy.ViewBindingKotlinModel
+import com.example.neverpidor.util.epoxy.ViewBindingKotlinModel
 
 data class ItemTypeEpoxyModel(
     val type: String,

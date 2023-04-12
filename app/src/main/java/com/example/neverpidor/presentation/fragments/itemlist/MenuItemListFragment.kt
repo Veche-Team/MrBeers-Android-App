@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyTouchHelper
@@ -23,6 +24,9 @@ import com.example.neverpidor.presentation.fragments.itemlist.epoxy.models.MenuI
 import com.example.neverpidor.presentation.fragments.BaseFragment
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.MenuItemListEpoxyController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MenuItemListFragment : BaseFragment() {
@@ -65,8 +69,14 @@ class MenuItemListFragment : BaseFragment() {
             MenuCategory.BeerCategory -> {
                 supportActionBar?.title = resources.getString(R.string.beer)
                 viewModel.getBeers()
-                viewModel.beers.observe(viewLifecycleOwner) {
+                /*viewModel.beers observe(viewLifecycleOwner) {
                     controller.beerList = it
+                }*/
+
+                lifecycleScope.launch {
+                    viewModel.beers.collect {
+                        controller.beerList = it
+                    }
                 }
                 observeBeerDeleteResponse()
             }

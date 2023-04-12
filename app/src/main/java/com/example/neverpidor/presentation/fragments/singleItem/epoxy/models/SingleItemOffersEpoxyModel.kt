@@ -3,7 +3,7 @@ package com.example.neverpidor.presentation.fragments.singleItem.epoxy.models
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.ModelSingleItemOffersBinding
 import com.example.neverpidor.domain.model.DomainItem
-import com.example.neverpidor.presentation.epoxy.ViewBindingKotlinModel
+import com.example.neverpidor.util.epoxy.ViewBindingKotlinModel
 import com.example.neverpidor.util.format
 
 data class SingleItemOffersEpoxyModel(

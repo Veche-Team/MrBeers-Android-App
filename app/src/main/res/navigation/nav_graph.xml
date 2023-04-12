@@ -68,4 +68,13 @@
             android:name="category"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/greetingFragment"
+        android:name="com.example.neverpidor.presentation.fragments.greeting.GreetingFragment"
+        android:label="GreetingFragment"
+        tools:layout="@layout/greeting_fragment"/>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.neverpidor.presentation.fragments.register.RegisterFragment"
+        android:label="RegisterFragment" />
 </navigation>

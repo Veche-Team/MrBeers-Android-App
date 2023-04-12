@@ -2,7 +2,7 @@ package com.example.neverpidor.presentation.fragments.itemlist.epoxy.models
 
 import com.example.neverpidor.R
 import com.example.neverpidor.databinding.DividerBinding
-import com.example.neverpidor.presentation.epoxy.ViewBindingKotlinModel
+import com.example.neverpidor.util.epoxy.ViewBindingKotlinModel
 
 data class DividerEpoxy(val color: Int) :
     ViewBindingKotlinModel<DividerBinding>(R.layout.divider) {

@@ -1,4 +1,4 @@
-package com.example.neverpidor.presentation.epoxy
+package com.example.neverpidor.util.epoxy
 
 import android.view.View
 import androidx.annotation.LayoutRes

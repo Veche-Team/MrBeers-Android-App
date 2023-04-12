@@ -17,14 +17,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-class MenuItemsRepository @Inject constructor(
+class MenuItemsRepositoryImpl @Inject constructor(
     private val beerMapper: BeerMapper,
     private val snackMapper: SnackMapper,
     private val apiClient: ApiClient,
     private val beersDao: BeersDao
-) {
+): com.example.neverpidor.domain.repository.MenuItemsRepository {
 
-    fun getDatabaseBeers(): Flow<List<DomainBeer>> {
+    override fun getDatabaseBeers(): Flow<List<DomainBeer>> {
         return beersDao
             .getDatabaseBeers()
             .map { list ->
@@ -48,7 +48,7 @@ class MenuItemsRepository @Inject constructor(
         }
     }
 
-    fun getDatabaseSnacks(): Flow<List<DomainSnack>> {
+    override fun getDatabaseSnacks(): Flow<List<DomainSnack>> {
         return beersDao
             .getDatabaseSnacks()
             .map { list ->
@@ -72,18 +72,18 @@ class MenuItemsRepository @Inject constructor(
         }
     }
 
-    suspend fun getBeerById(beerId: String): DomainBeer {
+    override suspend fun getBeerById(beerId: String): DomainBeer {
         val request = beersDao.getBeerById(beerId)
         return beerMapper.buildDomainFromEntity(request)
     }
 
-    suspend fun getSnackById(snackId: String): DomainSnack {
+    override suspend fun getSnackById(snackId: String): DomainSnack {
         val request = beersDao.getSnackById(snackId)
         return snackMapper.buildDomainFromEntity(request)
     }
 
 
-    suspend fun addBeer(beerRequest: BeerRequest): BeerResponse? {
+    override suspend fun addApiBeer(beerRequest: BeerRequest): BeerResponse? {
 
         val request = apiClient.addBeer(beerRequest)
 
@@ -96,11 +96,11 @@ class MenuItemsRepository @Inject constructor(
         return request.body
     }
 
-    suspend fun addBeerToDatabase(beerResponse: BeerResponse) {
+    override suspend fun addBeerToDatabase(beerResponse: BeerResponse) {
         beersDao.addOneBeer(beerMapper.buildEntityFromResponse(beerResponse))
     }
 
-    suspend fun addSnack(snackRequest: SnackRequest): SnackResponse? {
+    override suspend fun addApiSnack(snackRequest: SnackRequest): SnackResponse? {
         val request = apiClient.addSnack(snackRequest)
 
         if (request.failed) {
@@ -112,11 +112,11 @@ class MenuItemsRepository @Inject constructor(
         return request.body
     }
 
-    suspend fun addSnackToDatabase(snackResponse: SnackResponse) {
+    override suspend fun addSnackToDatabase(snackResponse: SnackResponse) {
         beersDao.addOneSnack(snackMapper.buildEntityFromResponse(snackResponse))
     }
 
-    suspend fun deleteBeer(beerId: String): BeerResponse? {
+    override suspend fun deleteApiBeer(beerId: String): BeerResponse? {
 
         val request = apiClient.deleteBeer(beerId)
 
@@ -129,11 +129,11 @@ class MenuItemsRepository @Inject constructor(
         return request.body
     }
 
-    suspend fun deleteBeerFromDatabase(beerId: String) {
+    override suspend fun deleteBeerFromDatabase(beerId: String) {
         beersDao.deleteBeerById(beerId)
     }
 
-    suspend fun deleteSnack(snackId: String): SnackResponse? {
+    override suspend fun deleteApiSnack(snackId: String): SnackResponse? {
         val request = apiClient.deleteSnack(snackId)
 
         if (request.failed) {
@@ -145,11 +145,11 @@ class MenuItemsRepository @Inject constructor(
         return request.body
     }
 
-    suspend fun deleteSnackFromDatabase(snackId: String) {
+    override suspend fun deleteSnackFromDatabase(snackId: String) {
         beersDao.deleteSnackById(snackId)
     }
 
-    suspend fun updateBeer(beerId: String, beerRequest: BeerRequest): BeerResponse? {
+    override suspend fun updateApiBeer(beerId: String, beerRequest: BeerRequest): BeerResponse? {
 
         val request = apiClient.updateBeer(beerId, beerRequest)
 
@@ -162,7 +162,7 @@ class MenuItemsRepository @Inject constructor(
         return request.body
     }
 
-    suspend fun updateDatabaseBeer(beerId: String, beerRequest: BeerRequest) {
+    override suspend fun updateDatabaseBeer(beerId: String, beerRequest: BeerRequest) {
         beersDao.updateBeer(
             beer = BeerEntity(
                 UID = beerId,
@@ -176,11 +176,11 @@ class MenuItemsRepository @Inject constructor(
         )
     }
 
-    suspend fun updateDatabaseBeer(beerEntity: BeerEntity) {
+    override suspend fun updateDatabaseBeer(beerEntity: BeerEntity) {
         beersDao.updateBeer(beerEntity)
     }
 
-    suspend fun updateSnack(snackId: String, snackRequest: SnackRequest): SnackResponse? {
+    override suspend fun updateApiSnack(snackId: String, snackRequest: SnackRequest): SnackResponse? {
         val request = apiClient.updateSnack(snackId, snackRequest)
 
         if (request.failed) {
@@ -192,7 +192,7 @@ class MenuItemsRepository @Inject constructor(
         return request.body
     }
 
-    suspend fun updateDatabaseSnack(snackId: String, snackRequest: SnackRequest) {
+    override suspend fun updateDatabaseSnack(snackId: String, snackRequest: SnackRequest) {
         beersDao.updateSnack(
             snack = SnackEntity(
                 UID = snackId,
@@ -204,7 +204,7 @@ class MenuItemsRepository @Inject constructor(
         )
     }
 
-    suspend fun updateDatabaseSnack(snackEntity: SnackEntity) {
+    override suspend fun updateDatabaseSnack(snackEntity: SnackEntity) {
         beersDao.updateSnack(snack = snackEntity)
     }
 }

@@ -6,7 +6,7 @@ import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.domain.model.DomainBeer
 import com.example.neverpidor.domain.model.DomainItem
 import com.example.neverpidor.domain.model.DomainSnack
-import com.example.neverpidor.presentation.epoxy.models.LoadingScreenEpoxyModel
+import com.example.neverpidor.util.epoxy.models.LoadingScreenEpoxyModel
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.models.DividerEpoxy
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.models.ItemTypeEpoxyModel
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.models.MenuItemEpoxyModel

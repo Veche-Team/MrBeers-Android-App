@@ -8,7 +8,7 @@
             android:title="Вход"
             android:icon="@drawable/ic_baseline_login_24"/>
 
-        <item android:id="@+id/menu_register"
+        <item android:id="@+id/registerFragment"
             app:showAsAction="always"
             android:title="Регистрация"
             android:icon="@drawable/ic_baseline_register_24"/>
@@ -18,7 +18,7 @@
             android:title="Забронировать"
             android:icon="@drawable/ic_reserve_24"/>
 
-        <item android:id="@+id/menu_menu"
+        <item android:id="@+id/listFragment"
             app:showAsAction="ifRoom"
             android:title="Меню"
             android:icon="@drawable/ic_baseline_emoji_food_beverage_24"/>

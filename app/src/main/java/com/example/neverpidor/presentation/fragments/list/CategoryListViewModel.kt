@@ -11,15 +11,15 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoryListViewModel @Inject constructor(
     private val appSettings: AppSettings
-): ViewModel() {
+) : ViewModel() {
 
-    private val _menuCategoriesLiveData = MutableLiveData<List<MenuCategory>>()
+    private val _menuCategoriesLiveData = MutableLiveData<List<MenuCategory>>(
+        listOf(
+            MenuCategory.BeerCategory,
+            MenuCategory.SnackCategory
+        )
+    )
     val menuCategoriesLiveData: LiveData<List<MenuCategory>> = _menuCategoriesLiveData
-
-
-    fun getCategories() {
-        _menuCategoriesLiveData.postValue(listOf(MenuCategory.BeerCategory, MenuCategory.SnackCategory))
-    }
 
     fun setItem(menuCategory: MenuCategory) {
         appSettings.setCurrentItem(menuCategory)

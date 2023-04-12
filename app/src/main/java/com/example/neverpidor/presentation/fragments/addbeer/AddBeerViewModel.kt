@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.providers.MenuCategory
-import com.example.neverpidor.data.repositories.MenuItemsRepository
 import com.example.neverpidor.domain.model.DomainBeer
 import com.example.neverpidor.domain.model.DomainSnack
 import com.example.neverpidor.data.network.dto.beer.BeerResponse
@@ -13,6 +12,7 @@ import com.example.neverpidor.data.network.dto.beer.BeerRequest
 import com.example.neverpidor.data.network.dto.snack.SnackResponse
 import com.example.neverpidor.data.network.dto.snack.SnackRequest
 import com.example.neverpidor.data.settings.AppSettings
+import com.example.neverpidor.domain.repository.MenuItemsRepository
 import com.example.neverpidor.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +82,7 @@ class AddBeerViewModel @Inject constructor(
     }
 
     private fun addBeer(beerRequest: BeerRequest) = viewModelScope.launch(Dispatchers.IO) {
-        val response = repository.addBeer(beerRequest)
+        val response = repository.addApiBeer(beerRequest)
         response?.let {
             repository.addBeerToDatabase(it)
             _beerResponse.postValue(Event(response))
@@ -91,7 +91,7 @@ class AddBeerViewModel @Inject constructor(
     }
 
     private fun addSnack(snackRequest: SnackRequest) = viewModelScope.launch(Dispatchers.IO) {
-        val response = repository.addSnack(snackRequest)
+        val response = repository.addApiSnack(snackRequest)
         response?.let {
             repository.addSnackToDatabase(it)
             _snackResponse.postValue(Event(response))
@@ -101,7 +101,7 @@ class AddBeerViewModel @Inject constructor(
 
     private fun updateBeer(beerId: String, beerRequest: BeerRequest) =
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.updateBeer(beerId, beerRequest)
+            val response = repository.updateApiBeer(beerId, beerRequest)
             response?.let {
                 _beerResponse.postValue(Event(response))
                 repository.updateDatabaseBeer(beerId, beerRequest)
@@ -110,7 +110,7 @@ class AddBeerViewModel @Inject constructor(
 
     private fun updateSnack(snackId: String, snackRequest: SnackRequest) =
         viewModelScope.launch(Dispatchers.IO) {
-            val response = repository.updateSnack(snackId, snackRequest)
+            val response = repository.updateApiSnack(snackId, snackRequest)
             response?.let {
                 _snackResponse.postValue(Event(response))
                 repository.updateDatabaseSnack(snackId, snackRequest)
