@@ -24,8 +24,11 @@ sealed class MenuCategory(
     )
     companion object {
         fun toMenuCategory(categoryString: String): MenuCategory {
-            return if (categoryString == BeerCategory.toString()) BeerCategory else SnackCategory
-
+            return when (categoryString) {
+                BeerCategory.toString() -> BeerCategory
+                SnackCategory.toString() -> SnackCategory
+                else -> throw Exception("MALAKA")
+            }
         }
     }
 }

@@ -153,8 +153,8 @@ class AddBeerFragment : BaseFragment() {
         binding.apply {
             saveButton.text = getString(R.string.update)
             if (category == MenuCategory.BeerCategory) {
-                viewModel.getBeerById(args.itemId!!)
-                viewModel.beerLiveData.observe(viewLifecycleOwner) {
+                viewModel.getMenuItemById(args.itemId!!)
+                viewModel.menuItemLiveData.observe(viewLifecycleOwner) {
                     supportActionBar?.title = getString(R.string.changing_item, it.name)
                     nameEditText.setText(it.name)
                     descriptionEt.setText(it.description)
@@ -164,8 +164,8 @@ class AddBeerFragment : BaseFragment() {
                     volumeEt.setText(it.volume.toString())
                 }
             } else {
-                viewModel.getSnackById(args.itemId!!)
-                viewModel.snackLiveData.observe(viewLifecycleOwner) {
+                viewModel.getMenuItemById(args.itemId!!)
+                viewModel.menuItemLiveData.observe(viewLifecycleOwner) {
                     supportActionBar?.title = getString(R.string.changing_item, it.name)
                     nameEditText.setText(it.name)
                     descriptionEt.setText(it.description)

@@ -4,7 +4,7 @@ import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
 
-data class UserAndItemInfos(
+/*data class UserAndItemInfos(
     @Embedded
     val user: UserEntity,
     @Relation(
@@ -17,4 +17,4 @@ data class UserAndItemInfos(
         )
     )
     val itemInfos: List<ItemInfo>
-)
+)*/

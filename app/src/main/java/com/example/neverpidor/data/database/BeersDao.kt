@@ -1,49 +1,28 @@
 package com.example.neverpidor.data.database
 
 import androidx.room.*
-import com.example.neverpidor.data.database.entities.BeerEntity
-import com.example.neverpidor.data.database.entities.SnackEntity
+import com.example.neverpidor.data.database.entities.MenuItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BeersDao {
-    //beer
 
-    @Query("SELECT * FROM beers")
-     fun getDatabaseBeers(): Flow<List<BeerEntity>>
+    @Query("SELECT * FROM items")
+     fun getDatabaseMenuItems(): Flow<List<MenuItemEntity>>
 
-    @Query("SELECT * FROM beers WHERE UID = :id")
-    suspend fun getBeerById(id: String): BeerEntity
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addBeers(beers: List<BeerEntity>)
-
-    @Query("DELETE FROM beers WHERE UID = :beerId")
-    suspend fun deleteBeerById(beerId: String)
-
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun addOneBeer(beer: BeerEntity)
-
-    @Update
-    suspend fun updateBeer(beer: BeerEntity)
-    //snacks
-
-    @Query("SELECT * FROM snacks")
-    fun getDatabaseSnacks(): Flow<List<SnackEntity>>
-
-    @Query("SELECT * FROM snacks WHERE UID = :id")
-    suspend fun getSnackById(id: String): SnackEntity
+    @Query("SELECT * FROM items WHERE UID = :id")
+    suspend fun getMenuItemById(id: String): MenuItemEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addSnacks(snacks: List<SnackEntity>)
+    suspend fun addMenuItems(items: List<MenuItemEntity>)
 
-    @Query("DELETE FROM snacks WHERE UID = :snackId")
-    suspend fun deleteSnackById(snackId: String)
+    @Query("DELETE FROM items WHERE UID = :itemId")
+    suspend fun deleteMenuItemById(itemId: String)
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun addOneSnack(snack: SnackEntity)
+    suspend fun addOneMenuItem(item: MenuItemEntity)
 
     @Update
-    suspend fun updateSnack(snack: SnackEntity)
+    suspend fun updateMenuItem(item: MenuItemEntity)
 
 }

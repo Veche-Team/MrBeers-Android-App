@@ -8,11 +8,11 @@ import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.util.Event
 import com.example.neverpidor.domain.model.DomainBeer
 import com.example.neverpidor.domain.model.DomainSnack
-import com.example.neverpidor.data.database.entities.BeerEntity
-import com.example.neverpidor.data.database.entities.SnackEntity
+import com.example.neverpidor.data.database.entities.MenuItemEntity
 import com.example.neverpidor.data.network.dto.beer.BeerResponse
 import com.example.neverpidor.data.network.dto.snack.SnackResponse
 import com.example.neverpidor.data.settings.AppSettings
+import com.example.neverpidor.domain.model.DomainItem
 import com.example.neverpidor.domain.repository.MenuItemsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -26,11 +26,8 @@ class MenuItemListViewModel @Inject constructor(
     private val appSettings: AppSettings
 ) : ViewModel() {
 
-    private val _snacks = MutableLiveData<List<DomainSnack>>()
-    val snacks: LiveData<List<DomainSnack>> = _snacks
-
-    private val _beers = MutableStateFlow<List<DomainBeer>>(emptyList())
-    val beers: StateFlow<List<DomainBeer>> = _beers
+    private val _menuItems = MutableStateFlow<List<DomainItem>>(emptyList())
+    val menuItems: StateFlow<List<DomainItem>> = _menuItems
 
     private val _beerResponse = MutableLiveData<Event<BeerResponse?>>()
     val beerResponse: LiveData<Event<BeerResponse?>> = _beerResponse
@@ -41,22 +38,22 @@ class MenuItemListViewModel @Inject constructor(
     private val _shownEpoxyState = MutableLiveData<Set<String>>()
     val shownEpoxyState: LiveData<Set<String>> = _shownEpoxyState
 
-    fun getSnacks() = viewModelScope.launch(Dispatchers.IO) {
-        repository.getDatabaseSnacks().collect {
-            _snacks.postValue(it)
-        }
+    fun getSnacks() {
+        repository.getDatabaseMenuItems().onEach {
+            _menuItems.value = it.filter { item -> item.category == MenuCategory.SnackCategory }
+        }.launchIn(viewModelScope)
     }
 
     fun getBeers() {
-        repository.getDatabaseBeers().onEach {
-            _beers.value = it
+        repository.getDatabaseMenuItems().onEach {
+            _menuItems.value = it.filter { item -> item.category == MenuCategory.BeerCategory }
         }.launchIn(viewModelScope)
     }
 
     fun deleteBeer(beerId: String) = viewModelScope.launch(Dispatchers.IO) {
         val response = repository.deleteApiBeer(beerId)
         response?.let {
-            repository.deleteBeerFromDatabase(beerId)
+            repository.deleteMenuItemFromDatabase(beerId)
             _beerResponse.postValue(Event(response))
         }
             ?: _beerResponse.postValue(Event(BeerResponse(msg = "Проверьте подключение к интернету!")))
@@ -65,7 +62,7 @@ class MenuItemListViewModel @Inject constructor(
     fun deleteSnack(snackId: String) = viewModelScope.launch(Dispatchers.IO) {
         val response = repository.deleteApiSnack(snackId)
         response?.let {
-            repository.deleteSnackFromDatabase(snackId)
+            repository.deleteMenuItemFromDatabase(snackId)
             _snackResponse.postValue(Event(response))
         }
             ?: _snackResponse.postValue(Event(SnackResponse(msg = "Проверьте подключение к интернету!")))
@@ -78,21 +75,24 @@ class MenuItemListViewModel @Inject constructor(
     }
 
     fun faveSnack(domainSnack: DomainSnack) = viewModelScope.launch {
-        repository.updateDatabaseSnack(
-            snackEntity = SnackEntity(
+        repository.updateDatabaseMenuItem(
+            itemEntity = MenuItemEntity(
                 UID = domainSnack.UID,
                 description = domainSnack.description,
                 name = domainSnack.name,
                 price = domainSnack.price,
                 type = domainSnack.type,
-                isFaved = !domainSnack.isFaved
+                isFaved = !domainSnack.isFaved,
+                category = MenuCategory.SnackCategory,
+                alcPercentage = null,
+                volume = null
             )
         )
     }
 
     fun faveBeer(domainBeer: DomainBeer) = viewModelScope.launch {
-        repository.updateDatabaseBeer(
-            beerEntity = BeerEntity(
+        repository.updateDatabaseMenuItem(
+            itemEntity = MenuItemEntity(
                 UID = domainBeer.UID,
                 description = domainBeer.description,
                 name = domainBeer.name,
@@ -100,7 +100,8 @@ class MenuItemListViewModel @Inject constructor(
                 type = domainBeer.type,
                 isFaved = !domainBeer.isFaved,
                 alcPercentage = domainBeer.alcPercentage,
-                volume = domainBeer.volume
+                volume = domainBeer.volume,
+                category = MenuCategory.BeerCategory
             )
         )
     }

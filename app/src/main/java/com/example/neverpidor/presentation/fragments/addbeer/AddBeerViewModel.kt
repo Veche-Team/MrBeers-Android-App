@@ -5,13 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.providers.MenuCategory
-import com.example.neverpidor.domain.model.DomainBeer
-import com.example.neverpidor.domain.model.DomainSnack
 import com.example.neverpidor.data.network.dto.beer.BeerResponse
 import com.example.neverpidor.data.network.dto.beer.BeerRequest
 import com.example.neverpidor.data.network.dto.snack.SnackResponse
 import com.example.neverpidor.data.network.dto.snack.SnackRequest
 import com.example.neverpidor.data.settings.AppSettings
+import com.example.neverpidor.domain.model.DomainItem
 import com.example.neverpidor.domain.repository.MenuItemsRepository
 import com.example.neverpidor.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,11 +24,8 @@ class AddBeerViewModel @Inject constructor(
     private val appSettings: AppSettings
 ) : ViewModel() {
 
-    private val _beerLiveData = MutableLiveData<DomainBeer>()
-    val beerLiveData: LiveData<DomainBeer> = _beerLiveData
-
-    private val _snackLiveData = MutableLiveData<DomainSnack>()
-    val snackLiveData: LiveData<DomainSnack> = _snackLiveData
+    private val _menuItemLiveData = MutableLiveData<DomainItem>()
+    val menuItemLiveData: LiveData<DomainItem> = _menuItemLiveData
 
     private val _beerResponse = MutableLiveData<Event<BeerResponse?>>()
     val beerResponse: LiveData<Event<BeerResponse?>> = _beerResponse
@@ -37,12 +33,8 @@ class AddBeerViewModel @Inject constructor(
     private val _snackResponse = MutableLiveData<Event<SnackResponse?>>()
     val snackResponse: LiveData<Event<SnackResponse?>> = _snackResponse
 
-    fun getBeerById(beerId: String) = viewModelScope.launch(Dispatchers.IO) {
-        _beerLiveData.postValue(repository.getBeerById(beerId))
-    }
-
-    fun getSnackById(snackId: String) = viewModelScope.launch(Dispatchers.IO) {
-        _snackLiveData.postValue(repository.getSnackById(snackId))
+    fun getMenuItemById(itemId: String) = viewModelScope.launch(Dispatchers.IO) {
+        _menuItemLiveData.postValue(repository.getMenuItemById(itemId))
     }
 
     fun getItem(): MenuCategory = appSettings.getCurrentItem()

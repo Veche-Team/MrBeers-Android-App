@@ -5,7 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Index
 
-@Entity(
+/*@Entity(
     primaryKeys = ["phoneNumber", "UID"],
     indices = [Index("phoneNumber"), Index("UID")],
     foreignKeys = [
@@ -26,4 +26,4 @@ import androidx.room.Index
 data class UserJoinItemInfo(
     val phoneNumber: Long,
     val UID: String
-)
+)*/

@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.database.entities.UserEntity
-import com.example.neverpidor.data.repositories.UserRepository
 import com.example.neverpidor.data.settings.AppSettings
 import com.example.neverpidor.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     val appSettings: AppSettings,
-    val repository: UserRepository
+  //  val repository: UserRepository
 ) : ViewModel() {
 
     private val _registerErrors = MutableLiveData(RegisterErrors())
@@ -81,7 +80,7 @@ class RegisterViewModel @Inject constructor(
             password = inputFields.value!!.password
         )
         viewModelScope.launch {
-            repository.addUser(user)
+       //     repository.addUser(user)
         }
         _goBackEvent.value = Event(true)
     }

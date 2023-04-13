@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.neverpidor.data.database.entities.UserEntity
 
+/*
 @Dao
 interface UserDao {
 
@@ -14,4 +15,4 @@ interface UserDao {
 
     @Query("SELECT * FROM users")
     suspend fun getAllUsers() : List<UserEntity>
-}
+}*/

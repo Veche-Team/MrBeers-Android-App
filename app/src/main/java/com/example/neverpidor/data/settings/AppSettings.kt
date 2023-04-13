@@ -1,6 +1,5 @@
 package com.example.neverpidor.data.settings
 
-import com.example.neverpidor.data.database.entities.UserEntity
 import com.example.neverpidor.data.providers.MenuCategory
 
 interface AppSettings {

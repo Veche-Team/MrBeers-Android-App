@@ -3,9 +3,7 @@ package com.example.neverpidor.presentation.fragments.itemlist.epoxy
 import com.airbnb.epoxy.EpoxyController
 import com.example.neverpidor.R
 import com.example.neverpidor.data.providers.MenuCategory
-import com.example.neverpidor.domain.model.DomainBeer
 import com.example.neverpidor.domain.model.DomainItem
-import com.example.neverpidor.domain.model.DomainSnack
 import com.example.neverpidor.util.epoxy.models.LoadingScreenEpoxyModel
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.models.DividerEpoxy
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.models.ItemTypeEpoxyModel
@@ -27,14 +25,7 @@ class MenuItemListEpoxyController(
             requestModelBuild()
         }
 
-    var snacks = listOf<DomainSnack>()
-        set(value) {
-            field = value
-            isLoading = false
-            requestModelBuild()
-        }
-
-    var beerList = listOf<DomainBeer>()
+    var items = listOf<DomainItem>()
         set(value) {
             field = value
             isLoading = false
@@ -55,7 +46,7 @@ class MenuItemListEpoxyController(
         }
         when (category) {
             MenuCategory.BeerCategory -> {
-                beerList.filter {
+                items.filter {
                     it.name.lowercase().contains(searchInput) ||
                             it.type.lowercase().contains(searchInput)
                 }.groupBy { it.type }
@@ -71,7 +62,7 @@ class MenuItemListEpoxyController(
                     }
             }
             MenuCategory.SnackCategory -> {
-                snacks.filter {
+                items.filter {
                     it.name.lowercase().contains(searchInput) ||
                             it.type.lowercase().contains(searchInput)
                 }.groupBy { it.type }

@@ -85,8 +85,8 @@ class FragmentSingleItem : BaseFragment() {
     }
 
     private fun showBeer() {
-        viewModel.getBeerById(itemId)
-        viewModel.beerLiveData.observe(viewLifecycleOwner) {
+        viewModel.getMenuItemById(itemId)
+        viewModel.menuItemLiveData.observe(viewLifecycleOwner) {
             item = it
 
             binding.volumeText.text = getString(R.string.volume, item.volume.format(2))
@@ -97,14 +97,14 @@ class FragmentSingleItem : BaseFragment() {
         }
 
         viewModel.getSnackSet()
-        viewModel.snackListLiveData.observe(viewLifecycleOwner) {
+        viewModel.itemListLiveData.observe(viewLifecycleOwner) {
             controller.itemList = it
         }
     }
 
     private fun showSnacks() {
-        viewModel.getSnackById(itemId)
-        viewModel.snackLiveData.observe(viewLifecycleOwner) {
+        viewModel.getMenuItemById(itemId)
+        viewModel.menuItemLiveData.observe(viewLifecycleOwner) {
             item = it
             binding.volumeText.isGone = true
             binding.alcoholPercentageText.isGone = true
@@ -112,7 +112,7 @@ class FragmentSingleItem : BaseFragment() {
             setImage()
         }
         viewModel.getBeerSet()
-        viewModel.beerListLiveData.observe(viewLifecycleOwner) {
+        viewModel.itemListLiveData.observe(viewLifecycleOwner) {
             controller.itemList = it
         }
     }

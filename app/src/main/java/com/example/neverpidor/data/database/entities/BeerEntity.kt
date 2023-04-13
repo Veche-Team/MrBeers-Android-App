@@ -3,6 +3,7 @@ package com.example.neverpidor.data.database.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/*
 @Entity(tableName = "beers")
 data class BeerEntity(
     @PrimaryKey(autoGenerate = false)
@@ -15,4 +16,4 @@ data class BeerEntity(
     val volume: Double,
     val isInCart: Boolean = false,
     val isFaved: Boolean = false
-)
+)*/

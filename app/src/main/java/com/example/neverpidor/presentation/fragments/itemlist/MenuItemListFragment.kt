@@ -25,8 +25,6 @@ import com.example.neverpidor.presentation.fragments.BaseFragment
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.MenuItemListEpoxyController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MenuItemListFragment : BaseFragment() {
@@ -69,13 +67,10 @@ class MenuItemListFragment : BaseFragment() {
             MenuCategory.BeerCategory -> {
                 supportActionBar?.title = resources.getString(R.string.beer)
                 viewModel.getBeers()
-                /*viewModel.beers observe(viewLifecycleOwner) {
-                    controller.beerList = it
-                }*/
 
                 lifecycleScope.launch {
-                    viewModel.beers.collect {
-                        controller.beerList = it
+                    viewModel.menuItems.collect {
+                        controller.items = it
                     }
                 }
                 observeBeerDeleteResponse()
@@ -83,8 +78,10 @@ class MenuItemListFragment : BaseFragment() {
             MenuCategory.SnackCategory -> {
                 supportActionBar?.title = resources.getString(R.string.snacks)
                 viewModel.getSnacks()
-                viewModel.snacks.observe(viewLifecycleOwner) {
-                    controller.snacks = it
+                lifecycleScope.launch {
+                    viewModel.menuItems.collect {
+                        controller.items = it
+                    }
                 }
                 observeSnackDeleteResponse()
             }

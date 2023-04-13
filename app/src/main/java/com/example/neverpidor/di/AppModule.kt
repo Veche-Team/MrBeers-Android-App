@@ -4,14 +4,12 @@ import android.content.Context
 import androidx.room.Room
 import com.example.neverpidor.data.database.BeersDao
 import com.example.neverpidor.data.database.BeersDatabase
-import com.example.neverpidor.data.database.UserDao
 import com.example.neverpidor.data.network.ApiClient
 import com.example.neverpidor.data.network.BeersApiService
 import com.example.neverpidor.data.repositories.MenuItemsRepositoryImpl
 import com.example.neverpidor.domain.repository.MenuItemsRepository
 import com.example.neverpidor.util.Constants.BASE_URL
-import com.example.neverpidor.util.mapper.BeerMapper
-import com.example.neverpidor.util.mapper.SnackMapper
+import com.example.neverpidor.util.mapper.MenuItemMapper
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -73,10 +71,10 @@ object AppModule {
         return beersDatabase.getBeersDao()
     }
 
-    @Provides
+   /* @Provides
     fun providesUserDao(beersDatabase: BeersDatabase): UserDao {
         return beersDatabase.getUserDao()
-    }
+    }*/
 
     @Provides
     @Singleton
@@ -87,11 +85,10 @@ object AppModule {
     @Provides
     @Singleton
     fun providesMenuItemsRepository(
-        beerMapper: BeerMapper,
-        snackMapper: SnackMapper,
+        beerMapper: MenuItemMapper,
         apiClient: ApiClient,
         beersDao: BeersDao
     ): MenuItemsRepository {
-        return MenuItemsRepositoryImpl(beerMapper, snackMapper, apiClient, beersDao)
+        return MenuItemsRepositoryImpl(beerMapper, apiClient, beersDao)
     }
 }
