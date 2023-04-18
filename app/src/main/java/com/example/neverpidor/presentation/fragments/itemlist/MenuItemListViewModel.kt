@@ -1,19 +1,15 @@
 package com.example.neverpidor.presentation.fragments.itemlist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.app.Activity
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.providers.MenuCategory
-import com.example.neverpidor.util.Event
-import com.example.neverpidor.domain.model.DomainBeer
-import com.example.neverpidor.domain.model.DomainSnack
-import com.example.neverpidor.data.database.entities.MenuItemEntity
-import com.example.neverpidor.data.network.dto.beer.BeerResponse
-import com.example.neverpidor.data.network.dto.snack.SnackResponse
 import com.example.neverpidor.data.settings.AppSettings
-import com.example.neverpidor.domain.model.DomainItem
-import com.example.neverpidor.domain.repository.MenuItemsRepository
+import com.example.neverpidor.domain.repositories.MenuItemsRepository
+import com.example.neverpidor.domain.use_cases.LikesUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -22,86 +18,72 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MenuItemListViewModel @Inject constructor(
-    private val repository: MenuItemsRepository,
-    private val appSettings: AppSettings
+    private val menuRepository: MenuItemsRepository,
+    private val appSettings: AppSettings,
+    private val likesUseCases: LikesUseCases
 ) : ViewModel() {
 
-    private val _menuItems = MutableStateFlow<List<DomainItem>>(emptyList())
-    val menuItems: StateFlow<List<DomainItem>> = _menuItems
+    private val _state = MutableStateFlow(MenuItemListState())
+    val state: StateFlow<MenuItemListState> = _state
 
-    private val _beerResponse = MutableLiveData<Event<BeerResponse?>>()
-    val beerResponse: LiveData<Event<BeerResponse?>> = _beerResponse
+    private val _response = MutableSharedFlow<String>()
+    val response: SharedFlow<String> = _response
 
-    private val _snackResponse = MutableLiveData<Event<SnackResponse?>>()
-    val snackResponse: LiveData<Event<SnackResponse?>> = _snackResponse
-
-    private val _shownEpoxyState = MutableLiveData<Set<String>>()
-    val shownEpoxyState: LiveData<Set<String>> = _shownEpoxyState
-
-    fun getSnacks() {
-        repository.getDatabaseMenuItems().onEach {
-            _menuItems.value = it.filter { item -> item.category == MenuCategory.SnackCategory }
+    fun getItemList() {
+        val category = getCategory()
+        menuRepository.getDatabaseMenuItems().onEach {
+            _state.value = state.value.copy(
+                menuItems = it.filter { item ->
+                    if (category == MenuCategory.BeerCategory)
+                        item.category == MenuCategory.BeerCategory
+                    else item.category == MenuCategory.SnackCategory
+                }
+            )
         }.launchIn(viewModelScope)
     }
 
-    fun getBeers() {
-        repository.getDatabaseMenuItems().onEach {
-            _menuItems.value = it.filter { item -> item.category == MenuCategory.BeerCategory }
-        }.launchIn(viewModelScope)
-    }
-
-    fun deleteBeer(beerId: String) = viewModelScope.launch(Dispatchers.IO) {
-        val response = repository.deleteApiBeer(beerId)
+    fun deleteItem(itemId: String) = viewModelScope.launch(Dispatchers.IO) {
+        val category = getCategory()
+        val response = if (category == MenuCategory.BeerCategory) {
+            menuRepository.deleteApiBeer(itemId)?.msg
+        } else menuRepository.deleteApiSnack(itemId)?.msg
         response?.let {
-            repository.deleteMenuItemFromDatabase(beerId)
-            _beerResponse.postValue(Event(response))
+            menuRepository.deleteMenuItemFromDatabase(itemId)
+            _response.emit(response)
         }
-            ?: _beerResponse.postValue(Event(BeerResponse(msg = "Проверьте подключение к интернету!")))
+            ?: _response.emit("Проверьте подключение к интернету!")
     }
 
-    fun deleteSnack(snackId: String) = viewModelScope.launch(Dispatchers.IO) {
-        val response = repository.deleteApiSnack(snackId)
-        response?.let {
-            repository.deleteMenuItemFromDatabase(snackId)
-            _snackResponse.postValue(Event(response))
-        }
-            ?: _snackResponse.postValue(Event(SnackResponse(msg = "Проверьте подключение к интернету!")))
+    fun getCategory(): MenuCategory {
+        return appSettings.getCurrentCategory()
     }
 
-    fun getItem(): MenuCategory = appSettings.getCurrentItem()
-
-    fun saveEpoxyState(set: Set<String>) {
-        _shownEpoxyState.postValue(set)
-    }
-
-    fun faveSnack(domainSnack: DomainSnack) = viewModelScope.launch {
-        repository.updateDatabaseMenuItem(
-            itemEntity = MenuItemEntity(
-                UID = domainSnack.UID,
-                description = domainSnack.description,
-                name = domainSnack.name,
-                price = domainSnack.price,
-                type = domainSnack.type,
-                isFaved = !domainSnack.isFaved,
-                category = MenuCategory.SnackCategory,
-                alcPercentage = null,
-                volume = null
+    fun getLikes() = viewModelScope.launch {
+        _state.emit(
+            state.value.copy(
+                likedItems = likesUseCases.getLikesUseCase()
             )
         )
     }
 
-    fun faveBeer(domainBeer: DomainBeer) = viewModelScope.launch {
-        repository.updateDatabaseMenuItem(
-            itemEntity = MenuItemEntity(
-                UID = domainBeer.UID,
-                description = domainBeer.description,
-                name = domainBeer.name,
-                price = domainBeer.price,
-                type = domainBeer.type,
-                isFaved = !domainBeer.isFaved,
-                alcPercentage = domainBeer.alcPercentage,
-                volume = domainBeer.volume,
-                category = MenuCategory.BeerCategory
+    fun isConnected(activity: Activity): Boolean {
+        val connectivityManager =
+            activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetwork ?: return false
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
+        return (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
+    }
+
+    fun likeOrDislike(domainItemId: String) = viewModelScope.launch {
+        _state.emit(
+            state.value.copy(
+                likedItems = likesUseCases.likeOrDislikeUseCase(
+                    domainItemId,
+                    state.value.likedItems
+                )
             )
         )
     }

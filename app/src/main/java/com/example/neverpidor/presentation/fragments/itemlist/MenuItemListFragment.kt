@@ -1,8 +1,5 @@
 package com.example.neverpidor.presentation.fragments.itemlist
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,13 +15,12 @@ import com.airbnb.epoxy.EpoxyTouchHelper.SwipeCallbacks
 import com.example.neverpidor.R
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.databinding.FragmentMenuItemListBinding
-import com.example.neverpidor.domain.model.DomainBeer
-import com.example.neverpidor.domain.model.DomainSnack
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.models.MenuItemEpoxyModel
 import com.example.neverpidor.presentation.fragments.BaseFragment
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.MenuItemListEpoxyController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class MenuItemListFragment : BaseFragment() {
@@ -48,52 +44,28 @@ class MenuItemListFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        category = viewModel.getItem()
+        category = viewModel.getCategory()
 
         binding.fab.setOnClickListener {
             val direction =
                 MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment()
             navController.navigate(direction)
         }
-
+        setEpoxyController()
         binding.searchEditText.doAfterTextChanged {
             controller.searchInput = it?.toString() ?: ""
         }
-
-        setEpoxyController()
-
         when (category) {
             MenuCategory.BeerCategory -> {
                 supportActionBar?.title = resources.getString(R.string.beer)
-                viewModel.getBeers()
-
-                lifecycleScope.launch {
-                    viewModel.menuItems.collect {
-                        controller.items = it
-                    }
-                }
-                observeBeerDeleteResponse()
             }
             MenuCategory.SnackCategory -> {
                 supportActionBar?.title = resources.getString(R.string.snacks)
-                viewModel.getSnacks()
-                lifecycleScope.launch {
-                    viewModel.menuItems.collect {
-                        controller.items = it
-                    }
-                }
-                observeSnackDeleteResponse()
             }
         }
-
-        binding.itemListRv.addItemDecoration(
-            DividerItemDecoration(
-                requireContext(),
-                RecyclerView.VERTICAL
-            )
-        )
-        addSwipeToDelete()
+        viewModel.getItemList()
+        viewModel.getLikes()
+        observeResponse()
     }
 
     override fun onDestroyView() {
@@ -116,29 +88,31 @@ class MenuItemListFragment : BaseFragment() {
                 navController.navigate(direction)
             },
             onFavClick = {
-                if (it.category == MenuCategory.BeerCategory) {
-                    viewModel.faveBeer(it as DomainBeer)
-                } else {
-                    viewModel.faveSnack(it as DomainSnack)
-                }
+                viewModel.likeOrDislike(it.UID)
             }
         )
         controller.isLoading = true
         binding.itemListRv.setControllerAndBuildModels(controller)
-    }
 
-    private fun observeBeerDeleteResponse() {
-        viewModel.beerResponse.observe(viewLifecycleOwner) {
-            it.getContent()?.let { beerResponse ->
-                Toast.makeText(requireContext(), beerResponse.msg, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            viewModel.state.collectLatest {
+                controller.likes = it.likedItems
+                controller.items = it.menuItems
             }
         }
+        binding.itemListRv.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                RecyclerView.VERTICAL
+            )
+        )
+        addSwipeToDelete()
     }
 
-    private fun observeSnackDeleteResponse() {
-        viewModel.snackResponse.observe(viewLifecycleOwner) {
-            it.getContent()?.let { snackResponse ->
-                Toast.makeText(requireContext(), snackResponse.msg, Toast.LENGTH_SHORT).show()
+    private fun observeResponse() {
+        lifecycleScope.launch {
+            viewModel.response.collectLatest {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -156,36 +130,13 @@ class MenuItemListFragment : BaseFragment() {
                     direction: Int
                 ) {
                     val removedItemId = model?.domainItem?.UID ?: return
-                    if (category == MenuCategory.BeerCategory) {
-                        viewModel.deleteBeer(removedItemId)
-                    } else {
-                        viewModel.deleteSnack(removedItemId)
-                    }
+                    viewModel.deleteItem(removedItemId)
                 }
 
                 override fun isSwipeEnabledForModel(model: MenuItemEpoxyModel?): Boolean {
-                    val connectivityManager =
-                        requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                    val activeNetwork = connectivityManager.activeNetwork ?: return false
-                    val capabilities =
-                        connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-                    val connected =
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-                                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
-                    if (!connected) return false
+                    if (!viewModel.isConnected(requireActivity())) return false
                     return super.isSwipeEnabledForModel(model)
                 }
             })
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.saveEpoxyState(controller.getShownState())
-    }
-
-    override fun onResume() {
-        super.onResume()
-        controller.setShownState(viewModel.shownEpoxyState.value ?: emptySet())
     }
 }

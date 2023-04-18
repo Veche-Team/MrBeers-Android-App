@@ -8,7 +8,9 @@ import com.example.neverpidor.util.format
 
 data class SingleItemOffersEpoxyModel(
     val domainItem: DomainItem,
-    val onItemClick: (DomainItem) -> Unit
+    val onItemClick: (DomainItem) -> Unit,
+    val isLiked: Boolean,
+    val onFavClick: (DomainItem) -> Unit
 ) :
     ViewBindingKotlinModel<ModelSingleItemOffersBinding>(R.layout.model_single_item_offers) {
     override fun ModelSingleItemOffersBinding.bind() {
@@ -23,7 +25,10 @@ data class SingleItemOffersEpoxyModel(
             onItemClick(domainItem)
         }
         val image =
-            if (domainItem.isFaved) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
+            if (isLiked) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
         favImage.setImageResource(image)
+        favImage.setOnClickListener {
+            onFavClick(domainItem)
+        }
     }
 }

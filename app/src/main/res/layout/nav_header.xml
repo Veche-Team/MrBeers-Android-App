@@ -28,4 +28,34 @@
         app:layout_constraintTop_toBottomOf="@+id/cityName"
         android:text="@string/street" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/userName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text=""
+        android:textSize="22sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="@+id/cityName"
+        app:layout_constraintTop_toBottomOf="@+id/address" />
+
+    <ImageView
+        android:id="@+id/exitIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/userName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/userName"
+        app:srcCompat="@drawable/ic_baseline_exit_to_app_24" />
+
+    <TextView
+        android:id="@+id/exitText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Выйти"
+        app:layout_constraintBottom_toBottomOf="@+id/exitIcon"
+        app:layout_constraintEnd_toStartOf="@+id/exitIcon"
+        app:layout_constraintTop_toTopOf="@+id/exitIcon" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

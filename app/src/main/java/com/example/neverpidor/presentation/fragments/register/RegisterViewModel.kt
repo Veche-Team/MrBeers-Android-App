@@ -1,106 +1,130 @@
 package com.example.neverpidor.presentation.fragments.register
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.database.entities.UserEntity
 import com.example.neverpidor.data.settings.AppSettings
-import com.example.neverpidor.util.Event
+import com.example.neverpidor.domain.repositories.UserRepository
+import com.example.neverpidor.presentation.fragments.register.util.RegisterState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     val appSettings: AppSettings,
-  //  val repository: UserRepository
+    val repository: UserRepository
 ) : ViewModel() {
 
-    private val _registerErrors = MutableLiveData(RegisterErrors())
-    val registerErrors: LiveData<RegisterErrors> = _registerErrors
+    private val _state = MutableStateFlow(RegisterState())
+    val state: StateFlow<RegisterState> = _state
 
-    private val _inputFields = MutableLiveData(RegisterModel())
-    val inputFields: LiveData<RegisterModel> = _inputFields
-
-    private val _isButtonEnabled = MutableLiveData(false)
-    val isButtonEnabled: LiveData<Boolean> = _isButtonEnabled
-
-    private val _goBackEvent = MutableLiveData<Event<Boolean>>()
-    val goBackEvent: LiveData<Event<Boolean>> = _goBackEvent
+    private val _goBackEvent = MutableSharedFlow<String>()
+    val goBackEvent: SharedFlow<String> = _goBackEvent
 
     fun onPhoneInput(text: String) {
-        if (text.isEmpty()) {
-            _registerErrors.value = registerErrors.value?.copy(numberError = "Number can't be empty")
-        }  else _registerErrors.value = registerErrors.value?.copy(numberError = "")
-        _inputFields.value = inputFields.value?.copy(number = text)
+        _state.value = state.value.copy(
+            errors = state.value.errors.copy(
+                numberError = if (text.isEmpty()) "Number can't be empty" else ""
+            ),
+            inputFields = state.value.inputFields.copy(
+                number = text
+            )
+        )
         enableRegisterButton()
     }
 
     fun onNameInput(text: String) {
-        if (text.isEmpty()) {
-            _registerErrors.value = registerErrors.value?.copy(nameError = "Name can't be empty")
-        } else _registerErrors.value = registerErrors.value?.copy(nameError = "")
-        _inputFields.value = inputFields.value?.copy(name = text)
+        _state.value = state.value.copy(
+            errors = state.value.errors.copy(
+                nameError = if (text.isEmpty()) "Name can't be empty" else ""
+            ),
+            inputFields = state.value.inputFields.copy(
+                name = text
+            )
+        )
         enableRegisterButton()
     }
+
     fun onPasswordInput(text: String) {
-        if (text.isEmpty()) {
-            _registerErrors.value = registerErrors.value?.copy(passwordError = "Password can't be empty")
-        } else if (text.length < 6) {
-            _registerErrors.value = registerErrors.value?.copy(passwordError = "Password's too short")
-        } else _registerErrors.value = registerErrors.value?.copy(passwordError = "")
-        _inputFields.value = inputFields.value?.copy(password = text)
+        _state.value = state.value.copy(
+            errors = state.value.errors.copy(
+                passwordError = when {
+                    text.isEmpty() -> "Password can't be empty"
+                    text.length < 6 -> "Password's too short"
+                    else -> ""
+                }
+            ),
+            inputFields = state.value.inputFields.copy(
+                password = text
+            )
+        )
         enableRegisterButton()
     }
+
     fun onRepeatPasswordInput(text: String) {
-        _inputFields.value = inputFields.value?.copy(repeatPassword = text)
-        _registerErrors.value = registerErrors.value?.copy(passwordRepeatError = "")
+        _state.value = state.value.copy(
+            inputFields = state.value.inputFields.copy(
+                repeatPassword = text
+            ),
+            errors = state.value.errors.copy(
+                passwordRepeatError = ""
+            )
+        )
         enableRegisterButton()
     }
 
     private fun enableRegisterButton() {
-        _isButtonEnabled.value = inputFields.value!!.password.isNotEmpty() &&
-                inputFields.value!!.name.isNotEmpty() &&
-                inputFields.value!!.password.isNotEmpty() &&
-                inputFields.value!!.repeatPassword.isNotEmpty() &&
-                registerErrors.value!!.numberError.isEmpty() &&
-                registerErrors.value!!.nameError.isEmpty() &&
-                registerErrors.value!!.passwordError.isEmpty() &&
-                registerErrors.value!!.passwordRepeatError.isEmpty()
-    }
-    fun register() {
-        if (inputFields.value?.password != inputFields.value?.repeatPassword) {
-            _registerErrors.value = registerErrors.value?.copy(passwordRepeatError = "Passwords should match")
-            return
-        }
-        val user = UserEntity(
-            phoneNumber = inputFields.value!!.number.toLong(),
-            name = inputFields.value!!.name,
-            password = inputFields.value!!.password
+        _state.value = state.value.copy(
+            isButtonEnabled = state.value.inputFields.password.isNotEmpty() &&
+                    state.value.inputFields.name.isNotEmpty() &&
+                    state.value.inputFields.password.isNotEmpty() &&
+                    state.value.inputFields.repeatPassword.isNotEmpty() &&
+                    state.value.errors.numberError.isEmpty() &&
+                    state.value.errors.nameError.isEmpty() &&
+                    state.value.errors.passwordError.isEmpty() &&
+                    state.value.errors.passwordRepeatError.isEmpty()
         )
-        viewModelScope.launch {
-       //     repository.addUser(user)
-        }
-        _goBackEvent.value = Event(true)
     }
 
-    fun validateRegisterInput(registerModel: RegisterModel) {
-        if (registerModel.number.isEmpty()) {
-            _registerErrors.value = registerErrors.value?.copy(numberError = "Number can't be empty")
-        }
-        if (registerModel.name.isEmpty()) {
-            _registerErrors.value = registerErrors.value?.copy(nameError = "Name can't be empty")
-        }
-        if (registerModel.password.isEmpty()) {
-            _registerErrors.value = registerErrors.value?.copy(passwordError = "Password can't be empty")
-            return
-        }
-        if (registerModel.password.length < 6) {
-            _registerErrors.value = registerErrors.value?.copy(passwordError = "Password's too short")
-        }
-        if (registerModel.repeatPassword != registerModel.password) {
-            _registerErrors.value = registerErrors.value?.copy(passwordRepeatError = "Passwords not matching")
+    fun register() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (state.value.inputFields.password != state.value.inputFields.repeatPassword) {
+                _state.emit(
+                    state.value.copy(
+                        errors = state.value.errors.copy(
+                            passwordRepeatError = "Passwords should match"
+                        )
+                    )
+                )
+                return@launch
+            }
+            val user = UserEntity(
+                phoneNumber = state.value.inputFields.number,
+                name = state.value.inputFields.name,
+                password = state.value.inputFields.password
+            )
+
+            val users = repository.getAllUsers()
+            users.forEach {
+                if (it.phoneNumber == state.value.inputFields.number) {
+                    _state.emit(
+                        state.value.copy(
+                            errors = state.value.errors.copy(
+                                numberError = "User with this number already exists"
+                            )
+                        )
+                    )
+                    return@launch
+                }
+            }
+            repository.addUser(user)
+            _goBackEvent.emit("Account has been created!")
         }
     }
 }

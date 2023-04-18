@@ -1,3 +1,4 @@
+/*
 package com.example.neverpidor.presentation.fragments.addbeer
 
 import android.text.Editable
@@ -119,4 +120,4 @@ class TextWatchers(val binding: AddBeerFragmentBinding) {
             }
         }
     }
-}
+}*/

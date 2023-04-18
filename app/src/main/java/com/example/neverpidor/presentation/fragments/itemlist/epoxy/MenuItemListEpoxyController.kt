@@ -27,12 +27,13 @@ class MenuItemListEpoxyController(
 
     var items = listOf<DomainItem>()
         set(value) {
-            field = value
-            isLoading = false
-            requestModelBuild()
+            if (value.isNotEmpty()) {
+                field = value
+                isLoading = false
+                requestModelBuild()
+            }
         }
-
-    private var isShown = setOf<String>()
+    var likes = listOf<String>()
         set(value) {
             field = value
             requestModelBuild()
@@ -54,10 +55,19 @@ class MenuItemListEpoxyController(
                         ItemTypeEpoxyModel(
                             map.key,
                         ).id(map.key.hashCode()).addTo(this)
-                        DividerEpoxy(R.color.amber_dark).id(Random.nextDouble(100.0)).addTo(this)
-                        map.value.forEach { data ->
-                            MenuItemEpoxyModel(data, onEditClick, onItemClick, onFavClick).id(data.UID)
+                        DividerEpoxy(R.color.amber_dark).id(map.key.hashCode()).addTo(this)
+                        map.value.forEachIndexed  { index, data ->
+                            MenuItemEpoxyModel(
+                                data,
+                                likes.any { it == data.UID },
+                                onEditClick,
+                                onItemClick,
+                                onFavClick
+                            ).id(data.UID)
                                 .addTo(this)
+                           /* if (index % 2 == 1) {
+                                DividerEpoxy(R.color.amber_dark).id(Random.nextDouble(100.0)).addTo(this)
+                            }*/
                         }
                     }
             }
@@ -70,17 +80,18 @@ class MenuItemListEpoxyController(
                         ItemTypeEpoxyModel(
                             map.key,
                         ).id(map.key.hashCode()).addTo(this)
-                        map.value.forEach {
-                            MenuItemEpoxyModel(it, onEditClick, onItemClick, onFavClick).id(it.UID).addTo(this)
+                        map.value.forEach { data ->
+                            MenuItemEpoxyModel(
+                                data,
+                                likes.any { it == data.UID },
+                                onEditClick,
+                                onItemClick,
+                                onFavClick
+                            ).id(data.UID).addTo(this)
                         }
                     }
             }
         }
-    }
-
-    fun getShownState(): Set<String> = isShown
-    fun setShownState(set: Set<String>) {
-        isShown = set
     }
 }
 

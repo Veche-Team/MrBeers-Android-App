@@ -7,18 +7,18 @@ import android.view.ViewGroup
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.neverpidor.R
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.databinding.SingleItemFragmentBinding
-import com.example.neverpidor.domain.model.DomainBeer
 import com.example.neverpidor.domain.model.DomainItem
-import com.example.neverpidor.domain.model.DomainSnack
 import com.example.neverpidor.presentation.fragments.BaseFragment
 import com.example.neverpidor.presentation.fragments.singleItem.epoxy.SingleItemEpoxyController
 import com.example.neverpidor.util.format
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.properties.Delegates
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FragmentSingleItem : BaseFragment() {
@@ -29,8 +29,6 @@ class FragmentSingleItem : BaseFragment() {
     private val args: FragmentSingleItemArgs by navArgs()
     private val viewModel: SingleItemViewModel by viewModels()
     private lateinit var controller: SingleItemEpoxyController
-    private lateinit var item: DomainItem
-    private var itemId by Delegates.notNull<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,24 +42,8 @@ class FragmentSingleItem : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadingState()
-        itemId = args.itemId
-        val category = MenuCategory.toMenuCategory(args.category)
-
-        controller = SingleItemEpoxyController {
-            val direction =
-                FragmentSingleItemDirections.actionFragmentSingleItemSelf(
-                    it.UID,
-                    it.category.toString()
-                )
-            navController.navigate(direction)
-        }
-        binding.recyclerView.setController(controller)
-
-        if (category == MenuCategory.BeerCategory) {
-            showBeer()
-        } else {
-            showSnacks()
-        }
+        setupEpoxyController()
+        showItems()
     }
 
     override fun onDestroyView() {
@@ -70,51 +52,56 @@ class FragmentSingleItem : BaseFragment() {
     }
 
     private fun setImage() {
-        if (item.isFaved) {
-            binding.favImage.setImageResource(R.drawable.ic_baseline_favorite_24)
-        } else {
-            binding.favImage.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-        }
-        binding.favImage.setOnClickListener {
-            if (item.category == MenuCategory.BeerCategory) {
-                viewModel.faveBeer(item as DomainBeer)
-            } else {
-                viewModel.faveSnack(item as DomainSnack)
+        lifecycleScope.launch {
+            viewModel.state.collect {
+                val image =
+                    if (it.isMainItemLiked) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
+                binding.favImage.setImageResource(image)
             }
         }
-    }
-
-    private fun showBeer() {
-        viewModel.getMenuItemById(itemId)
-        viewModel.menuItemLiveData.observe(viewLifecycleOwner) {
-            item = it
-
-            binding.volumeText.text = getString(R.string.volume, item.volume.format(2))
-            binding.alcoholPercentageText.text =
-                getString(R.string.alcPercentage, item.alcPercentage.format(1))
-            updateUi(item)
-            setImage()
-        }
-
-        viewModel.getSnackSet()
-        viewModel.itemListLiveData.observe(viewLifecycleOwner) {
-            controller.itemList = it
+        binding.favImage.setOnClickListener {
+            viewModel.likeOrDislikeMainItem()
         }
     }
 
-    private fun showSnacks() {
+    private fun setupEpoxyController() {
+        controller = SingleItemEpoxyController(
+            onItemClick = {
+                val direction =
+                    FragmentSingleItemDirections.actionFragmentSingleItemSelf(
+                        it.UID,
+                        it.category.toString()
+                    )
+                navController.navigate(direction)
+            },
+            onFavClick = {
+                viewModel.likeOrDislikeItemInSet(it.UID)
+            }
+        )
+        binding.recyclerView.setController(controller)
+    }
+
+    private fun showItems() {
+        val itemId = args.itemId
         viewModel.getMenuItemById(itemId)
-        viewModel.menuItemLiveData.observe(viewLifecycleOwner) {
-            item = it
-            binding.volumeText.isGone = true
-            binding.alcoholPercentageText.isGone = true
-            updateUi(item)
-            setImage()
+        lifecycleScope.launch {
+            viewModel.state.collectLatest {
+                val item = it.mainItem
+                if (it.mainItem.category == MenuCategory.BeerCategory) {
+                    binding.volumeText.text = getString(R.string.volume, item.volume.format(2))
+                    binding.alcoholPercentageText.text =
+                        getString(R.string.alcPercentage, item.alcPercentage.format(1))
+                } else {
+                    binding.volumeText.isGone = true
+                    binding.alcoholPercentageText.isGone = true
+                }
+                updateUi(item)
+                setImage()
+                controller.itemList = it.itemsSet
+                controller.likes = it.likedItems
+            }
         }
-        viewModel.getBeerSet()
-        viewModel.itemListLiveData.observe(viewLifecycleOwner) {
-            controller.itemList = it
-        }
+        viewModel.getItemsSet()
     }
 
     private fun loadingState() {
@@ -131,7 +118,6 @@ class FragmentSingleItem : BaseFragment() {
     }
 
     private fun updateUi(item: DomainItem) {
-
         supportActionBar?.title = item.name
         binding.apply {
             progressBar.isGone = true
@@ -151,4 +137,3 @@ class FragmentSingleItem : BaseFragment() {
         }
     }
 }
-

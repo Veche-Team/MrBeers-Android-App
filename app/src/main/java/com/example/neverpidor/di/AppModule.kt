@@ -4,10 +4,18 @@ import android.content.Context
 import androidx.room.Room
 import com.example.neverpidor.data.database.BeersDao
 import com.example.neverpidor.data.database.BeersDatabase
+import com.example.neverpidor.data.database.UserDao
 import com.example.neverpidor.data.network.ApiClient
 import com.example.neverpidor.data.network.BeersApiService
 import com.example.neverpidor.data.repositories.MenuItemsRepositoryImpl
-import com.example.neverpidor.domain.repository.MenuItemsRepository
+import com.example.neverpidor.data.repositories.UserRepositoryImpl
+import com.example.neverpidor.data.settings.AppSettings
+import com.example.neverpidor.domain.repositories.MenuItemsRepository
+import com.example.neverpidor.domain.repositories.UserRepository
+import com.example.neverpidor.domain.use_cases.GetLikesUseCase
+import com.example.neverpidor.domain.use_cases.IsItemLikedUseCase
+import com.example.neverpidor.domain.use_cases.LikeOrDislikeUseCase
+import com.example.neverpidor.domain.use_cases.LikesUseCases
 import com.example.neverpidor.util.Constants.BASE_URL
 import com.example.neverpidor.util.mapper.MenuItemMapper
 import com.squareup.moshi.Moshi
@@ -71,10 +79,10 @@ object AppModule {
         return beersDatabase.getBeersDao()
     }
 
-   /* @Provides
+    @Provides
     fun providesUserDao(beersDatabase: BeersDatabase): UserDao {
         return beersDatabase.getUserDao()
-    }*/
+    }
 
     @Provides
     @Singleton
@@ -90,5 +98,24 @@ object AppModule {
         beersDao: BeersDao
     ): MenuItemsRepository {
         return MenuItemsRepositoryImpl(beerMapper, apiClient, beersDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesUserRepository(userDao: UserDao): UserRepository {
+        return UserRepositoryImpl(userDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesLikesUseCases(
+        appSettings: AppSettings,
+        userRepository: UserRepository
+    ): LikesUseCases {
+        return LikesUseCases(
+            getLikesUseCase = GetLikesUseCase(appSettings, userRepository),
+            likeOrDislikeUseCase = LikeOrDislikeUseCase(appSettings, userRepository),
+            isItemLikedUseCase = IsItemLikedUseCase(appSettings, userRepository)
+        )
     }
 }

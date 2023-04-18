@@ -8,6 +8,7 @@ import com.example.neverpidor.util.format
 
 data class MenuItemEpoxyModel(
     val domainItem: DomainItem,
+    val isLiked: Boolean,
     val onEditClick: (String) -> Unit,
     val onItemClick: (DomainItem) -> Unit,
     val onFavClick: (DomainItem) -> Unit
@@ -27,7 +28,7 @@ data class MenuItemEpoxyModel(
         root.setOnClickListener {
             onItemClick(domainItem)
         }
-        if (domainItem.isFaved) {
+        if (isLiked) {
             favImage.setImageResource(R.drawable.ic_baseline_favorite_24)
         } else favImage.setImageResource(R.drawable.ic_baseline_favorite_border_24)
 

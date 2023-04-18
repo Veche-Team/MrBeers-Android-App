@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import com.example.neverpidor.data.providers.MenuCategory
 
 open class DomainItem(
-    val category: MenuCategory,
+    val category: MenuCategory = MenuCategory.SnackCategory,
     val UID: String = "",
     val alcPercentage: Double = 0.0,
     val description: String = "",

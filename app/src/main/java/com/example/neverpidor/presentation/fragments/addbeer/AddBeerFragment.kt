@@ -8,14 +8,17 @@ import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.neverpidor.R
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.databinding.AddBeerFragmentBinding
 import com.example.neverpidor.presentation.fragments.BaseFragment
-import com.example.neverpidor.util.ValidationModel
-import com.example.neverpidor.util.disableErrorMessage
+import com.example.neverpidor.presentation.fragments.addbeer.util.AddUpdateMode
+import com.example.neverpidor.presentation.fragments.addbeer.util.AddUpdateState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AddBeerFragment : BaseFragment() {
@@ -24,7 +27,6 @@ class AddBeerFragment : BaseFragment() {
     private val binding: AddBeerFragmentBinding
         get() = _binding!!
 
-    private var updateMode = false
     private val viewModel: AddBeerViewModel by viewModels()
 
     private val args: AddBeerFragmentArgs by navArgs()
@@ -41,59 +43,17 @@ class AddBeerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        category = viewModel.getItem()
         binding.lottie.playAnimation()
         args.itemId?.let {
-            activateUpdateMode()
-        }
-        if (category == MenuCategory.SnackCategory) {
-            supportActionBar?.title = getString(R.string.add_snack)
-            binding.volumeTextLayout.isGone = true
-            binding.alcTextLayout.isGone = true
-        } else {
-            supportActionBar?.title = getString(R.string.add_beer)
+            viewModel.getMenuItemById(it)
         }
         addTextChangedListeners()
-
+        observeState()
+        observeResponse()
+        setFields()
         binding.saveButton.setOnClickListener {
-            if (category == MenuCategory.BeerCategory) {
-                val fields = listOf(
-                    binding.nameLayout to binding.nameEditText,
-                    binding.descriptionTextLayout to binding.descriptionEt,
-                    binding.typeTextLayout to binding.typeEt,
-                    binding.priceTextLayout to binding.priceEt,
-                    binding.alcTextLayout to binding.alcEt,
-                    binding.volumeTextLayout to binding.volumeEt
-                )
-                if (fields.any { it.first.error != null } || fields.any { it.second.text.isNullOrEmpty() }) {
-                    Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_SHORT)
-                        .show()
-                    return@setOnClickListener
-                } else {
-                    onSaveButton()
-                }
-                observeBeerResponse()
-            } else {
-                val fields = listOf(
-                    binding.nameLayout to binding.nameEditText,
-                    binding.descriptionTextLayout to binding.descriptionEt,
-                    binding.typeTextLayout to binding.typeEt,
-                    binding.priceTextLayout to binding.priceEt
-                )
-                if (fields.any { it.first.error != null } || fields.any { it.second.text.isNullOrEmpty() }) {
-                    Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_SHORT)
-                        .show()
-                    return@setOnClickListener
-                } else {
-                    onSaveButton()
-                }
-                observeSnackResponse()
-            }
+            viewModel.onButtonClick()
         }
-
-        val watchers = TextWatchers(binding)
-        watchers.setWatchers()
     }
 
     override fun onDestroyView() {
@@ -101,90 +61,75 @@ class AddBeerFragment : BaseFragment() {
         _binding = null
     }
 
-    private fun onSaveButton() {
-        if (category == MenuCategory.BeerCategory) {
-
-            val model = ValidationModel(
-                binding.nameEditText.text.toString(),
-                binding.descriptionEt.text.toString(),
-                binding.typeEt.text.toString(),
-                binding.priceEt.text.toString(),
-                binding.alcEt.text.toString(),
-                binding.volumeEt.text.toString()
-
-            )
-            if (updateMode) viewModel.handleInput(model, args.itemId) else viewModel.handleInput(
-                model
-            )
-        } else {
-            val model = ValidationModel(
-                binding.nameEditText.text.toString(),
-                binding.descriptionEt.text.toString(),
-                binding.typeEt.text.toString(),
-                binding.priceEt.text.toString()
-            )
-            if (updateMode) viewModel.handleInput(model, args.itemId) else viewModel.handleInput(
-                model
-            )
-        }
-    }
-
-    private fun observeBeerResponse() {
-        viewModel.beerResponse.observe(viewLifecycleOwner) {
-            it.getContent()?.let { beerResponse ->
-                Toast.makeText(requireContext(), beerResponse.msg, Toast.LENGTH_SHORT).show()
-                if (beerResponse.msg != getString(R.string.check_connection)) navController.popBackStack()
-            }
-        }
-    }
-
-    private fun observeSnackResponse() {
-        viewModel.snackResponse.observe(viewLifecycleOwner) {
-            it.getContent()?.let { snackResponse ->
-                Toast.makeText(requireContext(), snackResponse.msg, Toast.LENGTH_SHORT).show()
-                if (snackResponse.msg != getString(R.string.check_connection)) navController.popBackStack()
-            }
-        }
-    }
-
-    private fun activateUpdateMode() {
-        updateMode = true
-
-        binding.apply {
-            saveButton.text = getString(R.string.update)
-            if (category == MenuCategory.BeerCategory) {
-                viewModel.getMenuItemById(args.itemId!!)
-                viewModel.menuItemLiveData.observe(viewLifecycleOwner) {
-                    supportActionBar?.title = getString(R.string.changing_item, it.name)
-                    nameEditText.setText(it.name)
-                    descriptionEt.setText(it.description)
-                    typeEt.setText(it.type)
-                    priceEt.setText(it.price.toString())
-                    alcEt.setText(it.alcPercentage.toString())
-                    volumeEt.setText(it.volume.toString())
-                }
-            } else {
-                viewModel.getMenuItemById(args.itemId!!)
-                viewModel.menuItemLiveData.observe(viewLifecycleOwner) {
-                    supportActionBar?.title = getString(R.string.changing_item, it.name)
-                    nameEditText.setText(it.name)
-                    descriptionEt.setText(it.description)
-                    typeEt.setText(it.type)
-                    priceEt.setText(it.price.toString())
-                }
+    private fun observeResponse() {
+        lifecycleScope.launch {
+            viewModel.response.collectLatest { response ->
+                Toast.makeText(requireContext(), response, Toast.LENGTH_SHORT).show()
+                if (response != getString(R.string.check_connection)) navController.popBackStack()
             }
         }
     }
 
     private fun addTextChangedListeners() {
         binding.apply {
-            nameEditText.addTextChangedListener { nameLayout.disableErrorMessage() }
-            descriptionEt.addTextChangedListener { descriptionTextLayout.disableErrorMessage() }
-            typeEt.addTextChangedListener { typeTextLayout.disableErrorMessage() }
-            priceEt.addTextChangedListener { priceTextLayout.disableErrorMessage() }
-            if (category == MenuCategory.BeerCategory) {
-                alcEt.addTextChangedListener { alcTextLayout.disableErrorMessage() }
-                volumeEt.addTextChangedListener { volumeTextLayout.disableErrorMessage() }
+            nameEditText.addTextChangedListener { viewModel.onTitleTextChanged(it.toString()) }
+            descriptionEt.addTextChangedListener { viewModel.onDescriptionTextChanged(it.toString()) }
+            typeEt.addTextChangedListener { viewModel.onTypeTextChanged(it.toString()) }
+            priceEt.addTextChangedListener { viewModel.onPriceTextChanged(it.toString()) }
+            alcEt.addTextChangedListener { viewModel.onAlcPercentageTextChanged(it.toString()) }
+            volumeEt.addTextChangedListener { viewModel.onVolumeTextChanged(it.toString()) }
+        }
+    }
+
+    private fun setFields() {
+        lifecycleScope.launch {
+            viewModel.itemState.collectLatest {
+                binding.nameEditText.setText(it.name)
+                binding.descriptionEt.setText(it.description)
+                binding.typeEt.setText(it.type)
+                binding.priceEt.setText(it.price.toString())
+                binding.alcEt.setText(it.alcPercentage.toString())
+                binding.volumeEt.setText(it.volume.toString())
+            }
+        }
+    }
+
+    private fun handleErrorsAndButtonState(state: AddUpdateState) {
+        binding.nameLayout.error = state.addUpdateErrorFields.titleError
+        binding.descriptionTextLayout.error = state.addUpdateErrorFields.descriptionError
+        binding.typeTextLayout.error = state.addUpdateErrorFields.typeError
+        binding.priceTextLayout.error = state.addUpdateErrorFields.priceError
+        binding.alcTextLayout.error = state.addUpdateErrorFields.alcPercentageError
+        binding.volumeTextLayout.error = state.addUpdateErrorFields.volumeError
+        binding.saveButton.isEnabled = state.isButtonEnabled
+    }
+
+    private fun observeState() {
+        lifecycleScope.launch {
+            viewModel.state.collectLatest {
+                category = it.mainItem.category
+                val mode = it.mode
+                handleErrorsAndButtonState(it)
+                if (mode == AddUpdateMode.UPDATE) {
+                    binding.apply {
+                        saveButton.text = getString(R.string.update)
+                        if (category == MenuCategory.BeerCategory) {
+                            supportActionBar?.title =
+                                getString(R.string.changing_item, it.mainItem.name)
+                        } else {
+                            supportActionBar?.title =
+                                getString(R.string.changing_item, it.mainItem.name)
+                        }
+                    }
+                } else {
+                    if (category == MenuCategory.SnackCategory) {
+                        supportActionBar?.title = getString(R.string.add_snack)
+                        binding.volumeTextLayout.isGone = true
+                        binding.alcTextLayout.isGone = true
+                    } else {
+                        supportActionBar?.title = getString(R.string.add_beer)
+                    }
+                }
             }
         }
     }

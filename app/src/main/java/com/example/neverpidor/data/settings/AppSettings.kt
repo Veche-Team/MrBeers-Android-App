@@ -1,16 +1,20 @@
 package com.example.neverpidor.data.settings
 
+import android.content.SharedPreferences
+import com.example.neverpidor.data.database.entities.UserEntity
 import com.example.neverpidor.data.providers.MenuCategory
 
 interface AppSettings {
 
-    fun getCurrentItem(): MenuCategory
+    fun addListener(listener: SharedPreferences.OnSharedPreferenceChangeListener)
 
-    fun setCurrentItem(category: MenuCategory)
+    fun getCurrentCategory(): MenuCategory
 
-    fun getCurrentUserNumber() : Long?
+    fun setCurrentCategory(category: MenuCategory)
 
-    fun setCurrentUser(phoneNumber: Long)
+    fun getCurrentUser() : UserEntity
+
+    fun setCurrentUser(user: UserEntity)
 
     companion object {
         const val NO_ITEM = ""
