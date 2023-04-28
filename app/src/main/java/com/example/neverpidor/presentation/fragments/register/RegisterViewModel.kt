@@ -95,10 +95,7 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 userProfileUseCases.registerUserUseCase(
-                    phoneNumber = state.value.inputFields.number,
-                    name = state.value.inputFields.name,
-                    password = state.value.inputFields.password,
-                    repeatPassword = state.value.inputFields.repeatPassword
+                    registerInputFields = state.value.inputFields
                 )
                 _goBackEvent.emit("Account has been created!")
             } catch (e: PasswordException.RepeatPasswordException) {

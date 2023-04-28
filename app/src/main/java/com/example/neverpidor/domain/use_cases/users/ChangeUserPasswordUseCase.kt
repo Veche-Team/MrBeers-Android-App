@@ -21,13 +21,12 @@ class ChangeUserPasswordUseCase(
         }
 
         val user = appSettings.getCurrentUser()
+        val userEntity = userRepository.findUserByNumber(user.phoneNumber)
         user.let {
-            if (it.password != oldPassword) {
+            if (userEntity?.password != oldPassword) {
                 throw PasswordException.OldPasswordException("Wrong password")
             }
-            val newUser = it.copy(password = newPassword)
-            userRepository.updateUser(newUser)
-            appSettings.setCurrentUser(newUser)
+            userRepository.changeUserPassword(user.phoneNumber, newPassword)
         }
     }
 }

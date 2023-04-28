@@ -1,12 +1,13 @@
 package com.example.neverpidor.data.database.entities
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.neverpidor.data.database.type_converters.CategoryConverter
 import com.example.neverpidor.data.providers.MenuCategory
 
-@Entity(tableName = "items")
+@Entity(tableName = "items", indices = [Index("UID")])
 @TypeConverters(CategoryConverter::class)
 data class MenuItemEntity(
     @PrimaryKey(autoGenerate = false)

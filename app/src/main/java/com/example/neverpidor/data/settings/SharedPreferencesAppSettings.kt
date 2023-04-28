@@ -6,8 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.neverpidor.data.database.entities.UserEntity
 import com.example.neverpidor.data.providers.MenuCategory
+import com.example.neverpidor.domain.model.User
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -44,19 +44,21 @@ class SharedPreferencesAppSettings @Inject constructor(
         return MenuCategory.BeerCategory
     }
 
-    override suspend fun getCurrentUser(): UserEntity {
+    override suspend fun getCurrentUser(): User {
         val userKey = stringPreferencesKey("user")
         val preferences = appContext.dataStore.data.first()
         preferences[userKey]?.let {
-            return GsonBuilder().create().fromJson(it, UserEntity::class.java)
+            val gson = GsonBuilder().registerTypeAdapter(User.Role::class.java, UserRoleTypeAdapter())
+            return gson.create().fromJson(it, User::class.java)
         }
-        return UserEntity()
+        return User(role = User.Role.NoUser)
     }
 
-    override suspend fun setCurrentUser(user: UserEntity) {
+    override suspend fun setCurrentUser(user: User) {
         val userKey = stringPreferencesKey("user")
         appContext.dataStore.edit {
-            it[userKey] = GsonBuilder().create().toJson(user)
+            val gson = GsonBuilder().registerTypeAdapter(User.Role::class.java, UserRoleTypeAdapter())
+            it[userKey] = gson.create().toJson(user)
         }
     }
 }

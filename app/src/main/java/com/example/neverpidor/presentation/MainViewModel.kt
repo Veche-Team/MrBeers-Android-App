@@ -3,6 +3,7 @@ package com.example.neverpidor.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.database.entities.UserEntity
+import com.example.neverpidor.domain.model.User
 import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +30,7 @@ class MainViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            userProfileUseCases.setCurrentUserUseCase(UserEntity())
+            userProfileUseCases.setCurrentUserUseCase(User(role = User.Role.NoUser))
         }
     }
 }

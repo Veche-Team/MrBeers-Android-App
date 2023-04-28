@@ -27,6 +27,5 @@ import java.util.UUID
 )
 data class UserMenuItemLikes(
     val phoneNumber: String = "",
-    val UID: String = "",
-    val likeUID: String = UUID.randomUUID().toString()
+    val UID: String = ""
 )

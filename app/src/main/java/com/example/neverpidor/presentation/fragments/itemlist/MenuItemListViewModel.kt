@@ -7,8 +7,8 @@ import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.cart.InCartItem
-import com.example.neverpidor.data.database.entities.UserEntity
 import com.example.neverpidor.data.providers.MenuCategory
+import com.example.neverpidor.domain.model.User
 import com.example.neverpidor.domain.use_cases.cart.CartUseCases
 import com.example.neverpidor.domain.use_cases.likes.LikesUseCases
 import com.example.neverpidor.domain.use_cases.menu_items.MenuItemsUseCases
@@ -38,7 +38,7 @@ class MenuItemListViewModel @Inject constructor(
     )
     val response: SharedFlow<String> = _response
 
-    private lateinit var user: UserEntity
+    private lateinit var user: User
 
     fun getItemList() = viewModelScope.launch {
         user = userProfileUseCases.getUserUseCase()
@@ -111,7 +111,7 @@ class MenuItemListViewModel @Inject constructor(
     }
 
     fun plusCartItem(inCartItem: InCartItem) = viewModelScope.launch {
-        cartUseCases.plusItemInCart(user, inCartItem.UID, inCartItem.quantity)
+        cartUseCases.plusItemInCart(user.phoneNumber, inCartItem.UID, inCartItem.quantity)
         _state.emit(
             state.value.copy(
                 inCartItems = state.value.inCartItems - inCartItem + inCartItem.copy(
@@ -122,7 +122,7 @@ class MenuItemListViewModel @Inject constructor(
     }
 
     fun minusCartItem(inCartItem: InCartItem) = viewModelScope.launch {
-        cartUseCases.minusItemInCart(user, inCartItem)
+        cartUseCases.minusItemInCart(user.phoneNumber, inCartItem)
         _state.emit(
             state.value.copy(
                 inCartItems = state.value.inCartItems - inCartItem + inCartItem.copy(

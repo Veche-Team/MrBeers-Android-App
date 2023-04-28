@@ -120,7 +120,7 @@ class SingleItemViewModel @Inject constructor(
     fun plusItemInCart() = viewModelScope.launch {
         val currentUser = userProfileUseCases.getUserUseCase()
         cartUseCases.plusItemInCart(
-            currentUser,
+            currentUser.phoneNumber,
             state.value.inCartItem.UID,
             state.value.inCartItem.quantity
         )
@@ -129,7 +129,7 @@ class SingleItemViewModel @Inject constructor(
 
     fun minusItemInCart() = viewModelScope.launch {
         val currentUser = userProfileUseCases.getUserUseCase()
-        cartUseCases.minusItemInCart(currentUser, state.value.inCartItem)
+        cartUseCases.minusItemInCart(currentUser.phoneNumber, state.value.inCartItem)
         _state.emit(state.value.copy(inCartItem = state.value.inCartItem.copy(quantity = state.value.inCartItem.quantity - 1)))
     }
 }

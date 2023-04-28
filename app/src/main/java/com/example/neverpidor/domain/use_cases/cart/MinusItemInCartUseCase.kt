@@ -9,17 +9,17 @@ class MinusItemInCartUseCase(
     val cartRepository: CartRepository
 ) {
 
-    suspend operator fun invoke(user: UserEntity, inCartItem: InCartItem) {
+    suspend operator fun invoke(number: String, inCartItem: InCartItem) {
         if (inCartItem.quantity > 1) {
             cartRepository.updateItemInCart(
                 UserMenuItemCart(
-                    user.phoneNumber,
+                    number,
                     inCartItem.UID,
                     inCartItem.quantity - 1
                 )
             )
         } else {
-            cartRepository.removeItemFromCart(user.phoneNumber, inCartItem.UID)
+            cartRepository.removeItemFromCart(number, inCartItem.UID)
         }
     }
 }

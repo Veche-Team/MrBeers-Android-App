@@ -21,6 +21,8 @@ import com.example.neverpidor.domain.use_cases.menu_items.*
 import com.example.neverpidor.domain.use_cases.users.*
 import com.example.neverpidor.util.Constants.BASE_URL
 import com.example.neverpidor.util.mapper.MenuItemMapper
+import com.example.neverpidor.util.security.SecurityUtils
+import com.example.neverpidor.util.security.SecurityUtilsImpl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -141,7 +143,8 @@ object AppModule {
     @Singleton
     fun providesUserProfileUseCases(
         appSettings: AppSettings,
-        userRepository: UserRepository
+        userRepository: UserRepository,
+        securityUtils: SecurityUtils
     ): UserProfileUseCases {
         return UserProfileUseCases(
             changeUserNameUseCase = ChangeUserNameUseCase(appSettings, userRepository),
@@ -150,7 +153,7 @@ object AppModule {
             getUserUseCase = GetUserUseCase(appSettings),
             findUserByNumberUseCase = FindUserByNumberUseCase(userRepository),
             setCurrentUserUseCase = SetCurrentUserUseCase(appSettings),
-            registerUserUseCase = RegisterUserUseCase(userRepository),
+            registerUserUseCase = RegisterUserUseCase(userRepository, securityUtils),
             addUserListenerUseCase = AddUserListenerUseCase(appSettings)
         )
     }
@@ -196,5 +199,11 @@ object AppModule {
         appSettings: AppSettings
     ): SetCurrentCategoryUseCase {
         return SetCurrentCategoryUseCase(appSettings)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSecurityUtils(): SecurityUtils {
+        return SecurityUtilsImpl()
     }
 }

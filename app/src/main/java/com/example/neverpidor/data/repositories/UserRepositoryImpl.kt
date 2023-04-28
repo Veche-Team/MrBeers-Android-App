@@ -12,11 +12,13 @@ class UserRepositoryImpl @Inject constructor(
         userDao.addUser(user)
     }
 
-    override suspend fun getAllUsers() = userDao.getAllUsers()
-
+    override suspend fun getAllUsers() = userDao.getAllUsers().map {
+        it.toUser()
+    }
+// todo update delete
     override suspend fun updateUser(user: UserEntity) = userDao.updateUser(user)
 
-    override suspend fun deleteUser(user: UserEntity) = userDao.deleteUser(user)
+    override suspend fun deleteUser(number: String) = userDao.deleteUser(number)
 
     override suspend fun addLike(userMenuItemJoin: UserMenuItemLikes) =
         userDao.addLike(userMenuItemJoin)
@@ -28,4 +30,16 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun findLike(number: String, id: String) = userDao.findLike(number, id)
 
     override fun getItemLikesById(id: String) = userDao.getItemLikes(id)
+
+    override suspend fun changeUserName(number: String, name: String) {
+        userDao.changeUserName(number, name)
+    }
+
+    override suspend fun changeUserPassword(number: String, password: String) {
+        userDao.changeUserPassword(number, password)
+    }
+
+    override suspend fun findUserByNumber(number: String): UserEntity? {
+       return userDao.findUserByNumber(number)
+    }
 }

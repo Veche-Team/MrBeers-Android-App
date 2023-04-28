@@ -8,6 +8,5 @@ class IsItemInCartUseCase(
 ) {
     suspend operator fun invoke(id: String, number: String): UserMenuItemCart? {
         return cartRepository.getItemInCart(number, id)
-
     }
 }

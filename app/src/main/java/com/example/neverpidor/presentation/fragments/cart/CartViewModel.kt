@@ -3,7 +3,7 @@ package com.example.neverpidor.presentation.fragments.cart
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.cart.InCartItem
-import com.example.neverpidor.data.database.entities.UserEntity
+import com.example.neverpidor.domain.model.User
 import com.example.neverpidor.domain.use_cases.cart.CartUseCases
 import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +23,11 @@ class CartViewModel @Inject constructor(
     private val _price = MutableStateFlow(0)
     val price: StateFlow<Int> = _price
 
-    private lateinit var user: UserEntity
+    private lateinit var user: User
 
     fun getUsersCart() = viewModelScope.launch {
         user = userProfileUseCases.getUserUseCase()
-        cartUseCases.getUserCartFlowUseCase(user).collect {
+        cartUseCases.getUserCartFlowUseCase(user.phoneNumber).collect {
             val list = cartUseCases.getCartListUseCase(it)
             _state.emit(list)
             _price.emit(list.sumOf { inCartItem -> inCartItem.price * inCartItem.quantity }.toInt())
@@ -35,14 +35,14 @@ class CartViewModel @Inject constructor(
     }
 
     fun addItem(inCartItem: InCartItem) = viewModelScope.launch {
-        cartUseCases.plusItemInCart(user, inCartItem.UID, inCartItem.quantity)
+        cartUseCases.plusItemInCart(user.phoneNumber, inCartItem.UID, inCartItem.quantity)
     }
 
     fun removeItem(inCartItem: InCartItem) = viewModelScope.launch {
-        cartUseCases.minusItemInCart(user, inCartItem)
+        cartUseCases.minusItemInCart(user.phoneNumber, inCartItem)
     }
 
     fun onOrderClick() = viewModelScope.launch {
-        cartUseCases.clearUserCart(user)
+        cartUseCases.clearUserCart(user.phoneNumber)
     }
 }

@@ -15,6 +15,5 @@ class AddUserListenerUseCase(
        return appSettings.addListener().map {
             it[userKey] ?: ""
         }.distinctUntilChanged()
-
     }
 }

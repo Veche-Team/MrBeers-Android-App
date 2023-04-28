@@ -1,6 +1,5 @@
 package com.example.neverpidor.presentation.fragments.favourites
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.domain.model.DomainItem
