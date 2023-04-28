@@ -2,11 +2,9 @@ package com.example.neverpidor.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -50,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+
     }
 
     private fun setupNavigation() {
@@ -61,7 +60,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.listFragment,
                 R.id.loginFragment,
                 R.id.registerFragment,
-                R.id.profileFragment
+                R.id.profileFragment,
+                R.id.favouritesFragment
             ), binding.drawerLayout
         )
         binding.navView.setupWithNavController(navController)
@@ -74,7 +74,6 @@ class MainActivity : AppCompatActivity() {
         exitButton.setOnClickListener {
             viewModel.logout()
             val fragment = navController.currentDestination?.id ?: 0
-            Log.e("FRAG", fragment.toString())
             if (fragment != R.id.listFragment) {
                 navController.navigate(R.id.listFragment)
             }
@@ -88,6 +87,7 @@ class MainActivity : AppCompatActivity() {
                 binding.navView.menu.findItem(R.id.profileFragment).isEnabled = it != ""
                 binding.navView.menu.findItem(R.id.loginFragment).isEnabled = it == ""
                 binding.navView.menu.findItem(R.id.registerFragment).isEnabled = it == ""
+                binding.navView.menu.findItem(R.id.favouritesFragment).isEnabled = it != ""
                 exitButton.isGone = it == ""
                 header.findViewById<TextView>(R.id.exitText).isGone = it == ""
             }

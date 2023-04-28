@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.neverpidor.databinding.FragmentProfileBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -45,7 +46,6 @@ class ProfileFragment : Fragment() {
     }
 
     private fun addTextChangeListeners() {
-        binding.editTextChangeName.setText(viewModel.getName())
         binding.editTextChangeName.addTextChangedListener {
             viewModel.onChangeNameInput(it.toString())
         }
@@ -64,8 +64,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun observeErrorsAndButtonsState() {
-        lifecycleScope.launch {
-            viewModel.state.collect {
+        viewLifecycleOwner.lifecycleScope.launch {
+            binding.editTextChangeName.setText(viewModel.getName())
+            viewModel.state.collectLatest {
                 binding.textLayoutChangeName.error = it.fieldErrors.changeNameError
                 binding.textLayoutOldPassword.error = it.fieldErrors.oldPasswordError
                 binding.textLayoutNewPassword.error = it.fieldErrors.newPasswordError
@@ -92,8 +93,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showToastOnEvent() {
-        lifecycleScope.launch {
-            viewModel.toastMessage.collect {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.toastMessage.collectLatest {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                 if (it.contains("deleted")) {
                     findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToListFragment())

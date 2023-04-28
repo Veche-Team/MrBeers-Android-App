@@ -8,7 +8,9 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.neverpidor.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,7 +58,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun observeErrorsAndEnableButton() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.state.collectLatest {
                 binding.textLayoutPhone.error = it.errors.numberError
                 binding.textLayoutPassword.error = it.errors.passwordError
@@ -75,11 +77,13 @@ class LoginFragment : Fragment() {
     }
 
     private fun showToastOnEvent() {
-        lifecycleScope.launch {
-            viewModel.loginEvent.collectLatest {
-                Toast.makeText(requireContext(), "Welcome, ${it}!", Toast.LENGTH_SHORT)
-                    .show()
-                findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToListFragment())
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loginEvent.collectLatest {
+                    Toast.makeText(requireContext(), "Welcome, ${it}!", Toast.LENGTH_SHORT)
+                        .show()
+                    findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToListFragment())
+                }
             }
         }
     }

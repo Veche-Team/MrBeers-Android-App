@@ -27,7 +27,7 @@ sealed class MenuCategory(
             return when (categoryString) {
                 BeerCategory.toString() -> BeerCategory
                 SnackCategory.toString() -> SnackCategory
-                else -> throw Exception("MALAKA")
+                else -> throw Exception("Unknown category")
             }
         }
     }

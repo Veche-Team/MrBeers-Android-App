@@ -11,7 +11,7 @@ data class UserAndMenuItems(
         parentColumn = "phoneNumber",
         entityColumn = "UID",
         associateBy = Junction(
-            value = UserMenuItemJoin::class,
+            value = UserMenuItemLikes::class,
             parentColumn = "phoneNumber",
             entityColumn = "UID"
         )

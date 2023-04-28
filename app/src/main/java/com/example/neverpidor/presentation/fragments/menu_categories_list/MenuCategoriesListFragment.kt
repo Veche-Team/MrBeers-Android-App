@@ -4,14 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.neverpidor.databinding.FragmentListBinding
-import com.example.neverpidor.presentation.fragments.BaseFragment
 import com.example.neverpidor.presentation.fragments.menu_categories_list.epoxy.MenuCategoriesListEpoxyController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MenuCategoriesListFragment : BaseFragment() {
+class MenuCategoriesListFragment : Fragment() {
 
     private val viewModel: MenuCategoriseListViewModel by viewModels()
     private var _binding: FragmentListBinding? = null
@@ -32,14 +35,21 @@ class MenuCategoriesListFragment : BaseFragment() {
         val controller = MenuCategoriesListEpoxyController {
             val direction =
                 MenuCategoriesListFragmentDirections.actionListFragmentToMenuItemListFragment()
-            viewModel.setItem(it)
-            navController.navigate(direction)
+            viewLifecycleOwner.lifecycleScope.launch {
+                launch {
+                    viewModel.setItem(it)
+                }.join()
+                launch {
+                    findNavController().navigate(direction)
+                }
+            }
         }
         binding.recyclerView.setControllerAndBuildModels(controller)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.recyclerView.adapter = null
         _binding = null
     }
 }

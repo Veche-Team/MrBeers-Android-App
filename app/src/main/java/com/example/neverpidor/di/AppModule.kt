@@ -4,18 +4,21 @@ import android.content.Context
 import androidx.room.Room
 import com.example.neverpidor.data.database.BeersDao
 import com.example.neverpidor.data.database.BeersDatabase
+import com.example.neverpidor.data.database.CartDao
 import com.example.neverpidor.data.database.UserDao
 import com.example.neverpidor.data.network.ApiClient
 import com.example.neverpidor.data.network.BeersApiService
+import com.example.neverpidor.data.repositories.CartRepositoryImpl
 import com.example.neverpidor.data.repositories.MenuItemsRepositoryImpl
 import com.example.neverpidor.data.repositories.UserRepositoryImpl
 import com.example.neverpidor.data.settings.AppSettings
+import com.example.neverpidor.domain.repositories.CartRepository
 import com.example.neverpidor.domain.repositories.MenuItemsRepository
 import com.example.neverpidor.domain.repositories.UserRepository
-import com.example.neverpidor.domain.use_cases.GetLikesUseCase
-import com.example.neverpidor.domain.use_cases.IsItemLikedUseCase
-import com.example.neverpidor.domain.use_cases.LikeOrDislikeUseCase
-import com.example.neverpidor.domain.use_cases.LikesUseCases
+import com.example.neverpidor.domain.use_cases.cart.*
+import com.example.neverpidor.domain.use_cases.likes.*
+import com.example.neverpidor.domain.use_cases.menu_items.*
+import com.example.neverpidor.domain.use_cases.users.*
 import com.example.neverpidor.util.Constants.BASE_URL
 import com.example.neverpidor.util.mapper.MenuItemMapper
 import com.squareup.moshi.Moshi
@@ -51,7 +54,7 @@ object AppModule {
     @Provides
     @Singleton
     fun providesOkHttpClient(): OkHttpClient {
-        val duration = Duration.ofSeconds(15)
+        val duration = Duration.ofSeconds(3)
         val logger = HttpLoggingInterceptor()
         logger.setLevel(HttpLoggingInterceptor.Level.BASIC)
         return OkHttpClient.Builder()
@@ -75,13 +78,21 @@ object AppModule {
     }
 
     @Provides
+    @Singleton
     fun providesBeersDao(beersDatabase: BeersDatabase): BeersDao {
         return beersDatabase.getBeersDao()
     }
 
     @Provides
+    @Singleton
     fun providesUserDao(beersDatabase: BeersDatabase): UserDao {
         return beersDatabase.getUserDao()
+    }
+
+    @Provides
+    @Singleton
+    fun providesCartDao(beersDatabase: BeersDatabase): CartDao {
+        return beersDatabase.getCartDao()
     }
 
     @Provides
@@ -108,6 +119,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesCartRepository(cartDao: CartDao): CartRepository {
+        return CartRepositoryImpl(cartDao)
+    }
+
+    @Provides
+    @Singleton
     fun providesLikesUseCases(
         appSettings: AppSettings,
         userRepository: UserRepository
@@ -115,7 +132,69 @@ object AppModule {
         return LikesUseCases(
             getLikesUseCase = GetLikesUseCase(appSettings, userRepository),
             likeOrDislikeUseCase = LikeOrDislikeUseCase(appSettings, userRepository),
-            isItemLikedUseCase = IsItemLikedUseCase(appSettings, userRepository)
+            isItemLikedUseCase = IsItemLikedUseCase(appSettings, userRepository),
+            getItemLikesByIdUseCase = GetItemLikesByIdUseCase(userRepository)
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesUserProfileUseCases(
+        appSettings: AppSettings,
+        userRepository: UserRepository
+    ): UserProfileUseCases {
+        return UserProfileUseCases(
+            changeUserNameUseCase = ChangeUserNameUseCase(appSettings, userRepository),
+            changeUserPasswordUseCase = ChangeUserPasswordUseCase(appSettings, userRepository),
+            deleteUserUseCase = DeleteUserUseCase(appSettings, userRepository),
+            getUserUseCase = GetUserUseCase(appSettings),
+            findUserByNumberUseCase = FindUserByNumberUseCase(userRepository),
+            setCurrentUserUseCase = SetCurrentUserUseCase(appSettings),
+            registerUserUseCase = RegisterUserUseCase(userRepository),
+            addUserListenerUseCase = AddUserListenerUseCase(appSettings)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesMenuItemsUseCases(
+        appSettings: AppSettings,
+        menuItemsRepository: MenuItemsRepository
+    ): MenuItemsUseCases {
+        return MenuItemsUseCases(
+            addBeerUseCase = AddBeerUseCase(menuItemsRepository),
+            addSnackUseCase = AddSnackUseCase(menuItemsRepository),
+            getCurrentItemCategoryUseCase = GetCurrentItemCategoryUseCase(appSettings),
+            getMenuItemByIdUseCase = GetMenuItemByIdUseCase(menuItemsRepository),
+            updateBeerUseCase = UpdateBeerUseCase(menuItemsRepository),
+            updateSnackUseCase = UpdateSnackUseCase(menuItemsRepository),
+            getAllItemsUseCases = GetAllItemsUseCases(menuItemsRepository),
+            deleteItemUseCase = DeleteItemUseCase(menuItemsRepository),
+            getItemsSetUseCase = GetItemsSetUseCase()
+        )
+    }
+    @Provides
+    @Singleton
+    fun providesCartUseCases(
+        beerMapper: MenuItemMapper,
+        cartRepository: CartRepository
+    ): CartUseCases {
+        return CartUseCases(
+            getCartListUseCase = GetCartListUseCase(beerMapper, cartRepository),
+            getUserCartFlowUseCase = GetUserCartFlowUseCase(cartRepository),
+            plusItemInCart = PlusItemInCartUseCase(cartRepository),
+            minusItemInCart = MinusItemInCartUseCase(cartRepository),
+            clearUserCart = ClearUserCartUseCase(cartRepository),
+            isItemInCartUseCase = IsItemInCartUseCase(cartRepository),
+            addItemToCartUseCase = AddItemToCartUseCase(cartRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSetCurrentCategoryUseCase(
+        appSettings: AppSettings
+    ): SetCurrentCategoryUseCase {
+        return SetCurrentCategoryUseCase(appSettings)
     }
 }

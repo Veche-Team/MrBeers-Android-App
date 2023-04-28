@@ -12,12 +12,12 @@ import javax.inject.Inject
 
 class ApiClient @Inject constructor(private val beersApiService: BeersApiService) {
 
-    suspend fun getSnacks(): SnackList {
-        return beersApiService.getSnacks()
+    suspend fun getSnacks(): SimpleResponse<SnackList> {
+        return safeApiCall { beersApiService.getSnacks() }
     }
 
-    suspend fun getBeers(): BeerList {
-        return beersApiService.getBeers()
+    suspend fun getBeers(): SimpleResponse<BeerList> {
+        return safeApiCall { beersApiService.getBeers() }
     }
 
     suspend fun addBeer(beerRequest: BeerRequest): SimpleResponse<BeerResponse> {

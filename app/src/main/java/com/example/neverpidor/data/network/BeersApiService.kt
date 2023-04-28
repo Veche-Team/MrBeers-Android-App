@@ -17,10 +17,10 @@ import retrofit2.http.Path
 interface BeersApiService {
 
     @GET("snacks")
-    suspend fun getSnacks(): SnackList
+    suspend fun getSnacks(): Response<SnackList>
 
     @GET("beverages")
-    suspend fun getBeers(): BeerList
+    suspend fun getBeers(): Response<BeerList>
 
     @POST("beverages/add-beverage")
     suspend fun addBeer(@Body beerRequest: BeerRequest): Response<BeerResponse>

@@ -2,44 +2,49 @@ package com.example.neverpidor.presentation.fragments.singleItem
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.data.providers.MenuCategory
-import com.example.neverpidor.domain.model.DomainItem
-import com.example.neverpidor.domain.repositories.MenuItemsRepository
-import com.example.neverpidor.domain.use_cases.LikesUseCases
+import com.example.neverpidor.domain.use_cases.cart.CartUseCases
+import com.example.neverpidor.domain.use_cases.likes.LikesUseCases
+import com.example.neverpidor.domain.use_cases.menu_items.MenuItemsUseCases
+import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SingleItemViewModel @Inject constructor(
-    private val repository: MenuItemsRepository,
     private val likesUseCases: LikesUseCases,
+    private val menuItemsUseCases: MenuItemsUseCases,
+    private val userProfileUseCases: UserProfileUseCases,
+    private val cartUseCases: CartUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SingleItemState())
     val state: StateFlow<SingleItemState> = _state
 
+    private val _likes = MutableStateFlow(0)
+    val likes: StateFlow<Int> = _likes
+
     fun getMenuItemById(itemId: String) = viewModelScope.launch(Dispatchers.IO) {
-        _state.value = state.value.copy(mainItem = repository.getMenuItemById(itemId))
+        val item = menuItemsUseCases.getMenuItemByIdUseCase(itemId)
+        _state.emit(
+            state.value.copy(
+                mainItem = item,
+                inCartItem = item.toInCartItem()
+            )
+        )
         isItemLiked()
+        isItemInCart()
+        likesUseCases.getItemLikesByIdUseCase(itemId).collect {
+            _likes.emit(it)
+        }
     }
 
     fun getItemsSet() = viewModelScope.launch(Dispatchers.IO) {
-        val set = mutableSetOf<DomainItem>()
-        val allItems = repository.getDatabaseMenuItems()
+        val allItems = menuItemsUseCases.getAllItemsUseCases()
         allItems.collect {
-            while (set.size < 3) {
-                if (state.value.mainItem.category == MenuCategory.BeerCategory) {
-                    set.add(it.filter { item -> item.category == MenuCategory.SnackCategory }
-                        .random())
-                } else {
-                    set.add(it.filter { item -> item.category == MenuCategory.BeerCategory }
-                        .random())
-                }
-            }
+            val set = menuItemsUseCases.getItemsSetUseCase(it, state.value.mainItem.category)
             _state.value = state.value.copy(itemsSet = set)
             val list = mutableListOf<String>()
             set.forEach { item ->
@@ -80,5 +85,51 @@ class SingleItemViewModel @Inject constructor(
                 state.value.likedItems
             )
         )
+    }
+
+    private fun isItemInCart() = viewModelScope.launch {
+        val currentUserNumber = userProfileUseCases.getUserUseCase().phoneNumber
+        val isInCart = cartUseCases.isItemInCartUseCase(state.value.mainItem.UID, currentUserNumber)
+        isInCart?.let {
+            _state.emit(
+                state.value.copy(
+                    isMainItemInCart = true,
+                    inCartItem = state.value.inCartItem.copy(quantity = it.quantity)
+                )
+            )
+        } ?: _state.emit(
+            state.value.copy(
+                isMainItemInCart = false,
+                inCartItem = state.value.inCartItem.copy(quantity = 0)
+            )
+        )
+    }
+
+    fun addToCart() = viewModelScope.launch {
+        _state.emit(
+            state.value.copy(
+                isMainItemInCart = !state.value.isMainItemInCart,
+                inCartItem = state.value.inCartItem.copy(quantity = state.value.inCartItem.quantity + 1)
+            )
+        )
+        val currentUser = userProfileUseCases.getUserUseCase()
+        val id = state.value.mainItem.UID
+        cartUseCases.addItemToCartUseCase(currentUser.phoneNumber, id)
+    }
+
+    fun plusItemInCart() = viewModelScope.launch {
+        val currentUser = userProfileUseCases.getUserUseCase()
+        cartUseCases.plusItemInCart(
+            currentUser,
+            state.value.inCartItem.UID,
+            state.value.inCartItem.quantity
+        )
+        _state.emit(state.value.copy(inCartItem = state.value.inCartItem.copy(quantity = state.value.inCartItem.quantity + 1)))
+    }
+
+    fun minusItemInCart() = viewModelScope.launch {
+        val currentUser = userProfileUseCases.getUserUseCase()
+        cartUseCases.minusItemInCart(currentUser, state.value.inCartItem)
+        _state.emit(state.value.copy(inCartItem = state.value.inCartItem.copy(quantity = state.value.inCartItem.quantity - 1)))
     }
 }

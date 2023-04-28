@@ -1,46 +1,35 @@
 package com.example.neverpidor.presentation
 
-import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neverpidor.data.database.entities.UserEntity
-import com.example.neverpidor.data.settings.AppSettings
-import com.example.neverpidor.data.settings.SharedPreferencesAppSettings
+import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
+import com.google.gson.GsonBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val appSettings: AppSettings
-): ViewModel(), OnSharedPreferenceChangeListener {
+    val userProfileUseCases: UserProfileUseCases
+) : ViewModel() {
 
-    private val _userName = MutableStateFlow(appSettings.getCurrentUser().name)
+    private val _userName = MutableStateFlow("")
     val userName: StateFlow<String> = _userName
 
     init {
-        addListener(this)
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        when (key) {
-            SharedPreferencesAppSettings.PREF_CURRENT_USER_NUMBER -> {
-                setName()
-            }
+        viewModelScope.launch {
+            userProfileUseCases.addUserListenerUseCase().onEach {
+                val user = GsonBuilder().create().fromJson(it, UserEntity::class.java) ?: UserEntity()
+                _userName.emit(user.name)
+            }.launchIn(viewModelScope)
         }
     }
 
-    private fun addListener(listener: OnSharedPreferenceChangeListener) {
-        appSettings.addListener(listener)
-    }
-    private fun setName() = viewModelScope.launch {
-        _userName.emit(appSettings.getCurrentUser().name)
-    }
-
     fun logout() {
-        appSettings.setCurrentUser(UserEntity())
+        viewModelScope.launch {
+            userProfileUseCases.setCurrentUserUseCase(UserEntity())
+        }
     }
 }

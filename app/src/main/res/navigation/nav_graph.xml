@@ -64,9 +64,6 @@
         <argument
             android:name="itemId"
             app:argType="string" />
-        <argument
-            android:name="category"
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -113,5 +110,29 @@
             app:exitAnim="@anim/slide_out_to_left"
             app:popEnterAnim="@anim/slide_in_from_left"
             app:popExitAnim="@anim/slide_out_to_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/favouritesFragment"
+        android:name="com.example.neverpidor.presentation.fragments.favourites.FavouritesFragment"
+        android:label="Избранное"
+        tools:layout="@layout/fragment_favourites">
+        <action
+            android:id="@+id/action_favouritesFragment_to_fragmentSingleItem"
+            app:destination="@id/fragmentSingleItem" />
+        <action
+            android:id="@+id/action_favouritesFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.neverpidor.presentation.fragments.cart.CartFragment"
+        android:label="CartFragment"
+        tools:layout="@layout/fragment_cart">
+        <action
+            android:id="@+id/action_cartFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_fragmentSingleItem"
+            app:destination="@id/fragmentSingleItem" />
     </fragment>
 </navigation>

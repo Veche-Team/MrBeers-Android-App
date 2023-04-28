@@ -2,7 +2,7 @@ package com.example.neverpidor.data.repositories
 
 import com.example.neverpidor.data.database.UserDao
 import com.example.neverpidor.data.database.entities.UserEntity
-import com.example.neverpidor.data.database.entities.UserMenuItemJoin
+import com.example.neverpidor.data.database.entities.UserMenuItemLikes
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -18,7 +18,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun deleteUser(user: UserEntity) = userDao.deleteUser(user)
 
-    override suspend fun addLike(userMenuItemJoin: UserMenuItemJoin) =
+    override suspend fun addLike(userMenuItemJoin: UserMenuItemLikes) =
         userDao.addLike(userMenuItemJoin)
 
     override suspend fun removeLike(number: String, id: String) = userDao.removeLike(number, id)
@@ -26,6 +26,6 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUserLikes(number: String) = userDao.getUserLikes(number)
 
     override suspend fun findLike(number: String, id: String) = userDao.findLike(number, id)
-}
 
-// todo make interface for this
+    override fun getItemLikesById(id: String) = userDao.getItemLikes(id)
+}

@@ -23,12 +23,12 @@
             android:title="Меню"
             android:icon="@drawable/ic_baseline_emoji_food_beverage_24"/>
 
-        <item android:id="@+id/menu_actions"
+        <item android:id="@+id/favouritesFragment"
             app:showAsAction="ifRoom"
-            android:title="Акции"
+            android:title="Избранное"
             android:icon="@drawable/ic_actions_24"/>
 
-        <item android:id="@+id/addresses"
+        <item android:id="@+id/cartFragment"
             app:showAsAction="ifRoom"
             android:title="Адреса"
             android:icon="@drawable/ic_addresses_24"/>

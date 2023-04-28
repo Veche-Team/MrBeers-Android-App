@@ -1,9 +1,11 @@
 package com.example.neverpidor.domain.model
 
 import androidx.annotation.DrawableRes
+import com.example.neverpidor.R
+import com.example.neverpidor.data.cart.InCartItem
 import com.example.neverpidor.data.providers.MenuCategory
 
-open class DomainItem(
+data class DomainItem(
     val category: MenuCategory = MenuCategory.SnackCategory,
     val UID: String = "",
     val alcPercentage: Double = 0.0,
@@ -13,7 +15,16 @@ open class DomainItem(
     val type: String = "",
     val volume: Double = 0.0,
     @DrawableRes
-     val image: Int? = null,
-    val isFaved: Boolean = false,
+     val image: Int = R.drawable.ic_baseline_remove_shopping_cart_24,
     val isInCart: Boolean = false
-)
+) {
+    fun toInCartItem(quantity: Int = 0): InCartItem {
+        return InCartItem(
+            UID = this.UID,
+            price = this.price,
+            quantity = quantity,
+            title = this.name,
+            image = this.image
+        )
+    }
+}

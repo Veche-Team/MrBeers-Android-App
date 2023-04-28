@@ -1,6 +1,6 @@
-package com.example.neverpidor.domain.use_cases
+package com.example.neverpidor.domain.use_cases.likes
 
-import com.example.neverpidor.data.database.entities.UserMenuItemJoin
+import com.example.neverpidor.data.database.entities.UserMenuItemLikes
 import com.example.neverpidor.data.settings.AppSettings
 import com.example.neverpidor.domain.repositories.UserRepository
 
@@ -17,7 +17,7 @@ class LikeOrDislikeUseCase(
                 userRepository.removeLike(user.phoneNumber, domainItemId)
                 likedItems.filterNot { it == domainItemId  }
             } else {
-                userRepository.addLike(UserMenuItemJoin(user.phoneNumber, domainItemId))
+                userRepository.addLike(UserMenuItemLikes(user.phoneNumber, domainItemId))
                 likedItems + domainItemId
             }
         }

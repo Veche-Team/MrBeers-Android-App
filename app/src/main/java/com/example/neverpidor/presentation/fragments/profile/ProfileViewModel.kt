@@ -1,12 +1,10 @@
 package com.example.neverpidor.presentation.fragments.profile
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.data.database.entities.UserEntity
-import com.example.neverpidor.data.settings.AppSettings
-import com.example.neverpidor.domain.repositories.UserRepository
+import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
 import com.example.neverpidor.presentation.fragments.profile.util.ProfileState
+import com.example.neverpidor.util.PasswordException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,12 +12,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val appSettings: AppSettings,
-    private val repository: UserRepository
+    private val userProfileUseCases: UserProfileUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -36,7 +34,9 @@ class ProfileViewModel @Inject constructor(
         enableButtons()
     }
 
-    fun getName() = appSettings.getCurrentUser().name
+    suspend fun getName() = withContext(viewModelScope.coroutineContext) {
+        userProfileUseCases.getUserUseCase().name
+    }
 
     fun onOldPasswordInput(text: String) {
         _state.value = state.value.copy(
@@ -47,10 +47,9 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun onNewPasswordInput(text: String) {
-
         _state.value = state.value.copy(
             inputFields = state.value.inputFields.copy(newPasswordField = text),
-            fieldErrors = if (text.length < 6) state.value.fieldErrors.copy(newPasswordError = "password's too short")
+            fieldErrors = if (text.length in 1..5) state.value.fieldErrors.copy(newPasswordError = "password's too short")
             else state.value.fieldErrors.copy(newPasswordError = "")
         )
         enableButtons()
@@ -90,84 +89,68 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun changeName() = viewModelScope.launch {
-        val user = appSettings.getCurrentUser()
-        Log.e("NAME", user.toString())
-        user.let {
-            val newUser = it.copy(name = state.value.inputFields.changeNameField)
-            repository.updateUser(newUser)
-            appSettings.setCurrentUser(newUser)
-            _toastMessage.emit("Name has been changed!")
-        }
-        val another = appSettings.getCurrentUser()
-        Log.e("NAME", another.toString())
+        userProfileUseCases.changeUserNameUseCase(state.value.inputFields.changeNameField)
+        _toastMessage.emit("Name has been changed!")
     }
 
     fun changePassword() = viewModelScope.launch(Dispatchers.IO) {
-        if (state.value.inputFields.oldPasswordField == state.value.inputFields.newPasswordField) {
+        try {
+            userProfileUseCases.changeUserPasswordUseCase(
+                oldPassword = state.value.inputFields.oldPasswordField,
+                newPassword = state.value.inputFields.newPasswordField,
+                repeatNewPassword = state.value.inputFields.repeatNewPasswordField
+            )
+        } catch (e: PasswordException) {
             _state.emit(
                 state.value.copy(
-                    fieldErrors = state.value.fieldErrors.copy(
-                        newPasswordError = "New password is the same as old"
-                    )
+                    fieldErrors = when (e) {
+                        is PasswordException.OldPasswordException -> {
+                            state.value.fieldErrors.copy(
+                                oldPasswordError = e.message ?: ""
+                            )
+                        }
+                        is PasswordException.NewPasswordException -> {
+                            state.value.fieldErrors.copy(
+                                newPasswordError = e.message ?: ""
+                            )
+                        }
+                        is PasswordException.RepeatPasswordException -> {
+                            state.value.fieldErrors.copy(
+                                repeatNewPasswordError = e.message ?: ""
+                            )
+                        }
+                    }
                 )
             )
             return@launch
         }
-        if (state.value.inputFields.newPasswordField != state.value.inputFields.repeatNewPasswordField) {
-            _state.emit(
-                state.value.copy(
-                    fieldErrors = state.value.fieldErrors.copy(
-                        repeatNewPasswordError = "Passwords should match"
-                    )
-                )
-            )
-            return@launch
-        }
+        _toastMessage.emit("Password has been changed!")
+        _state.emit(
+            state.value.copy(
 
-        val user = appSettings.getCurrentUser()
-        user.let {
-            if (it.password != state.value.inputFields.oldPasswordField) {
-                _state.emit(
-                    state.value.copy(
-                        fieldErrors = state.value.fieldErrors.copy(
-                            oldPasswordError = "Wrong password"
-                        )
-                    )
+                fieldErrors = state.value.fieldErrors.copy(
+                    oldPasswordError = "",
+                    newPasswordError = "",
+                    repeatNewPasswordError = ""
                 )
-                return@launch
-            }
-            val newUser = it.copy(password = state.value.inputFields.newPasswordField)
-            Log.e("PASS", newUser.toString())
-            repository.updateUser(newUser)
-            appSettings.setCurrentUser(newUser)
-            _toastMessage.emit("Password has been changed!")
-            _state.emit(state.value.copy(
-                inputFields = state.value.inputFields.copy(
-                    oldPasswordField = "",
-                    newPasswordField = "",
-                    repeatNewPasswordField = ""
-                )
-            ))
-        }
+            )
+        )
     }
 
     fun deleteUser() = viewModelScope.launch {
-        val user = appSettings.getCurrentUser()
-        user.let {
-            Log.e("DELETE", it.password)
-            if (it.password != state.value.inputFields.deleteUserPasswordField) {
-                _state.emit(
-                    state.value.copy(
-                        fieldErrors = state.value.fieldErrors.copy(
-                            deleteUserPasswordError = "Wrong password"
-                        )
+        try {
+            userProfileUseCases.deleteUserUseCase(
+                state.value.inputFields.deleteUserPasswordField
+            )
+        } catch (e: PasswordException) {
+            _state.emit(
+                state.value.copy(
+                    fieldErrors = state.value.fieldErrors.copy(
+                        deleteUserPasswordError = e.message ?: ""
                     )
                 )
-                return@launch
-            }
-            repository.deleteUser(user)
-            appSettings.setCurrentUser(UserEntity())
-            _toastMessage.emit("Account has been deleted")
+            )
         }
+        _toastMessage.emit("Account has been deleted")
     }
 }

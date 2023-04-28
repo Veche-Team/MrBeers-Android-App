@@ -1,5 +1,6 @@
 package com.example.neverpidor.data.repositories
 
+import android.accounts.NetworkErrorException
 import com.example.neverpidor.data.database.BeersDao
 import com.example.neverpidor.data.database.entities.MenuItemEntity
 import com.example.neverpidor.util.mapper.MenuItemMapper
@@ -19,7 +20,7 @@ class MenuItemsRepositoryImpl @Inject constructor(
     private val beerMapper: MenuItemMapper,
     private val apiClient: ApiClient,
     private val beersDao: BeersDao
-): com.example.neverpidor.domain.repositories.MenuItemsRepository {
+) : com.example.neverpidor.domain.repositories.MenuItemsRepository {
 
     override fun getDatabaseMenuItems(): Flow<List<DomainItem>> {
         return beersDao
@@ -37,12 +38,21 @@ class MenuItemsRepositoryImpl @Inject constructor(
     }
 
     private suspend fun getItems() {
-      val allItems =  apiClient.getBeers().data.map {
+        val requestBeers = apiClient.getBeers()
+        val requestSnacks = apiClient.getSnacks()
+
+        if (requestBeers.failed || !requestBeers.isSuccessful) {
+            throw requestBeers.exception ?: NetworkErrorException("bears got shattered")
+        }
+        if (requestSnacks.failed || !requestSnacks.isSuccessful) {
+            throw requestSnacks.exception ?: NetworkErrorException("snacks are all eaten by bears")
+        }
+        val allItems = requestBeers.body.data.map {
             beerMapper.buildBeerEntityFromNetwork(it)
-        } + apiClient.getSnacks().data.map {
+        } + requestSnacks.body.data.map {
             beerMapper.buildSnackEntityFromNetwork(it)
-      }
-           beersDao.addMenuItems(allItems)
+        }
+        beersDao.addMenuItems(allItems)
     }
 
     override suspend fun getMenuItemById(itemId: String): DomainItem {
@@ -144,7 +154,10 @@ class MenuItemsRepositoryImpl @Inject constructor(
         beersDao.updateMenuItem(itemEntity)
     }
 
-    override suspend fun updateApiSnack(snackId: String, snackRequest: SnackRequest): SnackResponse? {
+    override suspend fun updateApiSnack(
+        snackId: String,
+        snackRequest: SnackRequest
+    ): SnackResponse? {
         val request = apiClient.updateSnack(snackId, snackRequest)
 
         if (request.failed) {

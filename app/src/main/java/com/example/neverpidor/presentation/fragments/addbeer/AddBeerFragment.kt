@@ -7,21 +7,27 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.neverpidor.R
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.databinding.AddBeerFragmentBinding
-import com.example.neverpidor.presentation.fragments.BaseFragment
+import com.example.neverpidor.presentation.MainActivity
 import com.example.neverpidor.presentation.fragments.addbeer.util.AddUpdateMode
 import com.example.neverpidor.presentation.fragments.addbeer.util.AddUpdateState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
-class AddBeerFragment : BaseFragment() {
+class AddBeerFragment : Fragment() {
 
     private var _binding: AddBeerFragmentBinding? = null
     private val binding: AddBeerFragmentBinding
@@ -38,19 +44,25 @@ class AddBeerFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = AddBeerFragmentBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lottie.playAnimation()
-        args.itemId?.let {
-            viewModel.getMenuItemById(it)
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                setFields()
+                addTextChangedListeners()
+                observeState()
+                observeResponse()
+            withContext(Dispatchers.IO) {
+                args.itemId?.let {
+                    viewModel.getMenuItemById(it)
+                }
+            }
         }
-        addTextChangedListeners()
-        observeState()
-        observeResponse()
-        setFields()
+
         binding.saveButton.setOnClickListener {
             viewModel.onButtonClick()
         }
@@ -62,10 +74,12 @@ class AddBeerFragment : BaseFragment() {
     }
 
     private fun observeResponse() {
-        lifecycleScope.launch {
-            viewModel.response.collectLatest { response ->
-                Toast.makeText(requireContext(), response, Toast.LENGTH_SHORT).show()
-                if (response != getString(R.string.check_connection)) navController.popBackStack()
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.response.collect { response ->
+                    Toast.makeText(requireContext(), response, Toast.LENGTH_SHORT).show()
+                    if (response != getString(R.string.check_connection)) findNavController().popBackStack()
+                }
             }
         }
     }
@@ -82,7 +96,7 @@ class AddBeerFragment : BaseFragment() {
     }
 
     private fun setFields() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.itemState.collectLatest {
                 binding.nameEditText.setText(it.name)
                 binding.descriptionEt.setText(it.description)
@@ -105,29 +119,36 @@ class AddBeerFragment : BaseFragment() {
     }
 
     private fun observeState() {
-        lifecycleScope.launch {
-            viewModel.state.collectLatest {
-                category = it.mainItem.category
-                val mode = it.mode
-                handleErrorsAndButtonState(it)
-                if (mode == AddUpdateMode.UPDATE) {
-                    binding.apply {
-                        saveButton.text = getString(R.string.update)
-                        if (category == MenuCategory.BeerCategory) {
-                            supportActionBar?.title =
-                                getString(R.string.changing_item, it.mainItem.name)
-                        } else {
-                            supportActionBar?.title =
-                                getString(R.string.changing_item, it.mainItem.name)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                category = viewModel.getCategory()
+                viewModel.state.collectLatest {
+                    val mode = it.mode
+                    handleErrorsAndButtonState(it)
+                    val actionBar = (activity as MainActivity).supportActionBar
+                    if (mode == AddUpdateMode.UPDATE) {
+
+                        binding.apply {
+                            saveButton.text = getString(R.string.update)
+
+                            if (category == MenuCategory.BeerCategory) {
+                                actionBar?.title =
+                                    getString(R.string.changing_item, it.mainItem.name)
+                            } else {
+                                actionBar?.title =
+                                    getString(R.string.changing_item, it.mainItem.name)
+                                binding.volumeTextLayout.isGone = true
+                                binding.alcTextLayout.isGone = true
+                            }
                         }
-                    }
-                } else {
-                    if (category == MenuCategory.SnackCategory) {
-                        supportActionBar?.title = getString(R.string.add_snack)
-                        binding.volumeTextLayout.isGone = true
-                        binding.alcTextLayout.isGone = true
                     } else {
-                        supportActionBar?.title = getString(R.string.add_beer)
+                        if (category == MenuCategory.SnackCategory) {
+                            actionBar?.title = getString(R.string.add_snack)
+                            binding.volumeTextLayout.isGone = true
+                            binding.alcTextLayout.isGone = true
+                        } else {
+                            actionBar?.title = getString(R.string.add_beer)
+                        }
                     }
                 }
             }

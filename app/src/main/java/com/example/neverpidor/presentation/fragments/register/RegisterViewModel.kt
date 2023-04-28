@@ -2,10 +2,10 @@ package com.example.neverpidor.presentation.fragments.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.data.database.entities.UserEntity
-import com.example.neverpidor.data.settings.AppSettings
-import com.example.neverpidor.domain.repositories.UserRepository
+import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
 import com.example.neverpidor.presentation.fragments.register.util.RegisterState
+import com.example.neverpidor.util.NumberAlreadyExistsException
+import com.example.neverpidor.util.PasswordException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,8 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    val appSettings: AppSettings,
-    val repository: UserRepository
+    private val userProfileUseCases: UserProfileUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RegisterState())
@@ -94,37 +93,27 @@ class RegisterViewModel @Inject constructor(
 
     fun register() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (state.value.inputFields.password != state.value.inputFields.repeatPassword) {
-                _state.emit(
-                    state.value.copy(
-                        errors = state.value.errors.copy(
-                            passwordRepeatError = "Passwords should match"
-                        )
-                    )
+            try {
+                userProfileUseCases.registerUserUseCase(
+                    phoneNumber = state.value.inputFields.number,
+                    name = state.value.inputFields.name,
+                    password = state.value.inputFields.password,
+                    repeatPassword = state.value.inputFields.repeatPassword
                 )
-                return@launch
-            }
-            val user = UserEntity(
-                phoneNumber = state.value.inputFields.number,
-                name = state.value.inputFields.name,
-                password = state.value.inputFields.password
-            )
-
-            val users = repository.getAllUsers()
-            users.forEach {
-                if (it.phoneNumber == state.value.inputFields.number) {
-                    _state.emit(
-                        state.value.copy(
-                            errors = state.value.errors.copy(
-                                numberError = "User with this number already exists"
-                            )
-                        )
+                _goBackEvent.emit("Account has been created!")
+            } catch (e: PasswordException.RepeatPasswordException) {
+                _state.emit(state.value.copy(
+                    errors = state.value.errors.copy(
+                        passwordRepeatError = e.message ?: ""
                     )
-                    return@launch
-                }
+                ))
+            } catch (e: NumberAlreadyExistsException) {
+                _state.emit(state.value.copy(
+                    errors = state.value.errors.copy(
+                        numberError = e.message ?: ""
+                    )
+                ))
             }
-            repository.addUser(user)
-            _goBackEvent.emit("Account has been created!")
         }
     }
 }

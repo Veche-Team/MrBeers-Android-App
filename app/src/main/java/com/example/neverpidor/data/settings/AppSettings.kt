@@ -1,22 +1,19 @@
 package com.example.neverpidor.data.settings
 
-import android.content.SharedPreferences
+import androidx.datastore.preferences.core.Preferences
 import com.example.neverpidor.data.database.entities.UserEntity
 import com.example.neverpidor.data.providers.MenuCategory
+import kotlinx.coroutines.flow.Flow
 
 interface AppSettings {
 
-    fun addListener(listener: SharedPreferences.OnSharedPreferenceChangeListener)
+    fun addListener(): Flow<Preferences>
 
-    fun getCurrentCategory(): MenuCategory
+    suspend fun getCurrentCategory(): MenuCategory
 
-    fun setCurrentCategory(category: MenuCategory)
+   suspend fun setCurrentCategory(category: MenuCategory)
 
-    fun getCurrentUser() : UserEntity
+   suspend fun getCurrentUser() : UserEntity
 
-    fun setCurrentUser(user: UserEntity)
-
-    companion object {
-        const val NO_ITEM = ""
-    }
+   suspend fun setCurrentUser(user: UserEntity)
 }

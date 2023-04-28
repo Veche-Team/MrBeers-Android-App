@@ -47,7 +47,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun observeErrorsAndEnableButton() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.state.collectLatest {
                 binding.registerButton.isEnabled = it.isButtonEnabled
                 binding.textLayoutPhone.error = it.errors.numberError
@@ -83,7 +83,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun showToastOnEvent() {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             viewModel.goBackEvent.collectLatest {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
                 findNavController().navigate(RegisterFragmentDirections.actionRegisterFragmentToGreetingFragment())

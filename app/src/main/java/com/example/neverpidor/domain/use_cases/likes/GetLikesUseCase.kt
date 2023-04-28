@@ -1,4 +1,4 @@
-package com.example.neverpidor.domain.use_cases
+package com.example.neverpidor.domain.use_cases.likes
 
 import com.example.neverpidor.data.settings.AppSettings
 import com.example.neverpidor.domain.repositories.UserRepository
