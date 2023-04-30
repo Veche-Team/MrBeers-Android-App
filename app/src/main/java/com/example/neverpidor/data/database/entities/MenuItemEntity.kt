@@ -18,7 +18,5 @@ data class MenuItemEntity(
     val price: Double,
     val alcPercentage: Double?,
     val volume: Double?,
-    val isInCart: Boolean = false,
-    val isFaved: Boolean = false,
     val category: MenuCategory
 )

@@ -3,7 +3,7 @@ package com.example.neverpidor.domain.use_cases.menu_items
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.domain.model.DomainItem
 
-class GetItemsSetUseCase() {
+class GetItemsSetUseCase {
 
      operator fun invoke(
         items: List<DomainItem>,

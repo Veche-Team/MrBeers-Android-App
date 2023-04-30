@@ -18,7 +18,7 @@
             android:title="Профиль"
             android:icon="@drawable/ic_reserve_24"/>
 
-        <item android:id="@+id/listFragment"
+        <item android:id="@+id/menuFragment"
             app:showAsAction="ifRoom"
             android:title="Меню"
             android:icon="@drawable/ic_baseline_emoji_food_beverage_24"/>
@@ -26,17 +26,11 @@
         <item android:id="@+id/favouritesFragment"
             app:showAsAction="ifRoom"
             android:title="Избранное"
-            android:icon="@drawable/ic_actions_24"/>
+            android:icon="@drawable/ic_baseline_favorite_border_24"/>
 
         <item android:id="@+id/cartFragment"
             app:showAsAction="ifRoom"
-            android:title="Адреса"
-            android:icon="@drawable/ic_addresses_24"/>
-
-        <item android:id="@+id/patrons"
-            app:showAsAction="ifRoom"
-            android:title="Завсегдатаи"
-            android:icon="@drawable/ic_baseline_groups_24"/>
-
+            android:title="Корзина"
+            android:icon="@drawable/ic_baseline_add_shopping_cart_24"/>
     </group>
 </menu>

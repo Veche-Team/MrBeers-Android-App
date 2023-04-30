@@ -1,6 +1,5 @@
 package com.example.neverpidor.data.settings
 
-import android.util.Log
 import com.example.neverpidor.domain.model.User
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
@@ -24,12 +23,10 @@ class UserRoleTypeAdapter : TypeAdapter<User.Role>() {
             }
         }
         `in`.endObject()
-        Log.e("READ", name)
         return when (name) {
             "noUser" -> User.Role.NoUser
             "admin" -> User.Role.Admin
             "customer" -> User.Role.Customer
-            "" -> throw IOException("DEAD BITCh")
             else -> throw IOException("Invalid role!")
         }
     }

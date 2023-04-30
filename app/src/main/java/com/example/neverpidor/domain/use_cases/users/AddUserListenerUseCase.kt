@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 class AddUserListenerUseCase(
-    val appSettings: AppSettings
+    private val appSettings: AppSettings
 ) {
      operator fun invoke(): Flow<String> {
         val userKey = stringPreferencesKey("user")

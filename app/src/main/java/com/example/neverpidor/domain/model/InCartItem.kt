@@ -1,4 +1,4 @@
-package com.example.neverpidor.data.cart
+package com.example.neverpidor.domain.model
 
 import com.example.neverpidor.R
 

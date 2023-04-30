@@ -4,7 +4,7 @@ import com.example.neverpidor.data.network.dto.snack.SnackRequest
 import com.example.neverpidor.domain.repositories.MenuItemsRepository
 
 class UpdateSnackUseCase(
-    val repository: MenuItemsRepository
+    private val repository: MenuItemsRepository
 ) {
     suspend operator fun invoke(snackId: String, snackRequest: SnackRequest): String {
         val response = repository.updateApiSnack(snackId, snackRequest)
@@ -15,4 +15,3 @@ class UpdateSnackUseCase(
         } ?: return "Проверьте подключение к интернету!"
     }
 }
-// make it 2 different use cases!

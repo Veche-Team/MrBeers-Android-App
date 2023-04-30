@@ -40,7 +40,7 @@ class LoginViewModel @Inject constructor(
     fun onPasswordInput(text: String) {
         _state.value = state.value.copy(
             inputFields = state.value.inputFields.copy(
-                password = text
+                password = text.toCharArray()
             ),
             errors = state.value.errors.copy(
                 passwordError = ""

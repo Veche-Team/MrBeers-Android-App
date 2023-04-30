@@ -40,7 +40,7 @@ class ProfileViewModel @Inject constructor(
 
     fun onOldPasswordInput(text: String) {
         _state.value = state.value.copy(
-            inputFields = state.value.inputFields.copy(oldPasswordField = text),
+            inputFields = state.value.inputFields.copy(oldPasswordField = text.toCharArray()),
             fieldErrors = state.value.fieldErrors.copy(oldPasswordError = "")
         )
         enableButtons()
@@ -48,7 +48,7 @@ class ProfileViewModel @Inject constructor(
 
     fun onNewPasswordInput(text: String) {
         _state.value = state.value.copy(
-            inputFields = state.value.inputFields.copy(newPasswordField = text),
+            inputFields = state.value.inputFields.copy(newPasswordField = text.toCharArray()),
             fieldErrors = if (text.length in 1..5) state.value.fieldErrors.copy(newPasswordError = "password's too short")
             else state.value.fieldErrors.copy(newPasswordError = "")
         )
@@ -57,7 +57,7 @@ class ProfileViewModel @Inject constructor(
 
     fun onRepeatNewPasswordInput(text: String) {
         _state.value = state.value.copy(
-            inputFields = state.value.inputFields.copy(repeatNewPasswordField = text),
+            inputFields = state.value.inputFields.copy(repeatNewPasswordField = text.toCharArray()),
             fieldErrors = state.value.fieldErrors.copy(repeatNewPasswordError = "")
         )
         enableButtons()
@@ -65,7 +65,7 @@ class ProfileViewModel @Inject constructor(
 
     fun onDeleteUserPasswordInput(text: String) {
         _state.value = state.value.copy(
-            inputFields = state.value.inputFields.copy(deleteUserPasswordField = text),
+            inputFields = state.value.inputFields.copy(deleteUserPasswordField = text.toCharArray()),
             fieldErrors = state.value.fieldErrors.copy(deleteUserPasswordError = "")
         )
         enableButtons()

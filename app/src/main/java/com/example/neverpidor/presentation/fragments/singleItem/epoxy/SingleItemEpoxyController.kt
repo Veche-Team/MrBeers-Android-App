@@ -6,7 +6,8 @@ import com.example.neverpidor.presentation.fragments.singleItem.epoxy.models.Sin
 
 class SingleItemEpoxyController(
     val onItemClick: (DomainItem) -> Unit,
-    private val onFavClick: (DomainItem) -> Unit
+    private val onFavClick: (DomainItem) -> Unit,
+    val onNoUserClick:() -> Unit
 ) : EpoxyController() {
 
     var itemList = setOf<DomainItem>()
@@ -21,6 +22,8 @@ class SingleItemEpoxyController(
             requestModelBuild()
         }
 
+    var isUserLogged = false
+
     override fun buildModels() {
         itemList.forEach { domainItem ->
             SingleItemOffersEpoxyModel(
@@ -29,7 +32,9 @@ class SingleItemEpoxyController(
                     onItemClick(it)
                 },
                 isLiked = likes.any { it == domainItem.UID },
-                onFavClick = onFavClick
+                onFavClick = onFavClick,
+                isUserLogged = isUserLogged,
+                onNoUserClick = onNoUserClick::invoke
             ).id(domainItem.UID).addTo(this)
         }
     }

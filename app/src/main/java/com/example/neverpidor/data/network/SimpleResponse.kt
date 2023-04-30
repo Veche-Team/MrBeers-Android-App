@@ -3,7 +3,7 @@ package com.example.neverpidor.data.network
 import retrofit2.Response
 
 class SimpleResponse<T>(
-    val status: Status,
+    private val status: Status,
     val data: Response<T>?,
     val exception: Exception?
 ) {

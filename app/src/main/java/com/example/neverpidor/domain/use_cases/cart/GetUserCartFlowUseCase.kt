@@ -5,7 +5,7 @@ import com.example.neverpidor.domain.repositories.CartRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetUserCartFlowUseCase(
-    val repository: CartRepository
+    private val repository: CartRepository
 ) {
      operator fun invoke(number: String): Flow<UserAndItemsInCart> {
       return  repository.getUserCartByNumber(number)

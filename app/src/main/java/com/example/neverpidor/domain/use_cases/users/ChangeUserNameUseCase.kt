@@ -4,8 +4,8 @@ import com.example.neverpidor.data.settings.AppSettings
 import com.example.neverpidor.domain.repositories.UserRepository
 
 class ChangeUserNameUseCase(
-    val appSettings: AppSettings,
-    val userRepository: UserRepository
+    private val appSettings: AppSettings,
+    private val userRepository: UserRepository
 ) {
     suspend operator fun invoke(newName: String) {
         val user = appSettings.getCurrentUser()

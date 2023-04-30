@@ -61,6 +61,7 @@ class CartFragment : Fragment() {
             launch {
                 viewModel.price.collect {
                     binding.sumText.text = it.toString()
+                    binding.orderButton.isEnabled = viewModel.price.value !=  0
                 }
             }
             binding.orderButton.setOnClickListener {

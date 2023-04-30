@@ -7,8 +7,13 @@ import com.example.neverpidor.data.network.dto.snack.SnackRequest
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.domain.model.DomainItem
 import com.example.neverpidor.domain.use_cases.menu_items.MenuItemsUseCases
+import com.example.neverpidor.domain.use_cases.validation.ValidationUseCases
 import com.example.neverpidor.presentation.fragments.addbeer.util.AddUpdateMode
 import com.example.neverpidor.presentation.fragments.addbeer.util.AddUpdateState
+import com.example.neverpidor.util.EmptyFieldException
+import com.example.neverpidor.util.InvalidAlcPercentageException
+import com.example.neverpidor.util.InvalidPriceException
+import com.example.neverpidor.util.InvalidVolumeException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddBeerViewModel @Inject constructor(
-    private val menuItemsUseCases: MenuItemsUseCases
+    private val menuItemsUseCases: MenuItemsUseCases,
+    private val validationUseCases: ValidationUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddUpdateState())
@@ -33,16 +39,18 @@ class AddBeerViewModel @Inject constructor(
 
     fun getMenuItemById(itemId: String) = viewModelScope.launch(Dispatchers.IO) {
         val mainItem = menuItemsUseCases.getMenuItemByIdUseCase(itemId)
-        _itemState.emit(mainItem)
-        _state.value = state.value.copy(
-            mainItem = mainItem,
-            mode = AddUpdateMode.UPDATE
-        )
-
+        launch {
+            _itemState.emit(mainItem)
+        }
+        launch {
+            _state.value = state.value.copy(
+                mainItem = mainItem,
+                mode = AddUpdateMode.UPDATE
+            )
+        }
     }
 
-    fun onButtonClick() = viewModelScope.launch {
-        val category = getCategory()
+    fun onButtonClick(category: MenuCategory) = viewModelScope.launch {
         val mode = state.value.mode
         if (mode == AddUpdateMode.ADD) {
             if (category == MenuCategory.BeerCategory) addBeer() else addSnack()
@@ -55,11 +63,12 @@ class AddBeerViewModel @Inject constructor(
         _state.emit(
             state.value.copy(
                 validationModel = state.value.validationModel.copy(title = text),
-                addUpdateErrorFields = if (text.isEmpty()) state.value.addUpdateErrorFields.copy(
-                    titleError = "Title can't be empty"
-                ) else state.value.addUpdateErrorFields.copy(
-                    titleError = ""
-                )
+                addUpdateErrorFields = try {
+                    validationUseCases.titleValidationUseCase(text)
+                    state.value.addUpdateErrorFields.copy(titleError = "")
+                } catch (e: EmptyFieldException) {
+                    state.value.addUpdateErrorFields.copy(titleError = e.message ?: "")
+                }
             )
         )
         enableButton()
@@ -69,11 +78,12 @@ class AddBeerViewModel @Inject constructor(
         _state.emit(
             state.value.copy(
                 validationModel = state.value.validationModel.copy(description = text),
-                addUpdateErrorFields = if (text.isEmpty()) state.value.addUpdateErrorFields.copy(
-                    descriptionError = "Description can't be empty"
-                ) else state.value.addUpdateErrorFields.copy(
-                    descriptionError = ""
-                )
+                addUpdateErrorFields = try {
+                    validationUseCases.descriptionValidationUseCase(text)
+                    state.value.addUpdateErrorFields.copy(descriptionError = "")
+                } catch (e: EmptyFieldException) {
+                    state.value.addUpdateErrorFields.copy(descriptionError = e.message ?: "")
+                }
             )
         )
         enableButton()
@@ -83,11 +93,12 @@ class AddBeerViewModel @Inject constructor(
         _state.emit(
             state.value.copy(
                 validationModel = state.value.validationModel.copy(type = text),
-                addUpdateErrorFields = if (text.isEmpty()) state.value.addUpdateErrorFields.copy(
-                    typeError = "Type can't be empty"
-                ) else state.value.addUpdateErrorFields.copy(
-                    typeError = ""
-                )
+                addUpdateErrorFields = try {
+                    validationUseCases.typeValidationUseCase(text)
+                    state.value.addUpdateErrorFields.copy(typeError = "")
+                } catch (e: EmptyFieldException) {
+                    state.value.addUpdateErrorFields.copy(typeError = e.message ?: "")
+                }
             )
         )
         enableButton()
@@ -97,19 +108,11 @@ class AddBeerViewModel @Inject constructor(
         _state.emit(
             state.value.copy(
                 validationModel = state.value.validationModel.copy(price = text),
-                addUpdateErrorFields = if (text.isEmpty()) state.value.addUpdateErrorFields.copy(
-                    priceError = "Price can't be empty"
-                ) else try {
-                    val price = text.toDouble()
-                    if (price > 500.0) {
-                        state.value.addUpdateErrorFields.copy(priceError = "Price is too high")
-                    } else if (price < 50.0) {
-                        state.value.addUpdateErrorFields.copy(priceError = "Price is too low")
-                    } else {
-                        state.value.addUpdateErrorFields.copy(priceError = "")
-                    }
-                } catch (e: java.lang.Exception) {
-                    state.value.addUpdateErrorFields.copy(priceError = "Invalid input")
+                addUpdateErrorFields = try {
+                    validationUseCases.priceValidationUseCase(text)
+                    state.value.addUpdateErrorFields.copy(priceError = "")
+                } catch (e: InvalidPriceException) {
+                    state.value.addUpdateErrorFields.copy(priceError = e.message ?: "")
                 }
             )
         )
@@ -120,17 +123,11 @@ class AddBeerViewModel @Inject constructor(
         _state.emit(
             state.value.copy(
                 validationModel = state.value.validationModel.copy(alc = text),
-                addUpdateErrorFields = if (text.isEmpty()) state.value.addUpdateErrorFields.copy(
-                    alcPercentageError = "Alc percentage can't be empty"
-                ) else try {
-                    val alc = text.toDouble()
-                    if (alc > 20) {
-                        state.value.addUpdateErrorFields.copy(alcPercentageError = "Too much alcohol for a beer")
-                    } else {
-                        state.value.addUpdateErrorFields.copy(alcPercentageError = "")
-                    }
-                } catch (e: java.lang.Exception) {
-                    state.value.addUpdateErrorFields.copy(alcPercentageError = "Invalid input")
+                addUpdateErrorFields = try {
+                    validationUseCases.alcPercentageValidationUseCase(text)
+                    state.value.addUpdateErrorFields.copy(alcPercentageError = "")
+                } catch (e: InvalidAlcPercentageException) {
+                    state.value.addUpdateErrorFields.copy(alcPercentageError = e.message ?: "")
                 }
             )
         )
@@ -141,19 +138,11 @@ class AddBeerViewModel @Inject constructor(
         _state.emit(
             state.value.copy(
                 validationModel = state.value.validationModel.copy(volume = text),
-                addUpdateErrorFields = if (text.isEmpty()) state.value.addUpdateErrorFields.copy(
-                    volumeError = "Volume can't be empty"
-                ) else try {
-                    val volume = text.toDouble()
-                    if (volume > 5) {
-                        state.value.addUpdateErrorFields.copy(volumeError = "Too much volume")
-                    } else if (volume < 0.25) {
-                        state.value.addUpdateErrorFields.copy(volumeError = "Not enough volume")
-                    } else {
-                        state.value.addUpdateErrorFields.copy(volumeError = "")
-                    }
-                } catch (e: java.lang.Exception) {
-                    state.value.addUpdateErrorFields.copy(volumeError = "Invalid input")
+                addUpdateErrorFields = try {
+                    validationUseCases.volumeValidationUseCase(text)
+                    state.value.addUpdateErrorFields.copy(volumeError = "")
+                } catch (e: InvalidVolumeException) {
+                    state.value.addUpdateErrorFields.copy(volumeError = e.message ?: "")
                 }
             )
         )
@@ -189,11 +178,6 @@ class AddBeerViewModel @Inject constructor(
             )
         )
     }
-
-    suspend fun getCategory() =
-        withContext(viewModelScope.coroutineContext) {
-            menuItemsUseCases.getCurrentItemCategoryUseCase()
-        }
 
     private fun addBeer() = viewModelScope.launch(Dispatchers.IO) {
         val beerRequest = BeerRequest(
@@ -238,7 +222,6 @@ class AddBeerViewModel @Inject constructor(
             val beerId = state.value.mainItem.UID
             val response = menuItemsUseCases.updateBeerUseCase(beerId, beerRequest)
             _response.emit(response)
-
         }
 
     private fun updateSnack() =
@@ -250,7 +233,7 @@ class AddBeerViewModel @Inject constructor(
                 price = state.value.validationModel.price.toDouble()
             )
             val snackId = state.value.mainItem.UID
-                val response = menuItemsUseCases.updateSnackUseCase(snackId, snackRequest)
-                _response.emit(response)
+            val response = menuItemsUseCases.updateSnackUseCase(snackId, snackRequest)
+            _response.emit(response)
         }
 }

@@ -28,10 +28,12 @@ class SingleItemViewModel @Inject constructor(
 
     fun getMenuItemById(itemId: String) = viewModelScope.launch(Dispatchers.IO) {
         val item = menuItemsUseCases.getMenuItemByIdUseCase(itemId)
+        val user = userProfileUseCases.getUserUseCase()
         _state.emit(
             state.value.copy(
                 mainItem = item,
-                inCartItem = item.toInCartItem()
+                inCartItem = item.toInCartItem(),
+                user = user
             )
         )
         isItemLiked()
@@ -88,7 +90,7 @@ class SingleItemViewModel @Inject constructor(
     }
 
     private fun isItemInCart() = viewModelScope.launch {
-        val currentUserNumber = userProfileUseCases.getUserUseCase().phoneNumber
+        val currentUserNumber = state.value.user.phoneNumber
         val isInCart = cartUseCases.isItemInCartUseCase(state.value.mainItem.UID, currentUserNumber)
         isInCart?.let {
             _state.emit(
@@ -112,13 +114,13 @@ class SingleItemViewModel @Inject constructor(
                 inCartItem = state.value.inCartItem.copy(quantity = state.value.inCartItem.quantity + 1)
             )
         )
-        val currentUser = userProfileUseCases.getUserUseCase()
+        val currentUser = state.value.user
         val id = state.value.mainItem.UID
         cartUseCases.addItemToCartUseCase(currentUser.phoneNumber, id)
     }
 
     fun plusItemInCart() = viewModelScope.launch {
-        val currentUser = userProfileUseCases.getUserUseCase()
+        val currentUser = state.value.user
         cartUseCases.plusItemInCart(
             currentUser.phoneNumber,
             state.value.inCartItem.UID,
@@ -128,7 +130,7 @@ class SingleItemViewModel @Inject constructor(
     }
 
     fun minusItemInCart() = viewModelScope.launch {
-        val currentUser = userProfileUseCases.getUserUseCase()
+        val currentUser = state.value.user
         cartUseCases.minusItemInCart(currentUser.phoneNumber, state.value.inCartItem)
         _state.emit(state.value.copy(inCartItem = state.value.inCartItem.copy(quantity = state.value.inCartItem.quantity - 1)))
     }

@@ -8,3 +8,8 @@ sealed class PasswordException(message: String): Exception(message) {
 
 class UserDoesntExistException(message: String): Exception(message)
 class NumberAlreadyExistsException(message: String): Exception(message)
+
+class EmptyFieldException(message: String): Exception(message)
+class InvalidPriceException(message: String): Exception(message)
+class InvalidAlcPercentageException(message: String): Exception(message)
+class InvalidVolumeException(message: String): Exception(message)

@@ -4,7 +4,7 @@ import com.example.neverpidor.data.settings.AppSettings
 import com.example.neverpidor.domain.model.User
 
 class GetUserUseCase(
-    val appSettings: AppSettings
+    private val appSettings: AppSettings
 ) {
     suspend operator fun invoke(): User {
         return appSettings.getCurrentUser()

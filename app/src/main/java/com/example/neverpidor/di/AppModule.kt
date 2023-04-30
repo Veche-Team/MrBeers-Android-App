@@ -19,6 +19,7 @@ import com.example.neverpidor.domain.use_cases.cart.*
 import com.example.neverpidor.domain.use_cases.likes.*
 import com.example.neverpidor.domain.use_cases.menu_items.*
 import com.example.neverpidor.domain.use_cases.users.*
+import com.example.neverpidor.domain.use_cases.validation.*
 import com.example.neverpidor.util.Constants.BASE_URL
 import com.example.neverpidor.util.mapper.MenuItemMapper
 import com.example.neverpidor.util.security.SecurityUtils
@@ -148,10 +149,14 @@ object AppModule {
     ): UserProfileUseCases {
         return UserProfileUseCases(
             changeUserNameUseCase = ChangeUserNameUseCase(appSettings, userRepository),
-            changeUserPasswordUseCase = ChangeUserPasswordUseCase(appSettings, userRepository),
-            deleteUserUseCase = DeleteUserUseCase(appSettings, userRepository),
+            changeUserPasswordUseCase = ChangeUserPasswordUseCase(
+                appSettings,
+                userRepository,
+                securityUtils
+            ),
+            deleteUserUseCase = DeleteUserUseCase(appSettings, userRepository, securityUtils),
             getUserUseCase = GetUserUseCase(appSettings),
-            findUserByNumberUseCase = FindUserByNumberUseCase(userRepository),
+            findUserByNumberUseCase = FindUserByNumberUseCase(userRepository, securityUtils),
             setCurrentUserUseCase = SetCurrentUserUseCase(appSettings),
             registerUserUseCase = RegisterUserUseCase(userRepository, securityUtils),
             addUserListenerUseCase = AddUserListenerUseCase(appSettings)
@@ -161,13 +166,11 @@ object AppModule {
     @Provides
     @Singleton
     fun providesMenuItemsUseCases(
-        appSettings: AppSettings,
         menuItemsRepository: MenuItemsRepository
     ): MenuItemsUseCases {
         return MenuItemsUseCases(
             addBeerUseCase = AddBeerUseCase(menuItemsRepository),
             addSnackUseCase = AddSnackUseCase(menuItemsRepository),
-            getCurrentItemCategoryUseCase = GetCurrentItemCategoryUseCase(appSettings),
             getMenuItemByIdUseCase = GetMenuItemByIdUseCase(menuItemsRepository),
             updateBeerUseCase = UpdateBeerUseCase(menuItemsRepository),
             updateSnackUseCase = UpdateSnackUseCase(menuItemsRepository),
@@ -176,6 +179,7 @@ object AppModule {
             getItemsSetUseCase = GetItemsSetUseCase()
         )
     }
+
     @Provides
     @Singleton
     fun providesCartUseCases(
@@ -195,15 +199,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesSetCurrentCategoryUseCase(
-        appSettings: AppSettings
-    ): SetCurrentCategoryUseCase {
-        return SetCurrentCategoryUseCase(appSettings)
+    fun providesSecurityUtils(): SecurityUtils {
+        return SecurityUtilsImpl()
     }
 
     @Provides
     @Singleton
-    fun providesSecurityUtils(): SecurityUtils {
-        return SecurityUtilsImpl()
+    fun providesValidationUseCases(): ValidationUseCases {
+        return ValidationUseCases(
+            titleValidationUseCase = TitleValidationUseCase(),
+            descriptionValidationUseCase = DescriptionValidationUseCase(),
+            typeValidationUseCase = TypeValidationUseCase(),
+            priceValidationUseCase = PriceValidationUseCase(),
+            alcPercentageValidationUseCase = AlcPercentageValidationUseCase(),
+            volumeValidationUseCase = VolumeValidationUseCase()
+        )
     }
 }

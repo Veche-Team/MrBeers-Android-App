@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyTouchHelper
@@ -19,6 +22,7 @@ import com.airbnb.epoxy.EpoxyTouchHelper.SwipeCallbacks
 import com.example.neverpidor.R
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.databinding.FragmentMenuItemListBinding
+import com.example.neverpidor.domain.model.User
 import com.example.neverpidor.presentation.MainActivity
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.models.MenuItemEpoxyModel
 import com.example.neverpidor.presentation.fragments.itemlist.epoxy.MenuItemListEpoxyController
@@ -36,6 +40,7 @@ class MenuItemListFragment : Fragment() {
     private val viewModel: MenuItemListViewModel by viewModels()
 
     private lateinit var controller: MenuItemListEpoxyController
+    private val args: MenuItemListFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,32 +53,30 @@ class MenuItemListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val category = MenuCategory.toMenuCategory(args.category)
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    val category = viewModel.getCategory()
                     showActionBarTitle(category)
                     setEpoxyController(category)
                     observeErrorState()
+                    observeUserRole()
                 }.join()
                 launch(Dispatchers.Main) {
                     observeResponse()
                 }
                 withContext(Dispatchers.IO) {
-                    viewModel.getItemList()
+                    viewModel.getItemList(category)
                 }
             }
         }
 
         binding.fab.setOnClickListener {
             val direction =
-                MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment()
+                MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(category.toString())
             findNavController().navigate(direction)
         }
-        binding.searchEditText.doAfterTextChanged {
-            controller.searchInput = it?.toString() ?: ""
-        }
+
         viewModel.getLikes()
     }
 
@@ -89,7 +92,10 @@ class MenuItemListFragment : Fragment() {
             category,
             onEditClick = {
                 val direction =
-                    MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(it)
+                    MenuItemListFragmentDirections.actionMenuItemListFragmentToAddBeerFragment(
+                        category = category.toString(),
+                        it
+                    )
                 findNavController().navigate(direction)
             },
             onItemClick = {
@@ -100,10 +106,14 @@ class MenuItemListFragment : Fragment() {
                 findNavController().navigate(direction)
             },
             onFavClick = (viewModel::likeOrDislike),
-            onRetry = (viewModel::getItemList),
+            onRetry = { viewModel.getItemList(category) },
             onPlusClick = (viewModel::plusCartItem),
             onMinusClick = (viewModel::minusCartItem),
-            onAddToCartClick = (viewModel::addItemToCart)
+            onAddToCartClick = (viewModel::addItemToCart),
+            onNoUserClick = {
+                Toast.makeText(requireContext(), "Необходимо зайти в аккаунт", Toast.LENGTH_SHORT)
+                    .show()
+            }
         )
         binding.itemListRv.setControllerAndBuildModels(controller)
 
@@ -112,7 +122,12 @@ class MenuItemListFragment : Fragment() {
                 controller.likes = it.likedItems
                 controller.items = it.menuItems
                 controller.inCartState = it.inCartItems
+                controller.userRole = it.user.role
+                controller.searchInput = binding.searchEditText.text.toString()
             }
+        }
+        binding.searchEditText.doAfterTextChanged {
+            controller.searchInput = it?.toString() ?: ""
         }
 
         binding.itemListRv.addItemDecoration(
@@ -145,21 +160,13 @@ class MenuItemListFragment : Fragment() {
                     direction: Int
                 ) {
                     val removedItemId = model?.domainItem?.UID ?: return
-                    viewModel.deleteItem(removedItemId)
+                    val category = model.domainItem.category
+                    viewModel.deleteItem(removedItemId, category)
                 }
 
                 override fun isSwipeEnabledForModel(model: MenuItemEpoxyModel?): Boolean {
                     if (!viewModel.isConnected(requireActivity())) return false
                     return super.isSwipeEnabledForModel(model)
-                }
-
-                override fun onSwipeStarted(
-                    model: MenuItemEpoxyModel?,
-                    itemView: View?,
-                    adapterPosition: Int
-                ) {
-                    super.onSwipeStarted(model, itemView, adapterPosition)
-                    Toast.makeText(requireContext(), "Swipe started!", Toast.LENGTH_SHORT).show()
                 }
             })
     }
@@ -182,6 +189,17 @@ class MenuItemListFragment : Fragment() {
             viewModel.state.collect {
                 if (it.errorState) {
                     controller.isError = true
+                }
+            }
+        }
+    }
+
+    private fun observeUserRole() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.state.collect {
+                when (it.user.role) {
+                    User.Role.Admin -> binding.fab.isVisible = true
+                    else -> binding.fab.isGone = true
                 }
             }
         }

@@ -2,7 +2,7 @@ package com.example.neverpidor.presentation.fragments.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.data.cart.InCartItem
+import com.example.neverpidor.domain.model.InCartItem
 import com.example.neverpidor.domain.model.User
 import com.example.neverpidor.domain.use_cases.cart.CartUseCases
 import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
@@ -22,6 +22,9 @@ class CartViewModel @Inject constructor(
 
     private val _price = MutableStateFlow(0)
     val price: StateFlow<Int> = _price
+
+    private val _isButtonEnabled = MutableStateFlow(false)
+    val isButtonEnabled: StateFlow<Boolean> = _isButtonEnabled
 
     private lateinit var user: User
 

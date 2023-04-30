@@ -25,7 +25,6 @@ class MenuItemMapper @Inject constructor(
                 type = menuItemEntity.type,
                 volume = menuItemEntity.volume!!,
                 UID = menuItemEntity.UID,
-                isInCart = menuItemEntity.isInCart,
                 image = beerPicturesProvider.getNotRandomPicture(menuItemEntity.UID.filter {
                     it in '0'..'9'
                 }.map { it.digitToInt() }.sum()),
@@ -39,7 +38,6 @@ class MenuItemMapper @Inject constructor(
             type = menuItemEntity.type,
             volume = 0.0,
             UID = menuItemEntity.UID,
-            isInCart = menuItemEntity.isInCart,
             image = snackPicturesProvider.getNotRandomPicture(menuItemEntity.UID.filter {
                 it in '0'..'9'
             }.map { it.digitToInt() }.sum()),

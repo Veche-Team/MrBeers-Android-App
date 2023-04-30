@@ -8,29 +8,28 @@ import com.example.neverpidor.util.PasswordException
 import com.example.neverpidor.util.security.SecurityUtils
 
 class RegisterUserUseCase(
-    val repository: UserRepository,
+    private val repository: UserRepository,
     private val securityUtils: SecurityUtils
 ) {
     suspend operator fun invoke(
         registerInputFields: RegisterInputFields
     ) {
-        if (registerInputFields.password != registerInputFields.repeatPassword) {
+        if (!registerInputFields.password.contentEquals(registerInputFields.repeatPassword)) {
             throw PasswordException.RepeatPasswordException("Passwords should match")
         }
-        val users = repository.getAllUsers()
-        users.forEach {
-            if (it.phoneNumber == registerInputFields.number) {
-                throw NumberAlreadyExistsException("User with this number already exists")
-            }
+        registerInputFields.repeatPassword.fill('*')
+        val userEntity = repository.findUserByNumber(registerInputFields.number)
+        userEntity?.let {
+            throw NumberAlreadyExistsException("User with this number already exists")
         }
         val salt = securityUtils.generateSalt()
-        val hash = securityUtils.passwordToHash(registerInputFields.password.toCharArray(), salt)
+        val hash = securityUtils.passwordToHash(registerInputFields.password, salt)
+        registerInputFields.password.fill('*')
         val user = UserEntity(
             phoneNumber = registerInputFields.number,
             name = registerInputFields.name,
-         /*   hash = securityUtils.bytesToString(hash),
-            salt = securityUtils.bytesToString(salt)*/
-        password = registerInputFields.password
+            hash = securityUtils.bytesToString(hash),
+            salt = securityUtils.bytesToString(salt)
         )
         repository.addUser(user)
     }

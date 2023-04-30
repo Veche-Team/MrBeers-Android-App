@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding: ActivityMainBinding
         get() = _binding!!
-    lateinit var navController: NavController
+    private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val viewModel: MainViewModel by viewModels()
     private lateinit var exitButton: ImageView
@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-
     }
 
     private fun setupNavigation() {
@@ -57,15 +56,52 @@ class MainActivity : AppCompatActivity() {
         navController = navHostFragment.navController
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.listFragment,
+                R.id.menuFragment,
                 R.id.loginFragment,
                 R.id.registerFragment,
                 R.id.profileFragment,
-                R.id.favouritesFragment
+                R.id.favouritesFragment,
+                R.id.cartFragment
             ), binding.drawerLayout
         )
         binding.navView.setupWithNavController(navController)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        binding.navView.setNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.loginFragment -> {
+                    navController.navigate(R.id.loginFragment)
+                    binding.drawerLayout.closeDrawers()
+                    true
+                }
+                R.id.registerFragment -> {
+                    navController.navigate(R.id.registerFragment)
+                    binding.drawerLayout.closeDrawers()
+                    true
+                }
+                R.id.profileFragment -> {
+                    navController.navigate(R.id.profileFragment)
+                    binding.drawerLayout.closeDrawers()
+                    true
+                }
+                R.id.menuFragment -> {
+                    navController.navigate(R.id.menuFragment)
+                    binding.drawerLayout.closeDrawers()
+                    true
+                }
+                R.id.favouritesFragment -> {
+                    navController.navigate(R.id.favouritesFragment)
+                    binding.drawerLayout.closeDrawers()
+                    true
+                }
+                R.id.cartFragment -> {
+                    navController.navigate(R.id.cartFragment)
+                    binding.drawerLayout.closeDrawers()
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     private fun setupNavViewHeader() {
@@ -74,8 +110,8 @@ class MainActivity : AppCompatActivity() {
         exitButton.setOnClickListener {
             viewModel.logout()
             val fragment = navController.currentDestination?.id ?: 0
-            if (fragment != R.id.listFragment) {
-                navController.navigate(R.id.listFragment)
+            if (fragment != R.id.menuFragment) {
+                navController.navigate(R.id.menuFragment)
             }
         }
     }
@@ -88,6 +124,7 @@ class MainActivity : AppCompatActivity() {
                 binding.navView.menu.findItem(R.id.loginFragment).isEnabled = it == ""
                 binding.navView.menu.findItem(R.id.registerFragment).isEnabled = it == ""
                 binding.navView.menu.findItem(R.id.favouritesFragment).isEnabled = it != ""
+                binding.navView.menu.findItem(R.id.cartFragment).isEnabled = it != ""
                 exitButton.isGone = it == ""
                 header.findViewById<TextView>(R.id.exitText).isGone = it == ""
             }

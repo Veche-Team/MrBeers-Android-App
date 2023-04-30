@@ -10,12 +10,14 @@ data class UserEntity(
     @PrimaryKey(autoGenerate = false)
     val phoneNumber: String = "",
     val name: String = "",
-    val password: String = ""
+    val hash: String = "",
+    val salt: String = ""
 ) {
     fun toUser(): User {
         return User(
             phoneNumber = phoneNumber,
-            name = name
+            name = name,
+            role = if (this.phoneNumber == "777") User.Role.Admin else User.Role.Customer
         )
     }
 }

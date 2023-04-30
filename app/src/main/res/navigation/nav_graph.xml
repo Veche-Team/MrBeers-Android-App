@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/listFragment">
+    app:startDestination="@id/menuFragment">
 
     <fragment
-        android:id="@+id/listFragment"
+        android:id="@+id/menuFragment"
         android:name="com.example.neverpidor.presentation.fragments.menu_categories_list.MenuCategoriesListFragment"
         android:label="Меню"
         tools:layout="@layout/fragment_list">
@@ -37,6 +37,9 @@
             app:exitAnim="@anim/slide_out_to_left"
             app:popEnterAnim="@anim/slide_in_from_left"
             app:popExitAnim="@anim/slide_out_to_right"/>
+        <argument
+            android:name="category"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addBeerFragment"
@@ -48,6 +51,9 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="category"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/fragmentSingleItem"
@@ -79,7 +85,7 @@
             app:popExitAnim="@anim/slide_out_to_right"/>
         <action
             android:id="@+id/action_loginFragment_to_listFragment"
-            app:destination="@id/listFragment"
+            app:destination="@id/menuFragment"
             app:enterAnim="@anim/slide_in_from_right"
             app:exitAnim="@anim/slide_out_to_left"
             app:popEnterAnim="@anim/slide_in_from_left"
@@ -105,7 +111,7 @@
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profileFragment_to_listFragment"
-            app:destination="@id/listFragment"
+            app:destination="@id/menuFragment"
             app:enterAnim="@anim/slide_in_from_right"
             app:exitAnim="@anim/slide_out_to_left"
             app:popEnterAnim="@anim/slide_in_from_left"
@@ -118,21 +124,37 @@
         tools:layout="@layout/fragment_favourites">
         <action
             android:id="@+id/action_favouritesFragment_to_fragmentSingleItem"
-            app:destination="@id/fragmentSingleItem" />
+            app:destination="@id/fragmentSingleItem"
+            app:enterAnim="@anim/slide_in_from_right"
+            app:exitAnim="@anim/slide_out_to_left"
+            app:popEnterAnim="@anim/slide_in_from_left"
+            app:popExitAnim="@anim/slide_out_to_right"/>
         <action
             android:id="@+id/action_favouritesFragment_to_listFragment"
-            app:destination="@id/listFragment" />
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/slide_in_from_right"
+            app:exitAnim="@anim/slide_out_to_left"
+            app:popEnterAnim="@anim/slide_in_from_left"
+            app:popExitAnim="@anim/slide_out_to_right"/>
     </fragment>
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.example.neverpidor.presentation.fragments.cart.CartFragment"
-        android:label="CartFragment"
+        android:label="Корзина"
         tools:layout="@layout/fragment_cart">
         <action
             android:id="@+id/action_cartFragment_to_listFragment"
-            app:destination="@id/listFragment" />
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/slide_in_from_right"
+            app:exitAnim="@anim/slide_out_to_left"
+            app:popEnterAnim="@anim/slide_in_from_left"
+            app:popExitAnim="@anim/slide_out_to_right"/>
         <action
             android:id="@+id/action_cartFragment_to_fragmentSingleItem"
-            app:destination="@id/fragmentSingleItem" />
+            app:destination="@id/fragmentSingleItem"
+            app:enterAnim="@anim/slide_in_from_right"
+            app:exitAnim="@anim/slide_out_to_left"
+            app:popEnterAnim="@anim/slide_in_from_left"
+            app:popExitAnim="@anim/slide_out_to_right"/>
     </fragment>
 </navigation>

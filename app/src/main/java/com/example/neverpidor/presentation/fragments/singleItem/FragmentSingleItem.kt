@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import com.example.neverpidor.R
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.databinding.SingleItemFragmentBinding
 import com.example.neverpidor.domain.model.DomainItem
+import com.example.neverpidor.domain.model.User
 import com.example.neverpidor.presentation.MainActivity
 import com.example.neverpidor.presentation.fragments.singleItem.epoxy.SingleItemEpoxyController
 import com.example.neverpidor.util.format
@@ -57,12 +59,6 @@ class FragmentSingleItem : Fragment() {
                 showItems()
             }
         }
-        binding.addQuantityButton.setOnClickListener {
-            viewModel.plusItemInCart()
-        }
-        binding.removeQuantityButton.setOnClickListener {
-            viewModel.minusItemInCart()
-        }
     }
 
     override fun onDestroyView() {
@@ -73,37 +69,52 @@ class FragmentSingleItem : Fragment() {
 
     private fun setFavouriteImage() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collect {
+            viewModel.state.collect { state ->
                 val image =
-                    if (it.isMainItemLiked) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
+                    if (state.isMainItemLiked) R.drawable.ic_baseline_favorite_24 else R.drawable.ic_baseline_favorite_border_24
                 binding.favImage.setImageResource(image)
+                binding.favImage.setOnClickListener {
+                    if (state.user.role is User.Role.NoUser) {
+                        showNoUserToast()
+                    } else {
+                        viewModel.likeOrDislikeMainItem()
+                    }
+                }
             }
-        }
-        binding.favImage.setOnClickListener {
-            viewModel.likeOrDislikeMainItem()
         }
     }
 
     private fun setCartImage() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collect {
-                if (it.inCartItem.quantity > 0) {
+            viewModel.state.collect { state ->
+                if (state.inCartItem.quantity > 0) {
                     binding.cartImage.isGone = true
                     binding.cartQuantityText.isVisible = true
                     binding.addQuantityButton.isVisible = true
                     binding.removeQuantityButton.isVisible = true
-                    binding.cartQuantityText.text = it.inCartItem.quantity.toString()
+                    binding.cartQuantityText.text = state.inCartItem.quantity.toString()
                 } else {
                     binding.cartImage.isVisible = true
                     binding.cartQuantityText.isGone = true
                     binding.addQuantityButton.isGone = true
                     binding.removeQuantityButton.isGone = true
+                    binding.cartButton.setOnClickListener {
+                        if (binding.cartImage.isVisible) {
+                            if (state.user.role is User.Role.NoUser) {
+                                showNoUserToast()
+                            } else {
+                                viewModel.addToCart()
+                            }
+                        } else binding.cartButton.isClickable = false
+                    }
                 }
-
+                binding.addQuantityButton.setOnClickListener {
+                    viewModel.plusItemInCart()
+                }
+                binding.removeQuantityButton.setOnClickListener {
+                    viewModel.minusItemInCart()
+                }
             }
-        }
-        binding.cartImage.setOnClickListener {
-            viewModel.addToCart()
         }
     }
 
@@ -120,6 +131,9 @@ class FragmentSingleItem : Fragment() {
             },
             onFavClick = {
                 viewModel.likeOrDislikeItemInSet(it.UID)
+            },
+            onNoUserClick = {
+                showNoUserToast()
             }
         )
         binding.recyclerView.setController(controller!!)
@@ -143,6 +157,7 @@ class FragmentSingleItem : Fragment() {
                     updateUi(item)
                     controller?.itemList = it.itemsSet
                     controller?.likes = it.likedItems
+                    controller?.isUserLogged = it.user.role != User.Role.NoUser
                 }
             }
         }
@@ -189,5 +204,9 @@ class FragmentSingleItem : Fragment() {
                 binding.itemLikes.text = it.toString()
             }
         }
+    }
+
+    private fun showNoUserToast() {
+        Toast.makeText(requireContext(), "Необходимо зайти в аккаунт", Toast.LENGTH_SHORT).show()
     }
 }

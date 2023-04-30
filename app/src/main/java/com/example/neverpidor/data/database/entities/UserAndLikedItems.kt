@@ -4,17 +4,17 @@ import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
 
-data class MenuItemAndUsers(
+data class UserAndLikedItems(
     @Embedded
-    val menuItem: MenuItemEntity,
+    val user: UserEntity,
     @Relation(
-        parentColumn = "UID",
-        entityColumn = "phoneNumber",
+        parentColumn = "phoneNumber",
+        entityColumn = "UID",
         associateBy = Junction(
             value = UserMenuItemLikes::class,
-            parentColumn = "UID",
-            entityColumn = "phoneNumber"
+            parentColumn = "phoneNumber",
+            entityColumn = "UID"
         )
     )
-    val users: List<UserEntity>
+    val menuItems: List<MenuItemEntity>
 )

@@ -60,7 +60,7 @@ class RegisterViewModel @Inject constructor(
                 }
             ),
             inputFields = state.value.inputFields.copy(
-                password = text
+                password = text.toCharArray()
             )
         )
         enableRegisterButton()
@@ -69,7 +69,7 @@ class RegisterViewModel @Inject constructor(
     fun onRepeatPasswordInput(text: String) {
         _state.value = state.value.copy(
             inputFields = state.value.inputFields.copy(
-                repeatPassword = text
+                repeatPassword = text.toCharArray()
             ),
             errors = state.value.errors.copy(
                 passwordRepeatError = ""

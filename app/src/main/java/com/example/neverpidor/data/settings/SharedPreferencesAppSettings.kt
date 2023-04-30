@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.domain.model.User
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,22 +25,6 @@ class SharedPreferencesAppSettings @Inject constructor(
 
     override fun addListener(): Flow<Preferences> {
         return appContext.dataStore.data
-    }
-
-    override suspend fun setCurrentCategory(category: MenuCategory) {
-        val categoryKey = stringPreferencesKey("category")
-        appContext.dataStore.edit {
-            it[categoryKey] = category.toString()
-        }
-    }
-
-    override suspend fun getCurrentCategory(): MenuCategory {
-        val categoryKey = stringPreferencesKey("category")
-        val preferences = appContext.dataStore.data.first()
-        preferences[categoryKey]?.let {
-            return MenuCategory.toMenuCategory(it)
-        }
-        return MenuCategory.BeerCategory
     }
 
     override suspend fun getCurrentUser(): User {

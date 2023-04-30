@@ -6,9 +6,8 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.neverpidor.data.cart.InCartItem
+import com.example.neverpidor.domain.model.InCartItem
 import com.example.neverpidor.data.providers.MenuCategory
-import com.example.neverpidor.domain.model.User
 import com.example.neverpidor.domain.use_cases.cart.CartUseCases
 import com.example.neverpidor.domain.use_cases.likes.LikesUseCases
 import com.example.neverpidor.domain.use_cases.menu_items.MenuItemsUseCases
@@ -18,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,47 +36,43 @@ class MenuItemListViewModel @Inject constructor(
     )
     val response: SharedFlow<String> = _response
 
-    private lateinit var user: User
-
-    fun getItemList() = viewModelScope.launch {
-        user = userProfileUseCases.getUserUseCase()
-        _state.emit(state.value.copy(errorState = false))
-        val category = getCategory()
-        try {
-            menuItemsUseCases.getAllItemsUseCases(category).collect {
-                val inCartItems = mutableListOf<InCartItem>()
-                it.forEach { domainItem ->
-                    inCartItems.add(
-                        domainItem.toInCartItem(
-                            quantity = cartUseCases.isItemInCartUseCase(
-                                domainItem.UID,
-                                user.phoneNumber
-                            )?.quantity ?: 0
+    fun getItemList(category: MenuCategory) = viewModelScope.launch {
+        launch {
+            _state.emit(state.value.copy(errorState = false, user = userProfileUseCases.getUserUseCase()))
+        }.join()
+        launch {
+            try {
+                menuItemsUseCases.getAllItemsUseCases(category).collect {
+                    val inCartItems = mutableListOf<InCartItem>()
+                    it.forEach { domainItem ->
+                        inCartItems.add(
+                            domainItem.toInCartItem(
+                                quantity = cartUseCases.isItemInCartUseCase(
+                                    domainItem.UID,
+                                    state.value.user.phoneNumber
+                                )?.quantity ?: 0
+                            )
+                        )
+                    }
+                    _state.emit(
+                        state.value.copy(
+                            menuItems = it,
+                            inCartItems = inCartItems
                         )
                     )
                 }
-                _state.emit(
-                    state.value.copy(
-                        menuItems = it,
-                        inCartItems = inCartItems
-                    )
-                )
+            } catch (e: Exception) {
+                _state.emit(state.value.copy(errorState = true))
             }
-
-        } catch (e: Exception) {
-            _state.emit(state.value.copy(errorState = true))
         }
     }
 
-    fun deleteItem(itemId: String) = viewModelScope.launch(Dispatchers.IO) {
-        val category = getCategory()
+    fun deleteItem(itemId: String, category: MenuCategory) = viewModelScope.launch(Dispatchers.IO) {
+
         _response.emit(menuItemsUseCases.deleteItemUseCase(category, itemId))
+        val item = state.value.menuItems.find { it.UID == itemId } ?: return@launch
+        _state.emit(state.value.copy(menuItems = state.value.menuItems - item))
     }
-
-    suspend fun getCategory(): MenuCategory =
-        withContext(viewModelScope.coroutineContext) {
-            menuItemsUseCases.getCurrentItemCategoryUseCase()
-        }
 
     fun getLikes() = viewModelScope.launch {
         _state.emit(
@@ -111,7 +105,7 @@ class MenuItemListViewModel @Inject constructor(
     }
 
     fun plusCartItem(inCartItem: InCartItem) = viewModelScope.launch {
-        cartUseCases.plusItemInCart(user.phoneNumber, inCartItem.UID, inCartItem.quantity)
+        cartUseCases.plusItemInCart(state.value.user.phoneNumber, inCartItem.UID, inCartItem.quantity)
         _state.emit(
             state.value.copy(
                 inCartItems = state.value.inCartItems - inCartItem + inCartItem.copy(
@@ -122,7 +116,7 @@ class MenuItemListViewModel @Inject constructor(
     }
 
     fun minusCartItem(inCartItem: InCartItem) = viewModelScope.launch {
-        cartUseCases.minusItemInCart(user.phoneNumber, inCartItem)
+        cartUseCases.minusItemInCart(state.value.user.phoneNumber, inCartItem)
         _state.emit(
             state.value.copy(
                 inCartItems = state.value.inCartItems - inCartItem + inCartItem.copy(
@@ -133,7 +127,7 @@ class MenuItemListViewModel @Inject constructor(
     }
 
     fun addItemToCart(id: String) = viewModelScope.launch {
-        cartUseCases.addItemToCartUseCase(user.phoneNumber, id)
+        cartUseCases.addItemToCartUseCase(state.value.user.phoneNumber, id)
         val inCartItem = state.value.inCartItems.find { it.UID == id }!!
         _state.emit(
             state.value.copy(

@@ -4,7 +4,7 @@ import com.example.neverpidor.data.network.dto.beer.BeerRequest
 import com.example.neverpidor.domain.repositories.MenuItemsRepository
 
 class UpdateBeerUseCase(
-    val repository: MenuItemsRepository
+    private val repository: MenuItemsRepository
 ) {
     suspend operator fun invoke(beerId: String, beerRequest: BeerRequest): String {
         val response = repository.updateApiBeer(beerId, beerRequest)
