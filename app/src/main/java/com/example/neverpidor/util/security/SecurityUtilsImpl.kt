@@ -1,6 +1,7 @@
 package com.example.neverpidor.util.security
 
 import android.util.Base64
+import com.example.neverpidor.util.Constants.SECURITY_ALGORITHM
 import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
@@ -19,7 +20,7 @@ class SecurityUtilsImpl: SecurityUtils {
         val iterations = 1000
         val keyLength = 160
         val keySpec = PBEKeySpec(password, salt, iterations, keyLength)
-        val keyFactory = SecretKeyFactory.getInstance("PBKDF2withHmacSHA1")
+        val keyFactory = SecretKeyFactory.getInstance(SECURITY_ALGORITHM)
         return keyFactory.generateSecret(keySpec).encoded
     }
 

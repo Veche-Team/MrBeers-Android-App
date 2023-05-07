@@ -16,7 +16,7 @@ data class ItemInCartModel(
     override fun ItemInCartModelBinding.bind() {
         itemImage.setImageResource(inCartItem.image)
         titleText.text = inCartItem.title
-        priceText.text = inCartItem.price.format(2)
+        priceText.text = root.context.getString(R.string.price, inCartItem.price.format(2))
         itemCount.text = inCartItem.quantity.toString()
         addButton.setOnClickListener {
             onAddClick(inCartItem)
@@ -24,7 +24,10 @@ data class ItemInCartModel(
         removeButton.setOnClickListener {
             onRemoveClick(inCartItem)
         }
-        root.setOnClickListener {
+        itemImage.setOnClickListener {
+            onItemClick(inCartItem.UID)
+        }
+        titleText.setOnClickListener {
             onItemClick(inCartItem.UID)
         }
     }

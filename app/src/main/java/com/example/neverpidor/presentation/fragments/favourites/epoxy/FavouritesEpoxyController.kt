@@ -2,6 +2,7 @@ package com.example.neverpidor.presentation.fragments.favourites.epoxy
 
 import com.airbnb.epoxy.EpoxyController
 import com.example.neverpidor.domain.model.DomainItem
+import com.example.neverpidor.domain.model.InCartItem
 import com.example.neverpidor.presentation.fragments.singleItem.epoxy.models.SingleItemOffersEpoxyModel
 import com.example.neverpidor.util.epoxy.models.EmptyListModel
 import com.example.neverpidor.util.epoxy.models.ErrorModel
@@ -11,7 +12,10 @@ class FavouritesEpoxyController(
     val onItemClick: (DomainItem) -> Unit,
     val onFavClick: (DomainItem) -> Unit,
     val onRetry: () -> Unit,
-    val onToMenuClick: () -> Unit
+    val onToMenuClick: () -> Unit,
+    private val onPlusClick: (InCartItem) -> Unit,
+    private val onMinusClick: (InCartItem) -> Unit,
+    private val onAddToCartClick: (String) -> Unit,
 ) : EpoxyController() {
 
     private var isLoading = true
@@ -31,6 +35,12 @@ class FavouritesEpoxyController(
             }
         }
 
+    var inCartState = listOf<InCartItem>()
+    set(value) {
+        field = value
+        requestModelBuild()
+    }
+
     override fun buildModels() {
         if (isLoading) {
             LoadingScreenEpoxyModel().id("Loading").addTo(this)
@@ -47,9 +57,9 @@ class FavouritesEpoxyController(
             EmptyListModel { onToMenuClick() }.id("empty").addTo(this)
             return
         }
-        items.forEach {
+        items.forEach { domainItem ->
             SingleItemOffersEpoxyModel(
-                domainItem = it,
+                domainItem = domainItem,
                 onItemClick = { item ->
                     onItemClick(item)
                 },
@@ -58,8 +68,13 @@ class FavouritesEpoxyController(
                     onFavClick(item)
                 },
                 isUserLogged = true,
-                onNoUserClick = {}
-            ).id(it.UID).addTo(this)
+                onNoUserClick = {},
+                inCartState = inCartState.find { it.UID == domainItem.UID }
+                    ?: InCartItem(),
+                onMinusClick = onMinusClick::invoke,
+                onAddToCartClick = onAddToCartClick::invoke,
+                onPlusClick = onPlusClick::invoke
+            ).id(domainItem.UID).addTo(this)
         }
     }
 }

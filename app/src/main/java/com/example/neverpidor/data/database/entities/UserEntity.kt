@@ -4,8 +4,9 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.neverpidor.domain.model.User
+import com.example.neverpidor.util.Constants.USERS_TABLE_NAME
 
-@Entity(tableName = "users", indices = [Index("phoneNumber")])
+@Entity(tableName = USERS_TABLE_NAME, indices = [Index("phoneNumber")])
 data class UserEntity(
     @PrimaryKey(autoGenerate = false)
     val phoneNumber: String = "",

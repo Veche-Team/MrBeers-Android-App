@@ -20,4 +20,6 @@ abstract class BeersDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao
 
     abstract fun getCartDao(): CartDao
+
+    abstract fun getLikesDao(): LikesDao
 }

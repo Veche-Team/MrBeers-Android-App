@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.neverpidor.R
 import com.example.neverpidor.databinding.RegisterFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -85,7 +86,11 @@ class RegisterFragment : Fragment() {
     private fun showToastOnEvent() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.goBackEvent.collectLatest {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    requireContext().getString(R.string.acoount_created_toast),
+                    Toast.LENGTH_SHORT
+                ).show()
                 findNavController().navigate(RegisterFragmentDirections.actionRegisterFragmentToGreetingFragment())
             }
         }

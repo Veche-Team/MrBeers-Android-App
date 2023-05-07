@@ -7,13 +7,10 @@ import com.example.neverpidor.data.network.dto.snack.SnackRequest
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.domain.model.DomainItem
 import com.example.neverpidor.domain.use_cases.menu_items.MenuItemsUseCases
-import com.example.neverpidor.domain.use_cases.validation.ValidationUseCases
+import com.example.neverpidor.domain.use_cases.menu_validation.MenuValidationUseCases
 import com.example.neverpidor.presentation.fragments.addbeer.util.AddUpdateMode
 import com.example.neverpidor.presentation.fragments.addbeer.util.AddUpdateState
-import com.example.neverpidor.util.EmptyFieldException
-import com.example.neverpidor.util.InvalidAlcPercentageException
-import com.example.neverpidor.util.InvalidPriceException
-import com.example.neverpidor.util.InvalidVolumeException
+import com.example.neverpidor.util.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddBeerViewModel @Inject constructor(
     private val menuItemsUseCases: MenuItemsUseCases,
-    private val validationUseCases: ValidationUseCases
+    private val validationUseCases: MenuValidationUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddUpdateState())
@@ -48,6 +45,9 @@ class AddBeerViewModel @Inject constructor(
                 mode = AddUpdateMode.UPDATE
             )
         }
+    }
+    fun setCategory(category: MenuCategory) = viewModelScope.launch {
+        _state.emit(state.value.copy(mainItem = state.value.mainItem.copy(category = category)))
     }
 
     fun onButtonClick(category: MenuCategory) = viewModelScope.launch {
@@ -134,15 +134,30 @@ class AddBeerViewModel @Inject constructor(
         enableButton()
     }
 
-    fun onVolumeTextChanged(text: String) = viewModelScope.launch {
+    fun onSalePercentageTextChanged(text: String) = viewModelScope.launch {
         _state.emit(
             state.value.copy(
-                validationModel = state.value.validationModel.copy(volume = text),
+                validationModel = state.value.validationModel.copy(salePercentage = text),
                 addUpdateErrorFields = try {
-                    validationUseCases.volumeValidationUseCase(text)
-                    state.value.addUpdateErrorFields.copy(volumeError = "")
-                } catch (e: InvalidVolumeException) {
-                    state.value.addUpdateErrorFields.copy(volumeError = e.message ?: "")
+                    validationUseCases.salePercentageValidationUseCase(text)
+                    state.value.addUpdateErrorFields.copy(salePercentageError = "")
+                } catch (e: InvalidSalePercentageException) {
+                    state.value.addUpdateErrorFields.copy(salePercentageError = e.message ?: "")
+                }
+            )
+        )
+        enableButton()
+    }
+
+    fun onWeightTextChanged(text: String) = viewModelScope.launch {
+        _state.emit(
+            state.value.copy(
+                validationModel = state.value.validationModel.copy(weight = text),
+                addUpdateErrorFields = try {
+                    validationUseCases.weightValidationUseCase(text)
+                    state.value.addUpdateErrorFields.copy(weightError = "")
+                } catch (e: InvalidWeightException) {
+                    state.value.addUpdateErrorFields.copy(weightError = e.message ?: "")
                 }
             )
         )
@@ -158,22 +173,24 @@ class AddBeerViewModel @Inject constructor(
                             && state.value.validationModel.type.isNotEmpty()
                             && state.value.validationModel.price.isNotEmpty()
                             && state.value.validationModel.alc.isNotEmpty()
-                            && state.value.validationModel.volume.isNotEmpty()
+                            && state.value.validationModel.salePercentage.isNotEmpty()
                             && state.value.addUpdateErrorFields.titleError.isEmpty()
                             && state.value.addUpdateErrorFields.descriptionError.isEmpty()
                             && state.value.addUpdateErrorFields.typeError.isEmpty()
                             && state.value.addUpdateErrorFields.priceError.isEmpty()
                             && state.value.addUpdateErrorFields.alcPercentageError.isEmpty()
-                            && state.value.addUpdateErrorFields.volumeError.isEmpty()
+                            && state.value.addUpdateErrorFields.salePercentageError.isEmpty()
                 } else {
                     state.value.validationModel.title.isNotEmpty()
                             && state.value.validationModel.description.isNotEmpty()
                             && state.value.validationModel.type.isNotEmpty()
                             && state.value.validationModel.price.isNotEmpty()
+                            && state.value.validationModel.weight.isNotEmpty()
                             && state.value.addUpdateErrorFields.titleError.isEmpty()
                             && state.value.addUpdateErrorFields.descriptionError.isEmpty()
                             && state.value.addUpdateErrorFields.typeError.isEmpty()
                             && state.value.addUpdateErrorFields.priceError.isEmpty()
+                            && state.value.addUpdateErrorFields.weightError.isEmpty()
                 }
             )
         )
@@ -186,7 +203,8 @@ class AddBeerViewModel @Inject constructor(
             type = state.value.validationModel.type,
             price = state.value.validationModel.price.toDouble(),
             alcPercentage = state.value.validationModel.alc.toDouble(),
-            volume = state.value.validationModel.volume.toDouble()
+            category = "",
+            salePercentage = state.value.validationModel.salePercentage.toDouble()
         )
         withContext(viewModelScope.coroutineContext) {
             val response = menuItemsUseCases.addBeerUseCase(beerRequest)
@@ -199,7 +217,8 @@ class AddBeerViewModel @Inject constructor(
             name = state.value.validationModel.title,
             description = state.value.validationModel.description,
             type = state.value.validationModel.type,
-            price = state.value.validationModel.price.toDouble()
+            price = state.value.validationModel.price.toDouble(),
+            weight = state.value.validationModel.weight.toDouble()
         )
         launch {
             val response = async {
@@ -217,7 +236,8 @@ class AddBeerViewModel @Inject constructor(
                 type = state.value.validationModel.type,
                 price = state.value.validationModel.price.toDouble(),
                 alcPercentage = state.value.validationModel.alc.toDouble(),
-                volume = state.value.validationModel.volume.toDouble()
+                category = "",
+                salePercentage = state.value.validationModel.salePercentage.toDouble()
             )
             val beerId = state.value.mainItem.UID
             val response = menuItemsUseCases.updateBeerUseCase(beerId, beerRequest)
@@ -230,7 +250,8 @@ class AddBeerViewModel @Inject constructor(
                 name = state.value.validationModel.title,
                 description = state.value.validationModel.description,
                 type = state.value.validationModel.type,
-                price = state.value.validationModel.price.toDouble()
+                price = state.value.validationModel.price.toDouble(),
+                weight = state.value.validationModel.weight.toDouble()
             )
             val snackId = state.value.mainItem.UID
             val response = menuItemsUseCases.updateSnackUseCase(snackId, snackRequest)

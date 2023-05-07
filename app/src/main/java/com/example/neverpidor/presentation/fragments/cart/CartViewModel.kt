@@ -20,8 +20,8 @@ class CartViewModel @Inject constructor(
     private val _state = MutableStateFlow<List<InCartItem>>(emptyList())
     val state: StateFlow<List<InCartItem>> = _state
 
-    private val _price = MutableStateFlow(0)
-    val price: StateFlow<Int> = _price
+    private val _price = MutableStateFlow(0.0)
+    val price: StateFlow<Double> = _price
 
     private val _isButtonEnabled = MutableStateFlow(false)
     val isButtonEnabled: StateFlow<Boolean> = _isButtonEnabled
@@ -33,7 +33,7 @@ class CartViewModel @Inject constructor(
         cartUseCases.getUserCartFlowUseCase(user.phoneNumber).collect {
             val list = cartUseCases.getCartListUseCase(it)
             _state.emit(list)
-            _price.emit(list.sumOf { inCartItem -> inCartItem.price * inCartItem.quantity }.toInt())
+            _price.emit(list.sumOf { inCartItem -> inCartItem.price * inCartItem.quantity })
         }
     }
 

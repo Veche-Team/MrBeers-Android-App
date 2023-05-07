@@ -2,17 +2,17 @@ package com.example.neverpidor.data.network
 
 import retrofit2.Response
 
-class SimpleResponse<T>(
+class MyResponse<T>(
     private val status: Status,
     val data: Response<T>?,
     val exception: Exception?
 ) {
     companion object {
-        fun<T> success(data: Response<T>): SimpleResponse<T> {
-            return SimpleResponse(Status.Success, data, null)
+        fun<T> success(data: Response<T>): MyResponse<T> {
+            return MyResponse(Status.Success, data, null)
         }
-        fun <T> failure(exception: Exception): SimpleResponse<T> {
-            return SimpleResponse(Status.Failure, null, exception)
+        fun <T> failure(exception: Exception): MyResponse<T> {
+            return MyResponse(Status.Failure, null, exception)
         }
     }
 

@@ -6,5 +6,6 @@ data class AddUpdateErrorFields(
     val typeError: String = "",
     val priceError: String = "",
     val alcPercentageError: String = "",
-    val volumeError: String = ""
+    val salePercentageError: String = "",
+    val weightError: String = ""
 )

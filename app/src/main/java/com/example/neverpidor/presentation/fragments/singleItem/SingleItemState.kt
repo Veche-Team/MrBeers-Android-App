@@ -11,5 +11,6 @@ data class SingleItemState(
     val isMainItemLiked: Boolean = false,
     val isMainItemInCart: Boolean = false,
     val inCartItem: InCartItem = InCartItem(quantity = 0),
-    val user: User = User()
+    val user: User = User(),
+    val inCartItemsSet: List<InCartItem> = emptyList()
 )

@@ -1,11 +1,11 @@
-package com.example.neverpidor.domain.use_cases.validation
+package com.example.neverpidor.domain.use_cases.menu_validation
 
-class ValidationUseCases(
+class MenuValidationUseCases(
     val titleValidationUseCase: TitleValidationUseCase,
     val descriptionValidationUseCase: DescriptionValidationUseCase,
     val typeValidationUseCase: TypeValidationUseCase,
     val priceValidationUseCase: PriceValidationUseCase,
     val alcPercentageValidationUseCase: AlcPercentageValidationUseCase,
-    val volumeValidationUseCase: VolumeValidationUseCase
-) {
-}
+    val salePercentageValidationUseCase: SalePercentageValidationUseCase,
+    val weightValidationUseCase: WeightValidationUseCase
+)

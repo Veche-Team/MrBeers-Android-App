@@ -6,5 +6,6 @@ data class ValidationModel(
     val type: String = "",
     val price: String = "",
     val alc: String = "",
-    val volume: String = ""
+    val salePercentage: String = "",
+    val weight: String = ""
 )

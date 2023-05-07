@@ -1,5 +1,6 @@
 package com.example.neverpidor.presentation.fragments.singleItem
 
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -134,7 +135,10 @@ class FragmentSingleItem : Fragment() {
             },
             onNoUserClick = {
                 showNoUserToast()
-            }
+            },
+            onPlusClick = (viewModel::plusCartItem),
+            onMinusClick = (viewModel::minusCartItem),
+            onAddToCartClick = (viewModel::addItemToCart)
         )
         binding.recyclerView.setController(controller!!)
     }
@@ -147,29 +151,41 @@ class FragmentSingleItem : Fragment() {
                     val item = it.mainItem
 
                     if (it.mainItem.category == MenuCategory.BeerCategory) {
-                        binding.volumeText.text = getString(R.string.volume, item.volume.format(2))
+                        binding.discountedPriceText.text = getString(R.string.price, item.discountedPrice.format(2))
                         binding.alcoholPercentageText.text =
                             getString(R.string.alcPercentage, item.alcPercentage.format(1))
+                        binding.weightText.isGone = true
+                        if (item.salePercentage != 0.0) {
+                            binding.discountImage.isVisible = true
+                            binding.discountText.isVisible = true
+                            binding.discountText.text = getString(R.string.sale_percentage, item.salePercentage.toInt().toString())
+                            binding.price.paintFlags = Paint.STRIKE_THRU_TEXT_FLAG
+                            binding.discountCard.isVisible = true
+                            binding.discountedPriceText.isVisible = true
+                        }
                     } else {
-                        binding.volumeText.isGone = true
+                        binding.weightText.isVisible = true
+                        binding.weightText.text = getString(R.string.weight, item.weight.format(2))
                         binding.alcoholPercentageText.isGone = true
                     }
                     updateUi(item)
                     controller?.itemList = it.itemsSet
                     controller?.likes = it.likedItems
                     controller?.isUserLogged = it.user.role != User.Role.NoUser
+                    controller?.inCartState = it.inCartItemsSet
                 }
             }
         }
-        viewModel.getItemsSet()
-        viewModel.getMenuItemById(itemId)
+        viewLifecycleOwner.lifecycleScope.launch {
+           viewModel.getMenuItemById(itemId)
+        }
     }
 
     private fun loadingState() {
         binding.apply {
             progressBar.isVisible = true
             alcoholPercentageText.isGone = true
-            volumeText.isGone = true
+            discountCard.isGone = true
             price.isGone = true
             description.isGone = true
             imageView.isGone = true
@@ -183,7 +199,7 @@ class FragmentSingleItem : Fragment() {
         binding.apply {
             progressBar.isGone = true
             alcoholPercentageText.isVisible = true
-            volumeText.isVisible = true
+
             price.isVisible = true
             description.isVisible = true
             imageView.isVisible = true
@@ -207,6 +223,6 @@ class FragmentSingleItem : Fragment() {
     }
 
     private fun showNoUserToast() {
-        Toast.makeText(requireContext(), "Необходимо зайти в аккаунт", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), requireContext().getString(R.string.need_to_login_toast), Toast.LENGTH_SHORT).show()
     }
 }

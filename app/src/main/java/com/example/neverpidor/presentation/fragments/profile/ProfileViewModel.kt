@@ -2,8 +2,10 @@ package com.example.neverpidor.presentation.fragments.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neverpidor.domain.use_cases.user_validation.UserValidationUseCases
 import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
 import com.example.neverpidor.presentation.fragments.profile.util.ProfileState
+import com.example.neverpidor.presentation.fragments.profile.util.VMStringResource
 import com.example.neverpidor.util.PasswordException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,14 +19,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val userProfileUseCases: UserProfileUseCases
+    private val userProfileUseCases: UserProfileUseCases,
+    private val validationUseCases: UserValidationUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
     val state: StateFlow<ProfileState> = _state
 
-    private val _toastMessage = MutableSharedFlow<String>()
-    val toastMessage: SharedFlow<String> = _toastMessage
+    private val _toastMessage: MutableSharedFlow<VMStringResource> = MutableSharedFlow()
+    val toastMessage: SharedFlow<VMStringResource> = _toastMessage
 
     fun onChangeNameInput(text: String) {
         _state.value = state.value.copy(
@@ -47,11 +50,17 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun onNewPasswordInput(text: String) {
-        _state.value = state.value.copy(
-            inputFields = state.value.inputFields.copy(newPasswordField = text.toCharArray()),
-            fieldErrors = if (text.length in 1..5) state.value.fieldErrors.copy(newPasswordError = "password's too short")
-            else state.value.fieldErrors.copy(newPasswordError = "")
-        )
+        try {
+            validationUseCases.passwordValidationUseCase(text)
+            _state.value = state.value.copy(
+                inputFields = state.value.inputFields.copy(newPasswordField = text.toCharArray()),
+                fieldErrors = state.value.fieldErrors.copy(newPasswordError = "")
+            )
+        } catch (e: PasswordException.NewPasswordException) {
+            _state.value = state.value.copy(
+                fieldErrors = state.value.fieldErrors.copy(newPasswordError =  e.message ?: "")
+            )
+        }
         enableButtons()
     }
 
@@ -90,7 +99,7 @@ class ProfileViewModel @Inject constructor(
 
     fun changeName() = viewModelScope.launch {
         userProfileUseCases.changeUserNameUseCase(state.value.inputFields.changeNameField)
-        _toastMessage.emit("Name has been changed!")
+        _toastMessage.emit(VMStringResource.NameChanged)
     }
 
     fun changePassword() = viewModelScope.launch(Dispatchers.IO) {
@@ -124,10 +133,9 @@ class ProfileViewModel @Inject constructor(
             )
             return@launch
         }
-        _toastMessage.emit("Password has been changed!")
+        _toastMessage.emit(VMStringResource.PasswordChanged)
         _state.emit(
             state.value.copy(
-
                 fieldErrors = state.value.fieldErrors.copy(
                     oldPasswordError = "",
                     newPasswordError = "",
@@ -151,6 +159,6 @@ class ProfileViewModel @Inject constructor(
                 )
             )
         }
-        _toastMessage.emit("Account has been deleted")
+        _toastMessage.emit(VMStringResource.AccountDeleted)
     }
 }

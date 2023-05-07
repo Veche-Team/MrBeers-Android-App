@@ -11,6 +11,6 @@ abstract class SettingsModule {
 
     @Binds
     abstract fun bindAppSettings(
-        appSettings: SharedPreferencesAppSettings
+        appSettings: DataStoreAppSettings
     ): AppSettings
 }

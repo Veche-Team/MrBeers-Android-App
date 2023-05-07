@@ -2,6 +2,7 @@ package com.example.neverpidor.presentation.fragments.singleItem
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neverpidor.domain.model.InCartItem
 import com.example.neverpidor.domain.use_cases.cart.CartUseCases
 import com.example.neverpidor.domain.use_cases.likes.LikesUseCases
 import com.example.neverpidor.domain.use_cases.menu_items.MenuItemsUseCases
@@ -36,6 +37,9 @@ class SingleItemViewModel @Inject constructor(
                 user = user
             )
         )
+        launch {
+            getItemsSet()
+        }
         isItemLiked()
         isItemInCart()
         likesUseCases.getItemLikesByIdUseCase(itemId).collect {
@@ -43,11 +47,27 @@ class SingleItemViewModel @Inject constructor(
         }
     }
 
-    fun getItemsSet() = viewModelScope.launch(Dispatchers.IO) {
+    private fun getItemsSet() = viewModelScope.launch(Dispatchers.IO) {
         val allItems = menuItemsUseCases.getAllItemsUseCases()
         allItems.collect {
             val set = menuItemsUseCases.getItemsSetUseCase(it, state.value.mainItem.category)
-            _state.value = state.value.copy(itemsSet = set)
+            val inCartItems = mutableListOf<InCartItem>()
+            set.forEach { domainItem ->
+                inCartItems.add(
+                    domainItem.toInCartItem(
+                        quantity = cartUseCases.isItemInCartUseCase(
+                            domainItem.UID,
+                            state.value.user.phoneNumber
+                        )?.quantity ?: 0
+                    )
+                )
+            }
+            _state.emit(
+                state.value.copy(
+                    itemsSet = set,
+                    inCartItemsSet = inCartItems
+                )
+            )
             val list = mutableListOf<String>()
             set.forEach { item ->
                 val isLiked = likesUseCases.isItemLikedUseCase(item.UID)
@@ -133,5 +153,38 @@ class SingleItemViewModel @Inject constructor(
         val currentUser = state.value.user
         cartUseCases.minusItemInCart(currentUser.phoneNumber, state.value.inCartItem)
         _state.emit(state.value.copy(inCartItem = state.value.inCartItem.copy(quantity = state.value.inCartItem.quantity - 1)))
+    }
+    fun plusCartItem(inCartItem: InCartItem) = viewModelScope.launch {
+        cartUseCases.plusItemInCart(state.value.user.phoneNumber, inCartItem.UID, inCartItem.quantity)
+        _state.emit(
+            state.value.copy(
+                inCartItemsSet = state.value.inCartItemsSet - inCartItem + inCartItem.copy(
+                    quantity = inCartItem.quantity + 1
+                )
+            )
+        )
+    }
+
+    fun minusCartItem(inCartItem: InCartItem) = viewModelScope.launch {
+        cartUseCases.minusItemInCart(state.value.user.phoneNumber, inCartItem)
+        _state.emit(
+            state.value.copy(
+                inCartItemsSet = state.value.inCartItemsSet - inCartItem + inCartItem.copy(
+                    quantity = inCartItem.quantity - 1
+                )
+            )
+        )
+    }
+
+    fun addItemToCart(id: String) = viewModelScope.launch {
+        cartUseCases.addItemToCartUseCase(state.value.user.phoneNumber, id)
+        val inCartItem = state.value.inCartItemsSet.find { it.UID == id }!!
+        _state.emit(
+            state.value.copy(
+                inCartItemsSet = state.value.inCartItemsSet - inCartItem + inCartItem.copy(
+                    quantity = inCartItem.quantity + 1
+                )
+            )
+        )
     }
 }

@@ -144,8 +144,8 @@ class MenuItemsRepositoryImpl @Inject constructor(
                 price = beerRequest.price,
                 type = beerRequest.type,
                 alcPercentage = beerRequest.alcPercentage,
-                volume = beerRequest.volume,
-                category = MenuCategory.BeerCategory
+                category = MenuCategory.BeerCategory,
+                salePercentage = beerRequest.salePercentage ?: 0.0
             )
         )
     }
@@ -178,8 +178,7 @@ class MenuItemsRepositoryImpl @Inject constructor(
                 price = snackRequest.price,
                 type = snackRequest.type,
                 category = MenuCategory.SnackCategory,
-                alcPercentage = null,
-                volume = null
+                alcPercentage = null
             )
         )
     }

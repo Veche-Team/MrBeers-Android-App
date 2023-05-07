@@ -2,11 +2,11 @@ package com.example.neverpidor.domain.use_cases.likes
 
 import com.example.neverpidor.data.database.entities.UserMenuItemLikes
 import com.example.neverpidor.data.settings.AppSettings
-import com.example.neverpidor.domain.repositories.UserRepository
+import com.example.neverpidor.domain.repositories.LikesRepository
 
 class LikeOrDislikeUseCase(
     private val appSettings: AppSettings,
-    private val userRepository: UserRepository
+    private val userRepository: LikesRepository
 ) {
 
     suspend operator fun invoke(domainItemId: String, likedItems: List<String>): List<String> {

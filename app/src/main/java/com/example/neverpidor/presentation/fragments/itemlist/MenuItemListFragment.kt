@@ -111,24 +111,12 @@ class MenuItemListFragment : Fragment() {
             onMinusClick = (viewModel::minusCartItem),
             onAddToCartClick = (viewModel::addItemToCart),
             onNoUserClick = {
-                Toast.makeText(requireContext(), "Необходимо зайти в аккаунт", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), getString(R.string.need_to_login_toast), Toast.LENGTH_SHORT)
                     .show()
             }
         )
         binding.itemListRv.setControllerAndBuildModels(controller)
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.state.collect {
-                controller.likes = it.likedItems
-                controller.items = it.menuItems
-                controller.inCartState = it.inCartItems
-                controller.userRole = it.user.role
-                controller.searchInput = binding.searchEditText.text.toString()
-            }
-        }
-        binding.searchEditText.doAfterTextChanged {
-            controller.searchInput = it?.toString() ?: ""
-        }
+        collectControllerData()
 
         binding.itemListRv.addItemDecoration(
             DividerItemDecoration(
@@ -202,6 +190,20 @@ class MenuItemListFragment : Fragment() {
                     else -> binding.fab.isGone = true
                 }
             }
+        }
+    }
+    private fun collectControllerData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.state.collect {
+                controller.likes = it.likedItems
+                controller.items = it.menuItems
+                controller.inCartState = it.inCartItems
+                controller.userRole = it.user.role
+                controller.searchInput = binding.searchEditText.text.toString()
+            }
+        }
+        binding.searchEditText.doAfterTextChanged {
+            controller.searchInput = it?.toString() ?: ""
         }
     }
 }

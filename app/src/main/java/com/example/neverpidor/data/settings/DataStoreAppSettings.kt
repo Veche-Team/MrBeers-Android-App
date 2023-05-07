@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.neverpidor.domain.model.User
+import com.example.neverpidor.util.Constants.DATA_STORE_NAME
+import com.example.neverpidor.util.Constants.USER_PREFERENCES_KEY
 import com.google.gson.GsonBuilder
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -15,12 +17,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SharedPreferencesAppSettings @Inject constructor(
+class DataStoreAppSettings @Inject constructor(
     @ApplicationContext val appContext: Context
 ) : AppSettings {
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-        "settings"
+        DATA_STORE_NAME
     )
 
     override fun addListener(): Flow<Preferences> {
@@ -28,7 +30,7 @@ class SharedPreferencesAppSettings @Inject constructor(
     }
 
     override suspend fun getCurrentUser(): User {
-        val userKey = stringPreferencesKey("user")
+        val userKey = stringPreferencesKey(USER_PREFERENCES_KEY)
         val preferences = appContext.dataStore.data.first()
         preferences[userKey]?.let {
             val gson = GsonBuilder().registerTypeAdapter(User.Role::class.java, UserRoleTypeAdapter())
@@ -38,7 +40,7 @@ class SharedPreferencesAppSettings @Inject constructor(
     }
 
     override suspend fun setCurrentUser(user: User) {
-        val userKey = stringPreferencesKey("user")
+        val userKey = stringPreferencesKey(USER_PREFERENCES_KEY)
         appContext.dataStore.edit {
             val gson = GsonBuilder().registerTypeAdapter(User.Role::class.java, UserRoleTypeAdapter())
             it[userKey] = gson.create().toJson(user)

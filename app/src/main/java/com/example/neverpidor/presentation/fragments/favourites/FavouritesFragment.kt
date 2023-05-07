@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.neverpidor.databinding.FragmentFavouritesBinding
 import com.example.neverpidor.presentation.fragments.favourites.epoxy.FavouritesEpoxyController
@@ -14,11 +16,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FavouritesFragment: Fragment() {
+class FavouritesFragment : Fragment() {
 
     private var _binding: FragmentFavouritesBinding? = null
     private val binding: FragmentFavouritesBinding
-    get() = _binding!!
+        get() = _binding!!
 
     private val viewModel: FavouritesViewModel by viewModels()
     private lateinit var controller: FavouritesEpoxyController
@@ -35,6 +37,24 @@ class FavouritesFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    setupController()
+                    observeState()
+                }.join()
+                viewModel.getLikedItems()
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.itemListRv.adapter = null
+        _binding = null
+    }
+
+    private fun setupController() {
         controller = FavouritesEpoxyController(
             onItemClick = {
                 val direction =
@@ -50,31 +70,25 @@ class FavouritesFragment: Fragment() {
                 viewModel.getLikedItems()
             },
             onToMenuClick = {
-                val direction = FavouritesFragmentDirections.actionFavouritesFragmentToListFragment()
+                val direction =
+                    FavouritesFragmentDirections.actionFavouritesFragmentToListFragment()
                 findNavController().navigate(direction)
-            }
+            },
+            onPlusClick = { viewModel.plusCartItem(it) },
+            onMinusClick = { viewModel.minusCartItem(it) },
+            onAddToCartClick = viewModel::addItemToCart
         )
         binding.itemListRv.setController(controller)
-        viewLifecycleOwner.lifecycleScope.launch {
-            launch {
-                viewModel.likedItems.collect {
-                    controller.items = it
-                }
-            }
-            launch {
-                viewModel.errorState.collect {
-                    controller.isError = it
-                }
-            }
-            launch {
-                viewModel.getLikedItems()
-            }
-        }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.itemListRv.adapter = null
-        _binding = null
+    private fun observeState() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.state.collect {
+                controller.items = it.likedItems
+                controller.isError = it.errorState
+                controller.inCartState = it.inCartItems
+                controller.requestModelBuild()
+            }
+        }
     }
 }

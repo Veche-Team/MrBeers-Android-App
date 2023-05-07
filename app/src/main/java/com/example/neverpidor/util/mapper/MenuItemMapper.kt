@@ -1,9 +1,10 @@
 package com.example.neverpidor.util.mapper
 
 import com.example.neverpidor.data.database.entities.MenuItemEntity
+import com.example.neverpidor.data.network.dto.beer.BeerData
 import com.example.neverpidor.data.providers.BeerPicturesProvider
 import com.example.neverpidor.data.network.dto.beer.BeerResponse
-import com.example.neverpidor.data.network.dto.beer.Data
+import com.example.neverpidor.data.network.dto.snack.SnackData
 import com.example.neverpidor.data.network.dto.snack.SnackResponse
 import com.example.neverpidor.data.providers.MenuCategory
 import com.example.neverpidor.data.providers.SnackPicturesProvider
@@ -14,7 +15,6 @@ class MenuItemMapper @Inject constructor(
     private val beerPicturesProvider: BeerPicturesProvider,
     private val snackPicturesProvider: SnackPicturesProvider
 ) {
-
     fun buildDomainFromEntity(menuItemEntity: MenuItemEntity): DomainItem {
         if (menuItemEntity.category is MenuCategory.BeerCategory) {
             return DomainItem(
@@ -23,12 +23,12 @@ class MenuItemMapper @Inject constructor(
                 name = menuItemEntity.name,
                 price = menuItemEntity.price,
                 type = menuItemEntity.type,
-                volume = menuItemEntity.volume!!,
                 UID = menuItemEntity.UID,
                 image = beerPicturesProvider.getNotRandomPicture(menuItemEntity.UID.filter {
                     it in '0'..'9'
                 }.map { it.digitToInt() }.sum()),
-                category = MenuCategory.BeerCategory
+                category = MenuCategory.BeerCategory,
+                salePercentage = menuItemEntity.salePercentage
             )
         } else return DomainItem(
             alcPercentage = 0.0,
@@ -36,38 +36,38 @@ class MenuItemMapper @Inject constructor(
             name = menuItemEntity.name,
             price = menuItemEntity.price,
             type = menuItemEntity.type,
-            volume = 0.0,
             UID = menuItemEntity.UID,
             image = snackPicturesProvider.getNotRandomPicture(menuItemEntity.UID.filter {
                 it in '0'..'9'
             }.map { it.digitToInt() }.sum()),
-            category = MenuCategory.SnackCategory
+            category = MenuCategory.SnackCategory,
+            weight = menuItemEntity.weight
         )
     }
 
-    fun buildBeerEntityFromNetwork(data: Data): MenuItemEntity {
+    fun buildBeerEntityFromNetwork(data: BeerData): MenuItemEntity {
         return MenuItemEntity(
             UID = data.UID,
             description = data.description,
             name = data.name,
             price = data.price,
             type = data.type,
-            volume = data.volume,
             alcPercentage = data.alcPercentage,
-            category = MenuCategory.BeerCategory
+            category = MenuCategory.BeerCategory,
+            salePercentage = data.salePercentage?: 0.0
         )
     }
 
-    fun buildSnackEntityFromNetwork(data: Data): MenuItemEntity {
+    fun buildSnackEntityFromNetwork(data: SnackData): MenuItemEntity {
         return MenuItemEntity(
             UID = data.UID,
             description = data.description,
             name = data.name,
             price = data.price,
             type = data.type,
-            volume = data.volume,
-            alcPercentage = data.alcPercentage,
-            category = MenuCategory.SnackCategory
+            alcPercentage = null,
+            category = MenuCategory.SnackCategory,
+            weight = data.weight ?: 100.0
         )
     }
 
@@ -79,8 +79,8 @@ class MenuItemMapper @Inject constructor(
             price = beerResponse.createdBeverage.price,
             type = beerResponse.createdBeverage.type,
             alcPercentage = beerResponse.createdBeverage.alcPercentage,
-            volume = beerResponse.createdBeverage.volume,
-            category = MenuCategory.BeerCategory
+            category = MenuCategory.BeerCategory,
+            salePercentage = beerResponse.createdBeverage.salePercentage ?: 0.0
         )
     }
 
@@ -93,8 +93,7 @@ class MenuItemMapper @Inject constructor(
             type = snackResponse.createdSnack.type,
             category = MenuCategory.SnackCategory,
             alcPercentage = null,
-            volume = null
+            weight = snackResponse.createdSnack.weight ?: 100.0
         )
     }
 }
-

@@ -37,10 +37,8 @@ class MenuItemListViewModel @Inject constructor(
     val response: SharedFlow<String> = _response
 
     fun getItemList(category: MenuCategory) = viewModelScope.launch {
-        launch {
+
             _state.emit(state.value.copy(errorState = false, user = userProfileUseCases.getUserUseCase()))
-        }.join()
-        launch {
             try {
                 menuItemsUseCases.getAllItemsUseCases(category).collect {
                     val inCartItems = mutableListOf<InCartItem>()
@@ -64,7 +62,7 @@ class MenuItemListViewModel @Inject constructor(
             } catch (e: Exception) {
                 _state.emit(state.value.copy(errorState = true))
             }
-        }
+
     }
 
     fun deleteItem(itemId: String, category: MenuCategory) = viewModelScope.launch(Dispatchers.IO) {

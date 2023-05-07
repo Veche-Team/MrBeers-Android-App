@@ -7,5 +7,6 @@ data class BeerRequest(
     val name: String,
     val price: Double,
     val type: String,
-    val volume: Double
+    val category: String,
+    val salePercentage: Double?
 )

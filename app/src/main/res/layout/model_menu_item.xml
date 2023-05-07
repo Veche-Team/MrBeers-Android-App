@@ -6,7 +6,6 @@
     android:layout_width="185dp"
     app:cardCornerRadius="16dp"
     app:strokeWidth="3dp"
-    android:padding="5dp"
     android:layout_marginBottom="5dp"
     android:layout_marginStart="2dp"
     app:strokeColor="@color/accent"
@@ -53,21 +52,29 @@
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/shapeableImageView"
                 tools:text="Омуль байкальский потр. 1кг" />
 
-
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/editImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_edit_24"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/nameText"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/discountImage"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/favImage" />
+                app:layout_constraintTop_toTopOf="@+id/shapeableImageView"
+                app:srcCompat="@drawable/discount" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -75,8 +82,7 @@
             android:id="@+id/price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textStyle="bold"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/cartButton"
@@ -101,7 +107,7 @@
                 android:layout_height="match_parent"
                 android:padding="8dp">
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/cartImage"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
@@ -117,7 +123,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     android:gravity="center"
-                    android:text="1"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:visibility="gone"
@@ -126,7 +131,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/removeQuantityButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -137,7 +142,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/cartQuantityText"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/addQuantityButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

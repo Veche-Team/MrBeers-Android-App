@@ -19,7 +19,7 @@ class GetCartListUseCase(
                 InCartItem(
                     item.UID,
                     item.name,
-                    item.price,
+                    price = if (item.salePercentage == 0.0) item.price else item.discountedPrice,
                     cartRepository.getItemInCart(
                         userAndItems.user.phoneNumber,
                         item.UID

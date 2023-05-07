@@ -6,8 +6,9 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.neverpidor.data.database.type_converters.CategoryConverter
 import com.example.neverpidor.data.providers.MenuCategory
+import com.example.neverpidor.util.Constants.ITEMS_TABLE_NAME
 
-@Entity(tableName = "items", indices = [Index("UID")])
+@Entity(tableName = ITEMS_TABLE_NAME, indices = [Index("UID")])
 @TypeConverters(CategoryConverter::class)
 data class MenuItemEntity(
     @PrimaryKey(autoGenerate = false)
@@ -17,6 +18,7 @@ data class MenuItemEntity(
     val type: String,
     val price: Double,
     val alcPercentage: Double?,
-    val volume: Double?,
-    val category: MenuCategory
+    val category: MenuCategory,
+    val salePercentage: Double = 0.0,
+    val weight: Double = 100.0
 )

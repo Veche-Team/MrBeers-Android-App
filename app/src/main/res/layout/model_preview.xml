@@ -33,4 +33,5 @@
             tools:text="Пиво" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.google.android.material.card.MaterialCardView>

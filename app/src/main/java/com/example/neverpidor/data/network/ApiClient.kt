@@ -1,6 +1,5 @@
 package com.example.neverpidor.data.network
 
-import android.util.Log
 import com.example.neverpidor.data.network.dto.beer.BeerList
 import com.example.neverpidor.data.network.dto.beer.BeerResponse
 import com.example.neverpidor.data.network.dto.beer.BeerRequest
@@ -12,51 +11,49 @@ import javax.inject.Inject
 
 class ApiClient @Inject constructor(private val beersApiService: BeersApiService) {
 
-    suspend fun getSnacks(): SimpleResponse<SnackList> {
+    suspend fun getSnacks(): MyResponse<SnackList> {
         return safeApiCall { beersApiService.getSnacks() }
     }
 
-    suspend fun getBeers(): SimpleResponse<BeerList> {
+    suspend fun getBeers(): MyResponse<BeerList> {
         return safeApiCall { beersApiService.getBeers() }
     }
 
-    suspend fun addBeer(beerRequest: BeerRequest): SimpleResponse<BeerResponse> {
+    suspend fun addBeer(beerRequest: BeerRequest): MyResponse<BeerResponse> {
         return safeApiCall { beersApiService.addBeer(beerRequest) }
     }
 
-    suspend fun addSnack(snackRequest: SnackRequest): SimpleResponse<SnackResponse> {
+    suspend fun addSnack(snackRequest: SnackRequest): MyResponse<SnackResponse> {
         return safeApiCall { beersApiService.addSnack(snackRequest) }
     }
 
-    suspend fun deleteBeer(beerId: String): SimpleResponse<BeerResponse> {
+    suspend fun deleteBeer(beerId: String): MyResponse<BeerResponse> {
         return safeApiCall { beersApiService.deleteBeer(beerId) }
     }
 
-    suspend fun deleteSnack(snackId: String): SimpleResponse<SnackResponse> {
+    suspend fun deleteSnack(snackId: String): MyResponse<SnackResponse> {
         return safeApiCall { beersApiService.deleteSnack(snackId) }
     }
 
     suspend fun updateBeer(
         beerId: String,
         beerRequest: BeerRequest
-    ): SimpleResponse<BeerResponse> {
+    ): MyResponse<BeerResponse> {
         return safeApiCall { beersApiService.updateBeer(beerId, beerRequest) }
     }
 
     suspend fun updateSnack(
         snackId: String,
         snackRequest: SnackRequest
-    ): SimpleResponse<SnackResponse> {
+    ): MyResponse<SnackResponse> {
         return safeApiCall { beersApiService.updateSnack(snackId, snackRequest) }
     }
 
-    private inline fun <T> safeApiCall(apiCall: () -> Response<T>): SimpleResponse<T> {
+    private inline fun <T> safeApiCall(apiCall: () -> Response<T>): MyResponse<T> {
         return try {
-            Log.i("ApiClient", "Success")
-            SimpleResponse.success(apiCall.invoke())
+            MyResponse.success(apiCall.invoke())
         } catch (e: Exception) {
-            Log.i("ApiClient", "Failure")
-            SimpleResponse.failure(e)
+            MyResponse.failure(e)
         }
     }
 }

@@ -4,9 +4,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.Index
+import com.example.neverpidor.util.Constants.LIKES_TABLE_NAME
 
 @Entity(
-    tableName = "likes",
+    tableName = LIKES_TABLE_NAME,
     primaryKeys = ["phoneNumber", "UID"],
     indices = [Index("phoneNumber"), Index("UID")],
     foreignKeys = [

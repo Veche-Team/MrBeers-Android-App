@@ -28,7 +28,7 @@
                 android:layout_height="match_parent"
                 android:padding="12dp">
 
-                <ImageView
+                <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
@@ -68,9 +68,10 @@
                     android:layout_marginTop="8dp"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/alcoholPercentageText"
+                    android:gravity="center"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/titleText"
+                    app:layout_constraintEnd_toStartOf="@id/discountCard"
                     tools:text="240 P." />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -82,7 +83,6 @@
                     android:textStyle="italic"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
-
                     app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/alcoholPercentageText"
@@ -92,29 +92,59 @@
                     android:id="@+id/alcoholPercentageText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
                     android:gravity="center"
                     android:textSize="18sp"
                     android:textStyle="normal"
                     android:visibility="visible"
-                    app:layout_constraintEnd_toStartOf="@+id/volumeText"
-                    app:layout_constraintStart_toEndOf="@id/price"
+                    app:layout_constraintStart_toEndOf="@id/discountCard"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/price"
                     tools:text="Алк.: 9.8%" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/volumeText"
+                <TextView
+                    android:id="@+id/weightText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:textSize="18sp"
-                    android:textStyle="normal"
-                    android:visibility="visible"
+                    android:layout_marginStart="4dp"
+                    android:gravity="center"
+                    android:layout_marginBottom="8dp"
+                    android:textSize="20sp"
+                    android:visibility="gone"
+                    tools:text="500 г"
+                    app:layout_constraintStart_toEndOf="@id/discountCard"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/alcoholPercentageText"
-                    app:layout_constraintTop_toTopOf="@+id/price"
-                    tools:text="Объем 0.5 Л" />
+                    app:layout_constraintTop_toTopOf="@+id/price" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/discountCard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="20dp"
+                    android:layout_marginHorizontal="16dp"
+                    app:cardBackgroundColor="@color/amber_dark"
+                    app:layout_constraintBottom_toBottomOf="@+id/price"
+                    app:layout_constraintEnd_toStartOf="@+id/alcoholPercentageText"
+                    app:layout_constraintStart_toEndOf="@+id/price"
+                    app:layout_constraintTop_toTopOf="@+id/price">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/discountedPriceText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="start"
+                        android:textSize="22sp"
+                        android:textStyle="normal"
+                        android:visibility="visible"
+                        tools:text="140 P." />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
 
                 <TextView
                     android:id="@+id/itemLikes"
@@ -126,7 +156,6 @@
                     app:layout_constraintStart_toStartOf="@+id/favImage"
                     app:layout_constraintTop_toBottomOf="@+id/favImage"
                     tools:text="11" />
-
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cartButton"
@@ -146,7 +175,7 @@
                         android:layout_height="match_parent"
                         android:padding="10dp">
 
-                        <ImageView
+                        <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/cartImage"
                             android:layout_width="38dp"
                             android:layout_height="32dp"
@@ -161,7 +190,7 @@
                             android:id="@+id/cartQuantityText"
                             android:layout_width="38dp"
                             android:layout_height="32dp"
-                            android:text="1"
+                            tools:text="1"
                             android:textSize="24sp"
                             android:gravity="center"
                             android:textStyle="bold"
@@ -170,7 +199,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <ImageView
+                        <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/removeQuantityButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -179,7 +208,7 @@
                             app:layout_constraintEnd_toStartOf="@+id/cartQuantityText"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                        <ImageView
+                        <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/addQuantityButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -191,6 +220,30 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/discountImage"
+                    android:layout_width="58dp"
+                    android:layout_height="54dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/discount" />
+
+                <TextView
+                    android:id="@+id/discountText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    tools:text="-30%"
+                    android:visibility="gone"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@+id/discountImage"
+                    app:layout_constraintStart_toStartOf="@+id/discountImage"
+                    app:layout_constraintTop_toBottomOf="@+id/discountImage" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

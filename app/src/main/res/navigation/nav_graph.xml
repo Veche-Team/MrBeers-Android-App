@@ -9,7 +9,7 @@
         android:id="@+id/menuFragment"
         android:name="com.example.neverpidor.presentation.fragments.menu_categories_list.MenuCategoriesListFragment"
         android:label="Меню"
-        tools:layout="@layout/fragment_list">
+        tools:layout="@layout/fragment_menu_categories_list">
         <action
             android:id="@+id/action_listFragment_to_menuItemListFragment"
             app:destination="@id/menuItemListFragment"

@@ -4,5 +4,6 @@ data class SnackRequest(
     val description: String,
     val name: String,
     val price: Double,
-    val type: String
+    val type: String,
+    val weight: Double
 )

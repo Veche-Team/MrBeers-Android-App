@@ -5,32 +5,32 @@
     <group>
         <item android:id="@+id/loginFragment"
             app:showAsAction="ifRoom"
-            android:title="Вход"
+            android:title="@string/log_in"
             android:icon="@drawable/ic_baseline_login_24"/>
 
         <item android:id="@+id/registerFragment"
             app:showAsAction="always"
-            android:title="Регистрация"
+            android:title="@string/registration"
             android:icon="@drawable/ic_baseline_register_24"/>
 
         <item android:id="@+id/profileFragment"
             app:showAsAction="ifRoom"
-            android:title="Профиль"
+            android:title="@string/profile"
             android:icon="@drawable/ic_reserve_24"/>
 
         <item android:id="@+id/menuFragment"
             app:showAsAction="ifRoom"
-            android:title="Меню"
+            android:title="@string/menu"
             android:icon="@drawable/ic_baseline_emoji_food_beverage_24"/>
 
         <item android:id="@+id/favouritesFragment"
             app:showAsAction="ifRoom"
-            android:title="Избранное"
+            android:title="@string/favourites"
             android:icon="@drawable/ic_baseline_favorite_border_24"/>
 
         <item android:id="@+id/cartFragment"
             app:showAsAction="ifRoom"
-            android:title="Корзина"
+            android:title="@string/cart"
             android:icon="@drawable/ic_baseline_add_shopping_cart_24"/>
     </group>
 </menu>

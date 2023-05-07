@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.neverpidor.R
 import com.example.neverpidor.databinding.FragmentLoginBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -80,7 +81,7 @@ class LoginFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loginEvent.collectLatest {
-                    Toast.makeText(requireContext(), "Welcome, ${it}!", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), getString(R.string.welcome_toast, it), Toast.LENGTH_SHORT)
                         .show()
                     findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToListFragment())
                 }

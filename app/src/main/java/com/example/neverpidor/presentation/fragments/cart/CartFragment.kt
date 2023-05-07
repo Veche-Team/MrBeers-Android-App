@@ -9,8 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.neverpidor.R
 import com.example.neverpidor.databinding.FragmentCartBinding
 import com.example.neverpidor.presentation.fragments.cart.epoxy.CartEpoxyController
+import com.example.neverpidor.util.format
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -22,6 +24,7 @@ class CartFragment : Fragment() {
         get() = _binding!!
 
     private val viewModel: CartViewModel by viewModels()
+    private lateinit var controller: CartEpoxyController
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +38,18 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getUsersCart()
-        val controller = CartEpoxyController(
+        setupController()
+        observeState()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.recyclerView.adapter = null
+        _binding = null
+    }
+
+    private fun setupController() {
+        controller = CartEpoxyController(
             onAddClick = {
                 viewModel.addItem(it)
             },
@@ -52,6 +66,9 @@ class CartFragment : Fragment() {
             }
         )
         binding.recyclerView.setController(controller)
+    }
+
+    private fun observeState() {
         viewLifecycleOwner.lifecycleScope.launch {
             launch {
                 viewModel.state.collect {
@@ -60,20 +77,18 @@ class CartFragment : Fragment() {
             }
             launch {
                 viewModel.price.collect {
-                    binding.sumText.text = it.toString()
-                    binding.orderButton.isEnabled = viewModel.price.value !=  0
+                    binding.sumText.text = getString(R.string.price, it.format(2))
+                    binding.orderButton.isEnabled = viewModel.price.value != 0.0
                 }
             }
             binding.orderButton.setOnClickListener {
-                Toast.makeText(requireContext(), "Заказ отправлен!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.order_toast),
+                    Toast.LENGTH_SHORT
+                ).show()
                 viewModel.onOrderClick()
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.recyclerView.adapter = null
-        _binding = null
     }
 }

@@ -7,7 +7,7 @@ fun Double.format(digitsAfterDot: Int): String {
     if (afterDot.length < digitsAfterDot) {
         afterDot += '0'
     } else {
-        afterDot = afterDot.dropLast(1)
+        afterDot = afterDot.dropLast(afterDot.length - digitsAfterDot)
     }
     return "$beforeDot.$afterDot"
 }

@@ -2,25 +2,30 @@ package com.example.neverpidor.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.neverpidor.data.database.BeersDao
-import com.example.neverpidor.data.database.BeersDatabase
-import com.example.neverpidor.data.database.CartDao
-import com.example.neverpidor.data.database.UserDao
+import com.example.neverpidor.data.database.*
 import com.example.neverpidor.data.network.ApiClient
 import com.example.neverpidor.data.network.BeersApiService
 import com.example.neverpidor.data.repositories.CartRepositoryImpl
+import com.example.neverpidor.data.repositories.LikesRepositoryImpl
 import com.example.neverpidor.data.repositories.MenuItemsRepositoryImpl
 import com.example.neverpidor.data.repositories.UserRepositoryImpl
 import com.example.neverpidor.data.settings.AppSettings
 import com.example.neverpidor.domain.repositories.CartRepository
+import com.example.neverpidor.domain.repositories.LikesRepository
 import com.example.neverpidor.domain.repositories.MenuItemsRepository
 import com.example.neverpidor.domain.repositories.UserRepository
 import com.example.neverpidor.domain.use_cases.cart.*
 import com.example.neverpidor.domain.use_cases.likes.*
 import com.example.neverpidor.domain.use_cases.menu_items.*
 import com.example.neverpidor.domain.use_cases.users.*
-import com.example.neverpidor.domain.use_cases.validation.*
+import com.example.neverpidor.domain.use_cases.menu_validation.*
+import com.example.neverpidor.domain.use_cases.user_validation.NameValidationUseCase
+import com.example.neverpidor.domain.use_cases.user_validation.PasswordValidationUseCase
+import com.example.neverpidor.domain.use_cases.user_validation.PhoneNumberValidationUseCase
+import com.example.neverpidor.domain.use_cases.user_validation.UserValidationUseCases
 import com.example.neverpidor.util.Constants.BASE_URL
+import com.example.neverpidor.util.Constants.DATABASE_NAME
+import com.example.neverpidor.util.Constants.HTTP_CLIENT_TIMEOUT_DURATION
 import com.example.neverpidor.util.mapper.MenuItemMapper
 import com.example.neverpidor.util.security.SecurityUtils
 import com.example.neverpidor.util.security.SecurityUtilsImpl
@@ -57,7 +62,7 @@ object AppModule {
     @Provides
     @Singleton
     fun providesOkHttpClient(): OkHttpClient {
-        val duration = Duration.ofSeconds(3)
+        val duration = Duration.ofSeconds(HTTP_CLIENT_TIMEOUT_DURATION)
         val logger = HttpLoggingInterceptor()
         logger.setLevel(HttpLoggingInterceptor.Level.BASIC)
         return OkHttpClient.Builder()
@@ -94,6 +99,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesLikesDao(beersDatabase: BeersDatabase): LikesDao {
+        return beersDatabase.getLikesDao()
+    }
+
+    @Provides
+    @Singleton
     fun providesCartDao(beersDatabase: BeersDatabase): CartDao {
         return beersDatabase.getCartDao()
     }
@@ -101,7 +112,7 @@ object AppModule {
     @Provides
     @Singleton
     fun providesDatabase(@ApplicationContext context: Context): BeersDatabase {
-        return Room.databaseBuilder(context, BeersDatabase::class.java, "beers_db").build()
+        return Room.databaseBuilder(context, BeersDatabase::class.java, DATABASE_NAME).build()
     }
 
     @Provides
@@ -122,6 +133,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesLikesRepository(likesDao: LikesDao): LikesRepository {
+        return LikesRepositoryImpl(likesDao)
+    }
+
+    @Provides
+    @Singleton
     fun providesCartRepository(cartDao: CartDao): CartRepository {
         return CartRepositoryImpl(cartDao)
     }
@@ -130,13 +147,13 @@ object AppModule {
     @Singleton
     fun providesLikesUseCases(
         appSettings: AppSettings,
-        userRepository: UserRepository
+        likesRepository: LikesRepository
     ): LikesUseCases {
         return LikesUseCases(
-            getLikesUseCase = GetLikesUseCase(appSettings, userRepository),
-            likeOrDislikeUseCase = LikeOrDislikeUseCase(appSettings, userRepository),
-            isItemLikedUseCase = IsItemLikedUseCase(appSettings, userRepository),
-            getItemLikesByIdUseCase = GetItemLikesByIdUseCase(userRepository)
+            getLikesUseCase = GetLikesUseCase(appSettings, likesRepository),
+            likeOrDislikeUseCase = LikeOrDislikeUseCase(appSettings, likesRepository),
+            isItemLikedUseCase = IsItemLikedUseCase(appSettings, likesRepository),
+            getItemLikesByIdUseCase = GetItemLikesByIdUseCase(likesRepository)
         )
     }
 
@@ -145,20 +162,31 @@ object AppModule {
     fun providesUserProfileUseCases(
         appSettings: AppSettings,
         userRepository: UserRepository,
-        securityUtils: SecurityUtils
+        securityUtils: SecurityUtils,
+        @ApplicationContext context: Context
     ): UserProfileUseCases {
         return UserProfileUseCases(
             changeUserNameUseCase = ChangeUserNameUseCase(appSettings, userRepository),
             changeUserPasswordUseCase = ChangeUserPasswordUseCase(
                 appSettings,
                 userRepository,
-                securityUtils
+                securityUtils,
+                context
             ),
-            deleteUserUseCase = DeleteUserUseCase(appSettings, userRepository, securityUtils),
+            deleteUserUseCase = DeleteUserUseCase(
+                appSettings,
+                userRepository,
+                securityUtils,
+                context
+            ),
             getUserUseCase = GetUserUseCase(appSettings),
-            findUserByNumberUseCase = FindUserByNumberUseCase(userRepository, securityUtils),
+            findUserByNumberUseCase = FindUserByNumberUseCase(
+                userRepository,
+                securityUtils,
+                context
+            ),
             setCurrentUserUseCase = SetCurrentUserUseCase(appSettings),
-            registerUserUseCase = RegisterUserUseCase(userRepository, securityUtils),
+            registerUserUseCase = RegisterUserUseCase(userRepository, securityUtils, context),
             addUserListenerUseCase = AddUserListenerUseCase(appSettings)
         )
     }
@@ -166,16 +194,17 @@ object AppModule {
     @Provides
     @Singleton
     fun providesMenuItemsUseCases(
-        menuItemsRepository: MenuItemsRepository
+        menuItemsRepository: MenuItemsRepository,
+        @ApplicationContext context: Context
     ): MenuItemsUseCases {
         return MenuItemsUseCases(
-            addBeerUseCase = AddBeerUseCase(menuItemsRepository),
-            addSnackUseCase = AddSnackUseCase(menuItemsRepository),
+            addBeerUseCase = AddBeerUseCase(menuItemsRepository, context),
+            addSnackUseCase = AddSnackUseCase(menuItemsRepository, context),
             getMenuItemByIdUseCase = GetMenuItemByIdUseCase(menuItemsRepository),
-            updateBeerUseCase = UpdateBeerUseCase(menuItemsRepository),
-            updateSnackUseCase = UpdateSnackUseCase(menuItemsRepository),
+            updateBeerUseCase = UpdateBeerUseCase(menuItemsRepository, context),
+            updateSnackUseCase = UpdateSnackUseCase(menuItemsRepository, context),
             getAllItemsUseCases = GetAllItemsUseCases(menuItemsRepository),
-            deleteItemUseCase = DeleteItemUseCase(menuItemsRepository),
+            deleteItemUseCase = DeleteItemUseCase(menuItemsRepository, context),
             getItemsSetUseCase = GetItemsSetUseCase()
         )
     }
@@ -205,14 +234,29 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesValidationUseCases(): ValidationUseCases {
-        return ValidationUseCases(
-            titleValidationUseCase = TitleValidationUseCase(),
-            descriptionValidationUseCase = DescriptionValidationUseCase(),
-            typeValidationUseCase = TypeValidationUseCase(),
-            priceValidationUseCase = PriceValidationUseCase(),
-            alcPercentageValidationUseCase = AlcPercentageValidationUseCase(),
-            volumeValidationUseCase = VolumeValidationUseCase()
+    fun providesValidationUseCases(
+        @ApplicationContext context: Context
+    ): MenuValidationUseCases {
+        return MenuValidationUseCases(
+            titleValidationUseCase = TitleValidationUseCase(context),
+            descriptionValidationUseCase = DescriptionValidationUseCase(context),
+            typeValidationUseCase = TypeValidationUseCase(context),
+            priceValidationUseCase = PriceValidationUseCase(context),
+            alcPercentageValidationUseCase = AlcPercentageValidationUseCase(context),
+            salePercentageValidationUseCase = SalePercentageValidationUseCase(context),
+            weightValidationUseCase = WeightValidationUseCase(context)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesUserValidationUseCases(
+        @ApplicationContext context: Context
+    ): UserValidationUseCases {
+        return UserValidationUseCases(
+            passwordValidationUseCase = PasswordValidationUseCase(context),
+            phoneNumberValidationUseCase = PhoneNumberValidationUseCase(context),
+            nameValidationUseCase = NameValidationUseCase(context)
         )
     }
 }

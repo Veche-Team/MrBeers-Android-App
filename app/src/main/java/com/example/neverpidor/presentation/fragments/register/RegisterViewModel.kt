@@ -2,8 +2,11 @@ package com.example.neverpidor.presentation.fragments.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neverpidor.domain.use_cases.user_validation.UserValidationUseCases
 import com.example.neverpidor.domain.use_cases.users.UserProfileUseCases
 import com.example.neverpidor.presentation.fragments.register.util.RegisterState
+import com.example.neverpidor.util.InvalidNameException
+import com.example.neverpidor.util.InvalidNumberException
 import com.example.neverpidor.util.NumberAlreadyExistsException
 import com.example.neverpidor.util.PasswordException
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,52 +20,65 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val userProfileUseCases: UserProfileUseCases
+    private val userProfileUseCases: UserProfileUseCases,
+    private val userValidationUseCases: UserValidationUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RegisterState())
     val state: StateFlow<RegisterState> = _state
 
-    private val _goBackEvent = MutableSharedFlow<String>()
-    val goBackEvent: SharedFlow<String> = _goBackEvent
+    private val _goBackEvent = MutableSharedFlow<Boolean>()
+    val goBackEvent: SharedFlow<Boolean> = _goBackEvent
 
     fun onPhoneInput(text: String) {
-        _state.value = state.value.copy(
-            errors = state.value.errors.copy(
-                numberError = if (text.isEmpty()) "Number can't be empty" else ""
-            ),
-            inputFields = state.value.inputFields.copy(
-                number = text
+        try {
+            userValidationUseCases.phoneNumberValidationUseCase(text)
+            _state.value = state.value.copy(
+                errors = state.value.errors.copy(
+                    numberError = ""
+                ),
+                inputFields = state.value.inputFields.copy(
+                    number = text
+                )
             )
-        )
+        } catch (e: InvalidNumberException) {
+            _state.value = state.value.copy(
+                errors = state.value.errors.copy(numberError = e.message ?: "")
+            )
+        }
         enableRegisterButton()
     }
 
     fun onNameInput(text: String) {
-        _state.value = state.value.copy(
-            errors = state.value.errors.copy(
-                nameError = if (text.isEmpty()) "Name can't be empty" else ""
-            ),
-            inputFields = state.value.inputFields.copy(
-                name = text
+        try {
+            userValidationUseCases.nameValidationUseCase(text)
+            _state.value = state.value.copy(
+                inputFields = state.value.inputFields.copy(name = text),
+                errors = state.value.errors.copy(nameError = "")
             )
-        )
+        } catch (e: InvalidNameException) {
+            _state.value = state.value.copy(
+                errors = state.value.errors.copy(nameError = e.message ?: "")
+            )
+        }
         enableRegisterButton()
     }
 
     fun onPasswordInput(text: String) {
-        _state.value = state.value.copy(
-            errors = state.value.errors.copy(
-                passwordError = when {
-                    text.isEmpty() -> "Password can't be empty"
-                    text.length < 6 -> "Password's too short"
-                    else -> ""
-                }
-            ),
-            inputFields = state.value.inputFields.copy(
-                password = text.toCharArray()
+        try {
+            userValidationUseCases.passwordValidationUseCase(text)
+            _state.value = state.value.copy(
+                errors = state.value.errors.copy(
+                    passwordError = ""
+                ),
+                inputFields = state.value.inputFields.copy(
+                    password = text.toCharArray()
+                )
             )
-        )
+        } catch (e: PasswordException.NewPasswordException) {
+            _state.value =
+                state.value.copy(errors = state.value.errors.copy(passwordError = e.message ?: ""))
+        }
         enableRegisterButton()
     }
 
@@ -97,19 +113,23 @@ class RegisterViewModel @Inject constructor(
                 userProfileUseCases.registerUserUseCase(
                     registerInputFields = state.value.inputFields
                 )
-                _goBackEvent.emit("Account has been created!")
+                _goBackEvent.emit(true)
             } catch (e: PasswordException.RepeatPasswordException) {
-                _state.emit(state.value.copy(
-                    errors = state.value.errors.copy(
-                        passwordRepeatError = e.message ?: ""
+                _state.emit(
+                    state.value.copy(
+                        errors = state.value.errors.copy(
+                            passwordRepeatError = e.message ?: ""
+                        )
                     )
-                ))
+                )
             } catch (e: NumberAlreadyExistsException) {
-                _state.emit(state.value.copy(
-                    errors = state.value.errors.copy(
-                        numberError = e.message ?: ""
+                _state.emit(
+                    state.value.copy(
+                        errors = state.value.errors.copy(
+                            numberError = e.message ?: ""
+                        )
                     )
-                ))
+                )
             }
         }
     }

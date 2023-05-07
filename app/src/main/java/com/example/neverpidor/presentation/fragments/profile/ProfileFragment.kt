@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.example.neverpidor.R
 import com.example.neverpidor.databinding.FragmentProfileBinding
+import com.example.neverpidor.presentation.fragments.profile.util.VMStringResource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -95,13 +97,32 @@ class ProfileFragment : Fragment() {
     private fun showToastOnEvent() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.toastMessage.collectLatest {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                if (it.contains("deleted")) {
-                    findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToListFragment())
-                } else if (it.contains("Password")) {
-                    binding.editTextOldPassword.setText("")
-                    binding.editTextNewPassword.setText("")
-                    binding.editTextRepeatNewPassword.setText("")
+                when (it) {
+                    VMStringResource.NameChanged -> {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.name_changed_toast),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    VMStringResource.PasswordChanged -> {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.password_changed_toast),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        binding.editTextOldPassword.setText("")
+                        binding.editTextNewPassword.setText("")
+                        binding.editTextRepeatNewPassword.setText("")
+                    }
+                    VMStringResource.AccountDeleted -> {
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.account_deleted_toast),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        findNavController().navigate(ProfileFragmentDirections.actionProfileFragmentToListFragment())
+                    }
                 }
             }
         }

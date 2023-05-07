@@ -33,5 +33,4 @@ class CartRepositoryImpl @Inject constructor(
     override suspend fun clearUserCart(number: String) {
         cartDao.clearUserCart(number)
     }
-
 }

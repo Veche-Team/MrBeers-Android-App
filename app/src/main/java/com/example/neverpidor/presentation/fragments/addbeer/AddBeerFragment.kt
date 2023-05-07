@@ -5,8 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.ActionBar
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -62,6 +63,8 @@ class AddBeerFragment : Fragment() {
             withContext(Dispatchers.IO) {
                 args.itemId?.let {
                     viewModel.getMenuItemById(it)
+                } ?: kotlin.run {
+                    viewModel.setCategory(category)
                 }
             }
         }
@@ -90,7 +93,8 @@ class AddBeerFragment : Fragment() {
             typeEt.addTextChangedListener { viewModel.onTypeTextChanged(it.toString()) }
             priceEt.addTextChangedListener { viewModel.onPriceTextChanged(it.toString()) }
             alcEt.addTextChangedListener { viewModel.onAlcPercentageTextChanged(it.toString()) }
-            volumeEt.addTextChangedListener { viewModel.onVolumeTextChanged(it.toString()) }
+            saleEt.addTextChangedListener { viewModel.onSalePercentageTextChanged(it.toString()) }
+            weightEt.addTextChangedListener { viewModel.onWeightTextChanged(it.toString()) }
         }
     }
 
@@ -102,19 +106,23 @@ class AddBeerFragment : Fragment() {
                 binding.typeEt.setText(it.type)
                 binding.priceEt.setText(it.price.toString())
                 binding.alcEt.setText(it.alcPercentage.toString())
-                binding.volumeEt.setText(it.volume.toString())
+                binding.saleEt.setText(it.salePercentage.toString())
+                binding.weightEt.setText(it.weight.toString())
             }
         }
     }
 
     private fun handleErrorsAndButtonState(state: AddUpdateState) {
-        binding.nameLayout.error = state.addUpdateErrorFields.titleError
-        binding.descriptionTextLayout.error = state.addUpdateErrorFields.descriptionError
-        binding.typeTextLayout.error = state.addUpdateErrorFields.typeError
-        binding.priceTextLayout.error = state.addUpdateErrorFields.priceError
-        binding.alcTextLayout.error = state.addUpdateErrorFields.alcPercentageError
-        binding.volumeTextLayout.error = state.addUpdateErrorFields.volumeError
-        binding.saveButton.isEnabled = state.isButtonEnabled
+        binding.apply {
+            nameLayout.error = state.addUpdateErrorFields.titleError
+            descriptionTextLayout.error = state.addUpdateErrorFields.descriptionError
+            typeTextLayout.error = state.addUpdateErrorFields.typeError
+            priceTextLayout.error = state.addUpdateErrorFields.priceError
+            alcTextLayout.error = state.addUpdateErrorFields.alcPercentageError
+            weightTextLayout.error = state.addUpdateErrorFields.weightError
+            saleTextLayout.error = state.addUpdateErrorFields.salePercentageError
+            saveButton.isEnabled = state.isButtonEnabled
+        }
     }
 
     private fun observeState(category: MenuCategory) {
@@ -128,31 +136,49 @@ class AddBeerFragment : Fragment() {
                     handleErrorsAndButtonState(state)
                     val actionBar = (activity as MainActivity).supportActionBar
                     if (mode == AddUpdateMode.UPDATE) {
-                        binding.apply {
-                            saveButton.text = getString(R.string.update)
-                            if (category == MenuCategory.BeerCategory) {
-                                actionBar?.title =
-                                    getString(R.string.changing_item, state.mainItem.name)
-                            } else {
-                                actionBar?.title =
-                                    getString(R.string.changing_item, state.mainItem.name)
-                                binding.volumeTextLayout.isGone = true
-                                binding.alcTextLayout.isGone = true
-                            }
-                        }
+                        updateMode(category, actionBar, state.mainItem.name)
                     } else {
-                        if (category == MenuCategory.SnackCategory) {
-                            actionBar?.title = getString(R.string.add_snack)
-                            binding.volumeTextLayout.isGone = true
-                            binding.alcTextLayout.isGone = true
-                        } else {
-                            actionBar?.title = getString(R.string.add_beer)
-                            binding.volumeTextLayout.isVisible = true
-                            binding.alcTextLayout.isVisible= true
-                        }
+                        addMode(category, actionBar)
                     }
                 }
             }
+        }
+    }
+
+    private fun updateMode(category: MenuCategory, actionBar: ActionBar?, name: String) {
+        binding.apply {
+            saveButton.text = getString(R.string.update)
+            if (category == MenuCategory.BeerCategory) {
+                actionBar?.title =
+                    getString(R.string.changing_item, name)
+                binding.weightTextLayout.isGone = true
+            } else {
+                actionBar?.title =
+                    getString(R.string.changing_item, name)
+                binding.alcTextLayout.isGone = true
+                binding.saleTextLayout.isGone = true
+            }
+        }
+    }
+
+    private fun addMode(category: MenuCategory, actionBar: ActionBar?) {
+        if (category == MenuCategory.SnackCategory) {
+            actionBar?.title = getString(R.string.add_snack)
+            binding.alcTextLayout.isGone = true
+            binding.saleTextLayout.isGone = true
+            val constraintLayout = binding.constraintLayout
+            val constraintSet = ConstraintSet()
+            constraintSet.clone(constraintLayout)
+            constraintSet.connect(
+                R.id.priceTextLayout,
+                ConstraintSet.END,
+                R.id.weightTextLayout,
+                ConstraintSet.START
+            )
+            constraintSet.applyTo(constraintLayout)
+        } else {
+            actionBar?.title = getString(R.string.add_beer)
+            binding.weightTextLayout.isGone = true
         }
     }
 }

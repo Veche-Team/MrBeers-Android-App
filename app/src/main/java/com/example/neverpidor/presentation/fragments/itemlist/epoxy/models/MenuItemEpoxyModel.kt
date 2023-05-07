@@ -1,6 +1,6 @@
 package com.example.neverpidor.presentation.fragments.itemlist.epoxy.models
 
-import android.util.Log
+import android.graphics.Typeface
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import com.example.neverpidor.R
@@ -33,7 +33,14 @@ data class MenuItemEpoxyModel(
         }
 
         nameText.text = domainItem.name
-        price.text = root.context.getString(R.string.price, domainItem.price.format(2))
+        if (domainItem.salePercentage == 0.0) {
+            price.text =  root.context.getString(R.string.price, domainItem.price.format(2))
+            discountImage.isGone = true
+        } else {
+            price.typeface = Typeface.DEFAULT_BOLD
+            price.text = root.context.getString(R.string.price, domainItem.discountedPrice.format(2))
+            discountImage.isVisible = true
+        }
 
         editImage.setOnClickListener {
             onEditClick(domainItem.UID)
@@ -50,7 +57,6 @@ data class MenuItemEpoxyModel(
 
         favImage.setOnClickListener {
             if (userRole is User.Role.NoUser) {
-                Log.e("ROLE", "HEY")
                 onNoUserClick()
             } else {
                 onFavClick(domainItem.UID)
@@ -70,7 +76,6 @@ data class MenuItemEpoxyModel(
         }
         if (cartImage.isVisible) {
             cartButton.setOnClickListener {
-                Log.e("ROLE", userRole.toString())
                 if (userRole is User.Role.NoUser) {
                     onNoUserClick()
                 } else {
