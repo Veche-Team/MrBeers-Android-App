@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/amber_dark"
+    android:background="?colorPrimaryVariant"
     android:layout_height="match_parent">
 
     <com.airbnb.epoxy.EpoxyRecyclerView
@@ -20,12 +20,15 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/wholePriceCard"
         android:layout_width="match_parent"
+        style="@style/MyCardView"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/accent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        app:cardBackgroundColor="@color/amber_dark"
+        android:background="@android:color/transparent"
+        app:cardBackgroundColor="?colorSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" >
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -38,11 +41,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:textStyle="bold"
+                android:text="@string/full_price"
                 android:textSize="28sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/full_price" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/sumText"
@@ -50,18 +53,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:textStyle="bold"
                 android:textSize="28sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="540 p." />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/orderButton"
+                style="@style/CustomButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:backgroundTint="@color/accent"
                 android:text="@string/order"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

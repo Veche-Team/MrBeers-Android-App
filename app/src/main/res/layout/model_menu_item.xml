@@ -8,14 +8,14 @@
     app:strokeWidth="3dp"
     android:layout_marginBottom="5dp"
     android:layout_marginStart="2dp"
-    app:strokeColor="@color/accent"
-    app:cardBackgroundColor="@color/amber"
+    app:strokeColor="?colorAccent"
+    app:cardBackgroundColor="?colorPrimary"
     app:cardElevation="24dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/amber"
+        android:background="?colorPrimary"
         android:padding="12dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,7 +31,6 @@
                 android:id="@+id/shapeableImageView"
                 android:layout_width="40dp"
                 android:layout_height="0dp"
-                android:src="@drawable/a_beer2"
                 app:layout_constraintDimensionRatio="31:124"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -39,8 +38,8 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/favImage"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="44dp"
+                android:layout_height="46dp"
                 android:src="@drawable/ic_baseline_favorite_border_24"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/shapeableImageView"
@@ -94,12 +93,12 @@
             android:layout_height="40dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="2dp"
-            app:cardBackgroundColor="@color/amber"
+            app:cardBackgroundColor="?colorPrimaryVariant"
             app:cardCornerRadius="90dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/price"
-            app:strokeColor="@color/accent"
+            app:strokeColor="?colorAccent"
             app:strokeWidth="2dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/amber_dark"
+    android:background="?colorPrimaryVariant"
     android:padding="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +19,7 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="8dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="@color/accent"
+            app:strokeColor="?colorAccent"
             app:strokeWidth="3dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,7 +37,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textLayoutPhone"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="70dp"
@@ -59,7 +59,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textLayoutPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -78,8 +78,9 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/LoginButton"
+                    style="@style/CustomButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
@@ -100,7 +101,7 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="8dp"
             app:layout_constraintTop_toBottomOf="@id/createAccountCard"
-            app:strokeColor="@color/accent"
+            app:strokeColor="?colorAccent"
             app:strokeWidth="3dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -116,8 +117,9 @@
                     android:textSize="24sp"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
-                    android:id="@+id/CreateAccontButton"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/CreateAccountButton"
+                    style="@style/CustomButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"

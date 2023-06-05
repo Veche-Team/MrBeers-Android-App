@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/amber_dark"
+    android:background="?colorPrimaryVariant"
     android:padding="4dp">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -15,10 +15,11 @@
             android:layout_marginHorizontal="8dp"
             android:layout_marginTop="16dp"
             android:hint="@string/search"
-            android:textColorHint="@color/accent"
-            app:boxStrokeColor="@color/accent"
+            android:textColorHint="?colorAccent"
+            app:boxStrokeColor="?colorAccent"
+            app:counterTextColor="@color/amber_dark"
             app:errorEnabled="true"
-            app:hintTextColor="@color/accent"
+            app:hintTextColor="?colorOnSecondary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -26,8 +27,7 @@
                 android:id="@+id/searchEditText"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="text"
-                android:textColor="@color/accent" />
+                android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -38,7 +38,7 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         android:paddingBottom="32dp"
-        android:background="@color/amber_dark"
+        android:background="?colorPrimaryVariant"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchLayout"

@@ -1,13 +1,13 @@
 <resources>
-    <string name="app_name">NeverPidor</string>
+    <string name="app_name">Beers</string>
     <string name="beer">Пиво</string>
     <string name="snacks">Закуски</string>
     <string name="update">Изменить</string>
-    <string name="alcPercentage">Алк.: %1$s%% </string>
+    <string name="alcPercentage">Алк.: %.1f%%  </string>
     <string name="welcome_toast">Добро пожаловать, %1$s!</string>
-    <string name="price">%1$s P.</string>
+    <string name="price">%.2f P.</string>
     <string name="sale_percentage">-%1$s%%</string>
-    <string name="weight">%1$s г.</string>
+    <string name="weight">%.1f г.</string>
     <string name="changing_item">Изменяем %1$s</string>
     <string name="low_price_field">Цена слишком низкая</string>
     <string name="high_weight_field">Слишком большой вес</string>

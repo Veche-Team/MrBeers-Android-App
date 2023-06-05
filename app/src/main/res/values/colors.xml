@@ -12,8 +12,15 @@
     <color name="amber">#FFFFC107</color>
     <color name="amber_dark">#FFA000</color>
     <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
+    <color name="text_secondary">#959595</color>
     <color name="divider">#BDBDBD</color>
     <color name="accent">#009688</color>
 
+    <color name="dark_theme_darkest">#FF0D0C09</color>
+    <color name="dark_theme_medium">#FF574203</color>
+    <color name="dark_theme_lightest">#FF6E4500</color>
+    <color name="dark_theme_accent">#FF00D1BC</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#009688</color>
+    <color name="red_light_theme">#9B0319</color>
+    <color name="red_dark_theme">#FF052B</color>
 </resources>

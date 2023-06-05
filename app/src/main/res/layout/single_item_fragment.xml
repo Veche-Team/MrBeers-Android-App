@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/amber_dark"
+        android:background="?colorPrimaryVariant"
         android:padding="8dp">
 
         <com.google.android.material.card.MaterialCardView
@@ -20,7 +20,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="@color/accent"
+            app:strokeColor="?colorAccent"
             app:strokeWidth="2dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,8 +35,7 @@
                     android:paddingTop="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:srcCompat="@drawable/a_beer2" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/favImage"
@@ -71,7 +70,7 @@
                     android:gravity="center"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/titleText"
-                    app:layout_constraintEnd_toStartOf="@id/discountCard"
+                    app:layout_constraintEnd_toStartOf="@id/discountedPriceText"
                     tools:text="240 P." />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -96,7 +95,7 @@
                     android:textSize="18sp"
                     android:textStyle="normal"
                     android:visibility="visible"
-                    app:layout_constraintStart_toEndOf="@id/discountCard"
+                    app:layout_constraintStart_toEndOf="@id/discountedPriceText"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/price"
                     tools:text="Алк.: 9.8%" />
@@ -111,40 +110,26 @@
                     android:textSize="20sp"
                     android:visibility="gone"
                     tools:text="500 г"
-                    app:layout_constraintStart_toEndOf="@id/discountCard"
+                    app:layout_constraintStart_toEndOf="@id/discountedPriceText"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/price" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/discountCard"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="20dp"
-                    android:layout_marginHorizontal="16dp"
-                    app:cardBackgroundColor="@color/amber_dark"
-                    app:layout_constraintBottom_toBottomOf="@+id/price"
-                    app:layout_constraintEnd_toStartOf="@+id/alcoholPercentageText"
-                    app:layout_constraintStart_toEndOf="@+id/price"
-                    app:layout_constraintTop_toTopOf="@+id/price">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/discountedPriceText"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:gravity="start"
                         android:textSize="22sp"
                         android:textStyle="normal"
                         android:visibility="visible"
-                        tools:text="140 P." />
+                        tools:text="140 P."
+                        app:layout_constraintBottom_toBottomOf="@+id/price"
+                        app:layout_constraintEnd_toStartOf="@+id/alcoholPercentageText"
+                        app:layout_constraintStart_toEndOf="@+id/price"
+                        app:layout_constraintTop_toTopOf="@+id/price"/>
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </com.google.android.material.card.MaterialCardView>
 
                 <TextView
                     android:id="@+id/itemLikes"
@@ -162,12 +147,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    app:cardBackgroundColor="@color/amber"
+                    app:cardBackgroundColor="?colorPrimary"
                     app:layout_constraintDimensionRatio="2:1"
                     app:cardCornerRadius="90dp"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView"
                     app:layout_constraintEnd_toEndOf="@+id/imageView"
-                    app:strokeColor="@color/accent"
+                    app:strokeColor="?colorAccent"
                     app:strokeWidth="2dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -272,7 +257,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/relatedItemsText"
-            app:strokeColor="@color/accent"
+            app:strokeColor="?colorAccent"
             app:strokeWidth="3dp">
 
             <com.airbnb.epoxy.EpoxyRecyclerView

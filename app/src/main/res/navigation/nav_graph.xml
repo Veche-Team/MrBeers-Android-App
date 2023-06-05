@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/menuFragment"
-        android:name="com.example.neverpidor.presentation.fragments.menu_categories_list.MenuCategoriesListFragment"
+        android:name="com.example.beers_app.presentation.fragments.menu_categories_list.MenuCategoriesListFragment"
         android:label="Меню"
         tools:layout="@layout/fragment_menu_categories_list">
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/menuItemListFragment"
-        android:name="com.example.neverpidor.presentation.fragments.itemlist.MenuItemListFragment"
+        android:name="com.example.beers_app.presentation.fragments.itemlist.MenuItemListFragment"
         android:label="MenuItemListFragment"
         tools:layout="@layout/fragment_menu_item_list">
         <action
@@ -43,7 +43,7 @@
     </fragment>
     <fragment
         android:id="@+id/addBeerFragment"
-        android:name="com.example.neverpidor.presentation.fragments.addbeer.AddBeerFragment"
+        android:name="com.example.beers_app.presentation.fragments.addbeer.AddBeerFragment"
         android:label="AddBeerFragment"
         tools:layout="@layout/add_beer_fragment">
         <argument
@@ -57,7 +57,7 @@
     </fragment>
     <fragment
         android:id="@+id/fragmentSingleItem"
-        android:name="com.example.neverpidor.presentation.fragments.singleItem.FragmentSingleItem"
+        android:name="com.example.beers_app.presentation.fragments.singleItem.FragmentSingleItem"
         android:label="FragmentSingleItem"
         tools:layout="@layout/single_item_fragment">
         <action
@@ -73,7 +73,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.neverpidor.presentation.fragments.login.LoginFragment"
+        android:name="com.example.beers_app.presentation.fragments.login.LoginFragment"
         android:label="Вход"
         tools:layout="@layout/fragment_login">
         <action
@@ -93,7 +93,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="com.example.neverpidor.presentation.fragments.register.RegisterFragment"
+        android:name="com.example.beers_app.presentation.fragments.register.RegisterFragment"
         android:label="Регистрация"
         tools:layout="@layout/register_fragment">
         <action
@@ -106,7 +106,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.neverpidor.presentation.fragments.profile.ProfileFragment"
+        android:name="com.example.beers_app.presentation.fragments.profile.ProfileFragment"
         android:label="Изменить профиль"
         tools:layout="@layout/fragment_profile">
         <action
@@ -119,7 +119,7 @@
     </fragment>
     <fragment
         android:id="@+id/favouritesFragment"
-        android:name="com.example.neverpidor.presentation.fragments.favourites.FavouritesFragment"
+        android:name="com.example.beers_app.presentation.fragments.favourites.FavouritesFragment"
         android:label="Избранное"
         tools:layout="@layout/fragment_favourites">
         <action
@@ -139,7 +139,7 @@
     </fragment>
     <fragment
         android:id="@+id/cartFragment"
-        android:name="com.example.neverpidor.presentation.fragments.cart.CartFragment"
+        android:name="com.example.beers_app.presentation.fragments.cart.CartFragment"
         android:label="Корзина"
         tools:layout="@layout/fragment_cart">
         <action

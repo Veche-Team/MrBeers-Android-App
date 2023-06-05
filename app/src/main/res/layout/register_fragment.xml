@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/amber_dark"
+    android:background="?colorPrimaryVariant"
     android:padding="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +19,7 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="8dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="@color/accent"
+            app:strokeColor="?colorAccent"
             app:strokeWidth="3dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,7 +40,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textLayoutPhone"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -62,7 +62,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textLayoutName"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -84,7 +84,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textLayoutPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -106,7 +106,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/textLayoutConfirmPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -126,10 +126,11 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/registerButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/CustomButton"
                     android:layout_marginTop="30dp"
                     android:text="@string/register"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -147,7 +148,7 @@
             app:cardCornerRadius="12dp"
             app:cardElevation="8dp"
             app:layout_constraintTop_toBottomOf="@id/createAccountCard"
-            app:strokeColor="@color/accent"
+            app:strokeColor="?colorAccent"
             app:strokeWidth="3dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -166,8 +167,9 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/backButton"
+                    style="@style/CustomButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"

@@ -6,21 +6,21 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="16dp"
     app:strokeWidth="2dp"
-    app:strokeColor="@color/accent"
+    app:strokeColor="?colorAccent"
     android:elevation="7dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
-        android:background="@color/amber_light">
+        android:background="?colorSurface">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/typeText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="30sp"
-        android:textColor="@color/accent"
+        android:textColor="?colorAccent"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

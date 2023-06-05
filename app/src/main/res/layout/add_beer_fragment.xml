@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/amber_dark"
+    android:background="?colorPrimaryVariant"
     android:clipChildren="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:strokeColor="@color/accent"
+            app:strokeColor="?colorAccent"
             app:strokeWidth="5dp"
             tools:layout_editor_absoluteX="16dp">
 
@@ -30,7 +30,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/nameLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
@@ -52,7 +52,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/descriptionTextLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
@@ -72,7 +72,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/typeTextLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
@@ -92,7 +92,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/priceTextLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -111,7 +111,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/alcTextLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/alc_hint"
@@ -129,7 +129,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/weightTextLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/weight_hint"
@@ -147,7 +147,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/saleTextLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    style="@style/CustomOutlineBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -166,11 +166,16 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/saveButton"
+                    style="@style/CustomButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
                     android:layout_marginEnd="24dp"
                     android:layout_marginBottom="16dp"
+                    app:strokeColor="?colorAccent"
+                    app:cornerRadius="64dp"
+                    android:textColor="?colorOnSurface"
+                    app:strokeWidth="2dp"
                     android:text="@string/save"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

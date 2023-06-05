@@ -16,7 +16,7 @@
         <item android:id="@+id/profileFragment"
             app:showAsAction="ifRoom"
             android:title="@string/profile"
-            android:icon="@drawable/ic_reserve_24"/>
+            android:icon="@drawable/ic_profile_24"/>
 
         <item android:id="@+id/menuFragment"
             app:showAsAction="ifRoom"
