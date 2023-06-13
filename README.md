@@ -5,7 +5,7 @@ This is my first project and it's an app for a beer bar.
 
 ## Technologies I've used in this project
 - Language: Kotlin
-- Architecture: MVVM with usecases
+- Architecture: MVI with usecases
 - UI: XML-files
 - Coroutines
 - Room
